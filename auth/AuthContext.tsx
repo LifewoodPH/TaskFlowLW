@@ -54,6 +54,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         employeeId: sbUser.id,
         department: profile?.department,
         isAdmin: profile?.is_admin || false,
+        avatarUrl: profile?.avatar_url,
       });
     } catch (error) {
       console.error("Error mapping user", error);
@@ -170,6 +171,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser({ ...user, ...updates });
       if (updates.username && isSupabaseConfigured) {
         await supabase.from('profiles').update({ username: updates.username }).eq('id', user.employeeId);
+      }
+      if (updates.avatarUrl && isSupabaseConfigured) {
+        await supabase.from('profiles').update({ avatar_url: updates.avatarUrl }).eq('id', user.employeeId);
       }
     }
   };

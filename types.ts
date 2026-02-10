@@ -78,6 +78,7 @@ export interface User {
   employeeId: string;
   department?: string;
   isAdmin?: boolean;
+  avatarUrl?: string;
 }
 
 export interface ActivityLog {

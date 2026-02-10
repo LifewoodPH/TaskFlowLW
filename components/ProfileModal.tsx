@@ -9,6 +9,7 @@ import { Cog6ToothIcon } from './icons/Cog6ToothIcon';
 import { SunIcon } from './icons/SunIcon';
 import { MoonIcon } from './icons/MoonIcon';
 import { useTheme, ColorScheme } from './hooks/useTheme';
+import { supabase } from '../lib/supabaseClient';
 
 interface ProfileModalProps {
     isOpen: boolean;
@@ -72,6 +73,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
     const [emailNotifs, setEmailNotifs] = useState(true);
     const [pushNotifs, setPushNotifs] = useState(true);
     const [mentionNotifs, setMentionNotifs] = useState(true);
+    const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -80,6 +82,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
                 setAvatarUrl(currentUserEmployee.avatarUrl);
             } else {
                 setName(user.username);
+                setAvatarUrl(user.avatarUrl || '');
             }
 
             const timer = setTimeout(() => setShow(true), 10);
@@ -104,7 +107,46 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
         e.preventDefault();
         if (name.trim()) {
             onSave(name, avatarUrl);
-            // Show success feedback visually or rely on app notification (not available inside modal easily without context)
+        }
+    };
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !user) return;
+
+        // Simple validation
+        if (!file.type.startsWith('image/')) {
+            alert('Please upload an image file');
+            return;
+        }
+
+        if (file.size > 2 * 1024 * 1024) { // 2MB limit
+            alert('File size exceeds 2MB limit');
+            return;
+        }
+
+        try {
+            setIsUploading(true);
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${user.employeeId}/${Date.now()}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, file, { upsert: true });
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(filePath);
+
+            setAvatarUrl(publicUrl);
+        } catch (error) {
+            console.error('Error uploading avatar:', error);
+            alert('Failed to upload image');
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -145,8 +187,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
                                     key={item.id}
                                     onClick={() => setActiveTab(item.id as Tab)}
                                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === item.id
-                                            ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-lg shadow-black/5'
-                                            : 'text-slate-400 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
+                                        ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-lg shadow-black/5'
+                                        : 'text-slate-400 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
                                         }`}
                                 >
                                     <Icon className="w-4 h-4" />
@@ -187,27 +229,34 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
                                         <img
                                             src={avatarUrl || 'https://via.placeholder.com/150'}
                                             alt="Profile"
-                                            className="w-24 h-24 rounded-full object-cover border-4 border-slate-100 dark:border-slate-800 shadow-md"
+                                            className={`w-24 h-24 rounded-full object-cover border-4 border-slate-100 dark:border-slate-800 shadow-md ${isUploading ? 'blur-[2px]' : ''}`}
                                             onError={(e) => {
                                                 (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${name}&background=random`;
                                             }}
                                         />
-                                        <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                            <span className="text-white text-xs font-bold">Change</span>
-                                        </div>
+                                        <label htmlFor="avatar-upload" className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                            <span className="text-white text-xs font-bold">{isUploading ? '...' : 'Change'}</span>
+                                        </label>
                                     </div>
                                     <div className="flex-1">
                                         <h4 className="text-sm font-medium text-slate-900 dark:text-white">Profile Picture</h4>
                                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-3">
-                                            Supports .jpg, .png, or direct image links.
+                                            Click the avatar or use the button below to upload a new one. (Max 2MB)
                                         </p>
                                         <input
-                                            type="text"
-                                            value={avatarUrl}
-                                            onChange={(e) => setAvatarUrl(e.target.value)}
-                                            placeholder="https://..."
-                                            className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white"
+                                            type="file"
+                                            id="avatar-upload"
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                            className="hidden"
+                                            disabled={isUploading}
                                         />
+                                        <label
+                                            htmlFor="avatar-upload"
+                                            className={`inline-flex px-4 py-2 border border-black/10 dark:border-white/10 rounded-xl text-xs font-bold uppercase tracking-widest cursor-pointer transition-all text-slate-900 dark:text-white ${isUploading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black/5 dark:hover:bg-white/5 active:scale-95'}`}
+                                        >
+                                            {isUploading ? 'Uploading...' : 'Choose File'}
+                                        </label>
                                     </div>
                                 </div>
 
