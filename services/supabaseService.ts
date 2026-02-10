@@ -85,7 +85,7 @@ const mapDbSpaceToApp = (dbSpace: any): Space => ({
 
 const mapDbProfileToEmployee = (dbProfile: any): Employee => ({
   id: dbProfile.id,
-  name: dbProfile.username || 'Unknown',
+  name: dbProfile.full_name || dbProfile.username || 'Unknown',
   fullName: dbProfile.full_name,
   avatarUrl: dbProfile.avatar_url || 'https://via.placeholder.com/150',
 });

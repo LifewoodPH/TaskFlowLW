@@ -49,7 +49,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       setUser({
         username: profile?.username || sbUser.email?.split('@')[0],
-        fullName: profile?.full_name,
+        fullName: profile?.full_name || profile?.username || sbUser.email?.split('@')[0],
         role: 'user', // Default role, specific space roles handled in data layer
         employeeId: sbUser.id,
         department: profile?.department,
@@ -171,6 +171,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser({ ...user, ...updates });
       if (updates.username && isSupabaseConfigured) {
         await supabase.from('profiles').update({ username: updates.username }).eq('id', user.employeeId);
+      }
+      if (updates.fullName && isSupabaseConfigured) {
+        await supabase.from('profiles').update({ full_name: updates.fullName }).eq('id', user.employeeId);
       }
       if (updates.avatarUrl && isSupabaseConfigured) {
         await supabase.from('profiles').update({ avatar_url: updates.avatarUrl }).eq('id', user.employeeId);

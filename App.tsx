@@ -797,7 +797,7 @@ const Dashboard: React.FC = () => {
           user={user}
           currentUserEmployee={currentUserEmployee}
           onSave={(name, avatar) => {
-            updateUser({ username: name, avatarUrl: avatar });
+            updateUser({ fullName: name, avatarUrl: avatar });
             showNotification('Profile updated successfully', 'success');
           }}
           onLogout={() => {

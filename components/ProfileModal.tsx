@@ -78,10 +78,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
     useEffect(() => {
         if (isOpen) {
             if (currentUserEmployee) {
-                setName(currentUserEmployee.name);
+                setName(currentUserEmployee.fullName || currentUserEmployee.name);
                 setAvatarUrl(currentUserEmployee.avatarUrl);
             } else {
-                setName(user.username);
+                setName(user.fullName || user.username);
                 setAvatarUrl(user.avatarUrl || '');
             }
 
