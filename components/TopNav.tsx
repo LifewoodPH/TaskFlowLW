@@ -6,6 +6,8 @@ import { BellIcon } from './icons/BellIcon'; // Assuming we might want this, oth
 import { MoonIcon } from './icons/MoonIcon';
 import { SunIcon } from './icons/SunIcon';
 import { useTheme } from '../context/ThemeContext';
+import { useAppNotifications } from '../context/AppNotificationContext';
+import NotificationPanel from './NotificationPanel';
 
 interface TopNavProps {
     activeSpaceName: string;
@@ -33,6 +35,8 @@ const TopNav: React.FC<TopNavProps> = ({
     onTimelineViewModeChange
 }) => {
     const { theme, toggleTheme } = useTheme();
+    const { unreadCount } = useAppNotifications();
+    const [isNotificationPanelOpen, setNotificationPanelOpen] = React.useState(false);
 
     return (
         <header className="fixed top-0 left-0 right-0 h-24 px-8 z-50 flex items-center justify-between pointer-events-none">
@@ -101,6 +105,19 @@ const TopNav: React.FC<TopNavProps> = ({
                     {theme === 'light' ? <MoonIcon className="w-5 h-5" /> : <SunIcon className="w-5 h-5" />}
                 </button>
 
+                {/* Notifications */}
+                <button
+                    onClick={() => setNotificationPanelOpen(true)}
+                    className="relative p-3 bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-white/40 dark:border-white/10 rounded-full text-slate-500 dark:text-white/60 hover:text-lime-600 dark:hover:text-[#CEFD4A] hover:bg-white dark:hover:bg-black/60 transition-all"
+                >
+                    <BellIcon className="w-5 h-5" />
+                    {unreadCount > 0 && (
+                        <span className="absolute top-0 right-0 w-4 h-4 bg-lime-500 dark:bg-[#CEFD4A] text-black text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white dark:border-black animate-in zoom-in">
+                            {unreadCount}
+                        </span>
+                    )}
+                </button>
+
                 {/* Profile */}
                 <button
                     onClick={onOpenProfile}
@@ -122,6 +139,11 @@ const TopNav: React.FC<TopNavProps> = ({
                     </div>
                 </button>
             </div>
+
+            <NotificationPanel
+                isOpen={isNotificationPanelOpen}
+                onClose={() => setNotificationPanelOpen(false)}
+            />
         </header>
     );
 };

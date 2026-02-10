@@ -360,11 +360,22 @@ const Dashboard: React.FC = () => {
   };
 
   const handleAddMemberToSpace = async (spaceId: string, memberId: string) => {
+    if (!user) return;
     try {
       await dataService.addMemberToSpace(spaceId, memberId);
       const updatedSpace = await dataService.getSpaceById(spaceId);
       setSpaces(spaces.map(s => s.id === spaceId ? updatedSpace : s));
       const memberName = employees.find(e => e.id === memberId)?.name || 'Member';
+
+      // Notify the new member
+      dataService.createNotification({
+        user_id: memberId,
+        title: 'Added to Workspace',
+        message: `${user.fullName || user.username} added you to "${updatedSpace.name}"`,
+        type: 'system',
+        target_id: spaceId
+      }).catch(err => console.error("Notification Error:", err));
+
       showNotification(`${memberName} added to workspace`, 'success');
     } catch (err: any) {
       showNotification(err.message || 'Failed to add member', 'error');
@@ -438,6 +449,18 @@ const Dashboard: React.FC = () => {
         setTasks([savedTask, ...tasks]);
         logActivity(`created "${savedTask.title}"`);
       }
+
+      // Notify assignee if it's not the current user
+      if (savedTask.assigneeId && savedTask.assigneeId !== user.employeeId) {
+        dataService.createNotification({
+          user_id: savedTask.assigneeId,
+          title: id ? 'Task Updated' : 'New Task Assigned',
+          message: `${user.fullName || user.username} ${id ? 'updated' : 'assigned'} task: ${savedTask.title}`,
+          type: 'task',
+          target_id: savedTask.id.toString()
+        }).catch(err => console.error("Notification Error:", err));
+      }
+
       setAddTaskModalOpen(false);
       return savedTask;
     } catch (err: any) {

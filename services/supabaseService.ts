@@ -480,3 +480,43 @@ export const syncScratchpad = async (userId: string, content: string) => {
     .upsert({ user_id: userId, content, updated_at: new Date().toISOString() });
   if (error) throw error;
 };
+
+// --- Notifications ---
+
+export const getNotifications = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (error) throw error;
+  return data;
+};
+
+export const markNotificationAsRead = async (id: string) => {
+  const { error } = await supabase
+    .from('notifications')
+    .update({ is_read: true })
+    .eq('id', id);
+
+  if (error) throw error;
+};
+
+export const createNotification = async (notification: {
+  user_id: string;
+  title: string;
+  message: string;
+  type: string;
+  target_id?: string | null;
+}) => {
+  const { data, error } = await supabase
+    .from('notifications')
+    .insert(notification)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
