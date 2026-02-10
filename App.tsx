@@ -117,16 +117,17 @@ const Dashboard: React.FC = () => {
   const getCurrentViewFromPath = (): string => {
     const path = location.pathname;
     if (path.includes('/calendar') || path.includes('/gantt') || path.includes('/timeline')) return 'timeline';
-    if (path.includes('/dashboard')) return 'dashboard';
+    // Fail-safe: If admin, everything else is overview
+    if (user?.isAdmin) return 'overview';
+
+    if (path.includes('/dashboard') || path.includes('/overview') || path.includes('/overseer')) return 'overview';
     if (path.includes('/board')) return 'board';
     if (path.includes('/whiteboard')) return 'whiteboard';
-    if (path.includes('/overview')) return 'overview';
     if (path.includes('/settings')) return 'settings';
     if (path.includes('/home')) return 'home';
     if (path.includes('/list')) return 'list';
-    if (path.includes('/list')) return 'list';
     if (path.includes('/members')) return 'members';
-    return user?.isAdmin ? 'overview' : 'home';
+    return 'home';
   };
 
   const currentView = getCurrentViewFromPath();
@@ -149,7 +150,7 @@ const Dashboard: React.FC = () => {
   const [isLoadingTasks, setIsLoadingTasks] = useState(false);
 
   // Selection
-  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+  const [taskToEdit, setTaskToEdit] = useState<Task | Partial<Task> | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [taskToDeleteId, setTaskToDeleteId] = useState<number | null>(null);
 
@@ -401,22 +402,23 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleOpenAddTaskModal = (task: Task | null = null) => {
+  const handleOpenAddTaskModal = (task: Task | Partial<Task> | null = null) => {
     setTaskToEdit(task);
     setAddTaskModalOpen(true);
   };
 
   const handleSaveTask = async (data: any, id: number | null) => {
     console.log("handleSaveTask called", { data, id, activeSpaceId, user });
-    if (!activeSpaceId || !user) {
-      console.error("Missing activeSpaceId or user", { activeSpaceId, user });
+    const spaceId = data.spaceId || activeSpaceId;
+    if (!spaceId || !user) {
+      console.error("Missing spaceId or user", { spaceId, user });
       return null;
     }
 
     const payload = {
       ...data,
       id: id || undefined,
-      spaceId: activeSpaceId,
+      spaceId: spaceId,
       assigneeId: data.assigneeId || user.employeeId
     };
 
@@ -556,12 +558,13 @@ const Dashboard: React.FC = () => {
             {/* ADMIN VIEW - Daily Overview or Timeline */}
             {user.isAdmin ? (
               <>
-                {currentView === 'overview' && (
+                {(currentView === 'overview' || currentView === 'home') && (
                   <AdminOverseerView
                     spaces={allSpaces}
                     tasks={allTasks}
                     employees={employees}
                     onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
+                    onAddTask={(assigneeId, spaceId) => handleOpenAddTaskModal({ assigneeId, spaceId })}
                     userName={user.fullName || user.username}
                   />
                 )}
@@ -707,7 +710,6 @@ const Dashboard: React.FC = () => {
       <BottomDock
         currentView={currentView}
         onViewChange={setCurrentView}
-        onAddTask={() => activeSpaceId ? handleOpenAddTaskModal() : showNotification("Select a space first", 'error')}
         activeSpaceId={activeSpaceId}
         isAdmin={user.isAdmin}
       />
@@ -718,10 +720,11 @@ const Dashboard: React.FC = () => {
           isOpen={isAddTaskModalOpen}
           onClose={() => setAddTaskModalOpen(false)}
           onSave={handleSaveTask}
-          employees={spaceMembers}
-          taskToEdit={taskToEdit}
-          allTasks={filteredTasks}
+          employees={employees} // Admin should see all employees, or at least many
+          taskToEdit={taskToEdit as Task}
+          allTasks={allTasks}
           currentUserId={user?.employeeId}
+          isAdmin={user?.isAdmin}
         />
       )}
 

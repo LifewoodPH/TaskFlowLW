@@ -12,7 +12,6 @@ import { UsersIcon } from './icons/UsersIcon';
 interface BottomDockProps {
     currentView: string;
     onViewChange: (view: string) => void;
-    onAddTask: () => void;
     activeSpaceId: string;
     isAdmin?: boolean;
 }
@@ -20,7 +19,6 @@ interface BottomDockProps {
 const BottomDock: React.FC<BottomDockProps> = ({
     currentView,
     onViewChange,
-    onAddTask,
     activeSpaceId,
     isAdmin
 }) => {
@@ -83,16 +81,6 @@ const BottomDock: React.FC<BottomDockProps> = ({
                     );
                 })}
 
-                <div className="w-px h-8 bg-slate-200 dark:bg-white/10 mx-1"></div>
-
-                {/* Add Task Button (Prominent) */}
-                <button
-                    onClick={onAddTask}
-                    className="p-3.5 bg-lime-400 dark:bg-[#CEFD4A] hover:bg-lime-500 dark:hover:bg-[#b8e63b] text-black rounded-full shadow-[0_0_20px_rgba(163,230,53,0.4)] dark:shadow-[0_0_20px_rgba(206,253,74,0.4)] hover:shadow-[0_0_30px_rgba(163,230,53,0.6)] dark:hover:shadow-[0_0_30px_rgba(206,253,74,0.6)] hover:scale-105 transition-all duration-300 group"
-                    title="New Task"
-                >
-                    <PlusIcon className="w-6 h-6 stroke-[2.5px]" />
-                </button>
             </div>
         </div>
     );

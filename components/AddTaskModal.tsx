@@ -9,14 +9,15 @@ import TagPill from './TagPill';
 interface AddTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (task: Omit<Task, 'id' | 'spaceId' | 'status' | 'comments' | 'createdAt' | 'subtasks' | 'tags' | 'timeLogs' | 'timerStartTime' | 'completedAt'> & { subtasks?: Subtask[], tags?: string[] }, id: number | null) => void;
+  onSave: (task: Omit<Task, 'id' | 'spaceId' | 'status' | 'comments' | 'createdAt' | 'subtasks' | 'tags' | 'timeLogs' | 'timerStartTime' | 'completedAt'> & { subtasks?: Subtask[], tags?: string[], spaceId?: string }, id: number | null) => void;
   employees: Employee[];
-  taskToEdit: Task | null;
+  taskToEdit: Task | Partial<Task> | null;
   allTasks: Task[];
   currentUserId?: string;
+  isAdmin?: boolean;
 }
 
-const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, employees, taskToEdit, allTasks, currentUserId }) => {
+const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, employees, taskToEdit, allTasks, currentUserId, isAdmin }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [assigneeId, setAssigneeId] = useState('');
@@ -29,6 +30,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
   const [showTagSuggestions, setShowTagSuggestions] = useState(false);
   const [show, setShow] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [spaceId, setSpaceId] = useState<string>('');
 
   useEffect(() => {
     if (isOpen) {
@@ -52,14 +54,15 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
 
   useEffect(() => {
     if (taskToEdit) {
-      setTitle(taskToEdit.title);
-      setDescription(taskToEdit.description);
-      setAssigneeId(taskToEdit.assigneeId);
-      setDueDate(taskToEdit.dueDate);
-      setPriority(taskToEdit.priority);
+      setTitle(taskToEdit.title || '');
+      setDescription(taskToEdit.description || '');
+      setAssigneeId(taskToEdit.assigneeId || currentUserId || (employees.length > 0 ? employees[0].id : ''));
+      setDueDate(taskToEdit.dueDate || new Date().toISOString().split('T')[0]);
+      setPriority(taskToEdit.priority || Priority.MEDIUM);
       setBlockedById(taskToEdit.blockedById || null);
       setSubtasks(taskToEdit.subtasks || []);
       setTags(taskToEdit.tags || []);
+      setSpaceId(taskToEdit.spaceId || '');
     } else {
       setTitle('');
       setDescription('');
@@ -69,6 +72,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
       setBlockedById(null);
       setSubtasks([]);
       setTags([]);
+      setSpaceId('');
     }
   }, [taskToEdit, employees, isOpen, currentUserId]);
 
@@ -89,7 +93,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
-    onSave({ title, description, assigneeId, dueDate, priority, blockedById, subtasks, tags }, taskToEdit ? taskToEdit.id : null);
+    onSave({ title, description, assigneeId, dueDate, priority, blockedById, subtasks, tags, spaceId }, taskToEdit && 'id' in taskToEdit ? taskToEdit.id as number : null);
   };
 
   const handleSuggestPriority = async () => {
@@ -224,7 +228,6 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
                 value={assigneeId}
                 onChange={(e) => setAssigneeId(e.target.value)}
                 className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-700 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/50 appearance-none transition-all cursor-pointer outline-none shadow-inner"
-                disabled={!taskToEdit && !!currentUserId}
               >
                 {employees.map(emp => (
                   <option key={emp.id} value={emp.id} className="bg-white dark:bg-[#1E1E1E] text-slate-900 dark:text-white">{emp.name}{emp.id === currentUserId ? ' (Active Self)' : ''}</option>
@@ -296,8 +299,8 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
             {taskToEdit ? 'Finalize Updates' : 'Commit Directive'}
           </button>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

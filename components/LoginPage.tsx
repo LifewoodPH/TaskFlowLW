@@ -60,8 +60,16 @@ const LoginPage: React.FC = () => {
   // Redirect if already logged in
   if (!loading && user) {
     // Redirect admins to overseer view, employees to home
-    const defaultPath = user.isAdmin ? '/app/overseer' : '/app/home';
-    const from = (location as any).state?.from?.pathname || defaultPath;
+    const defaultPath = user.isAdmin ? '/app/overview' : '/app/home';
+    let from = (location as any).state?.from?.pathname || defaultPath;
+
+    // Fix overlap: If user is admin but 'from' is an employee-specific view, force overview
+    const employeeOnlyViews = ['/app/home', '/app/board', '/app/list', '/app/calendar', '/app/gantt', '/app/timeline'];
+    if (user.isAdmin && employeeOnlyViews.some(view => from.startsWith(view))) {
+      console.log("LoginPage: Admin attempting to access employee view, redirecting to overview", { from });
+      from = '/app/overview';
+    }
+
     return <Navigate to={from} replace />;
   }
 
@@ -72,9 +80,7 @@ const LoginPage: React.FC = () => {
     try {
       if (isLogin) {
         await login(username, password);
-        // Navigate to app after successful login
-        const from = (location as any).state?.from?.pathname || '/app/list';
-        navigate(from, { replace: true });
+        // Navigation will be handled by the redirect block above once useAuth updates
       } else {
         await signup(username, password, fullName, department);
         navigate('/login');

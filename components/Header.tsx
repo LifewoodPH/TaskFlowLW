@@ -15,7 +15,6 @@ interface HeaderProps {
   activeSpace: string;
   currentView: string;
   onViewChange: (view: any) => void;
-  onAddTask: () => void;
   onGenerateTasks: () => void;
   searchTerm: string;
   onSearchChange: (term: string) => void;
@@ -26,7 +25,6 @@ const Header: React.FC<HeaderProps> = ({
   activeSpace,
   currentView,
   onViewChange,
-  onAddTask,
   onGenerateTasks,
   searchTerm,
   onSearchChange,
@@ -116,17 +114,6 @@ const Header: React.FC<HeaderProps> = ({
               title="AI Generate Tasks"
             >
               <SparklesIcon className="w-5 h-5" />
-            </button>
-          )}
-
-          {/* Add Task - Only show in workspace views */}
-          {['list', 'board', 'calendar', 'gantt'].includes(currentView) && (
-            <button
-              onClick={onAddTask}
-              className="flex items-center gap-2 bg-gradient-to-br from-orange-500 to-pink-600 hover:scale-[1.02] text-white text-sm font-bold py-2.5 px-6 rounded-2xl shadow-lg shadow-orange-500/20 transition-all duration-300 active:scale-95"
-            >
-              <PlusIcon className="w-4 h-4 stroke-[3px]" />
-              <span className="hidden sm:inline">New Task</span>
             </button>
           )}
         </div>

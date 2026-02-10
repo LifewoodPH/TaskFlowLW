@@ -6,6 +6,7 @@ interface AdminOverseerViewProps {
     tasks: Task[];
     employees: Employee[];
     onViewTask: (task: Task) => void;
+    onAddTask: (memberId: string, spaceId: string) => void;
     userName?: string;
 }
 
@@ -19,6 +20,7 @@ const AdminOverseerView: React.FC<AdminOverseerViewProps> = ({
     tasks,
     employees,
     onViewTask,
+    onAddTask,
     userName,
 }) => {
     // Get time-based greeting
@@ -172,6 +174,13 @@ const AdminOverseerView: React.FC<AdminOverseerViewProps> = ({
                                                         {memberTasks.length} task{memberTasks.length !== 1 ? 's' : ''}
                                                     </p>
                                                 </div>
+                                                <button
+                                                    onClick={() => onAddTask(employee.id, space.id)}
+                                                    className="p-2 text-lime-600 dark:text-[#CEFD4A] hover:bg-lime-500/10 dark:hover:bg-[#CEFD4A]/10 rounded-xl transition-all border border-lime-500/20 dark:border-[#CEFD4A]/20"
+                                                    title="Assign Task"
+                                                >
+                                                    <span className="text-xs font-black uppercase tracking-widest">+ Assign</span>
+                                                </button>
                                             </div>
 
                                             {/* Member's Tasks */}
