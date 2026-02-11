@@ -17,12 +17,91 @@ export const IdScannerModal: React.FC<IdScannerModalProps> = ({ isOpen, onClose,
     const [isProcessing, setIsProcessing] = useState(false);
     const [status, setStatus] = useState<string>('Align your ID card within the frame');
     const [scanProgress, setScanProgress] = useState(0);
+    const audioCtxRef = useRef<AudioContext | null>(null);
+
+    // Initialize AudioContext on mount
+    useEffect(() => {
+        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        return () => {
+            if (audioCtxRef.current) {
+                audioCtxRef.current.close();
+            }
+        };
+    }, []);
+
+    // Scanning beep sound effect using Web Audio API
+    const playScanBeep = useCallback(() => {
+        const ctx = audioCtxRef.current;
+        if (!ctx) return;
+
+        // Resume context in case it's suspended (common browser restriction)
+        if (ctx.state === 'suspended') {
+            ctx.resume();
+        }
+
+        try {
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+
+            oscillator.type = 'square'; // Clearer, more "electronic" sound
+            oscillator.frequency.setValueAtTime(1200, ctx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
+
+            gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+
+            oscillator.start();
+            oscillator.stop(ctx.currentTime + 0.1);
+        } catch (e) {
+            console.error("Error playing scan beep:", e);
+        }
+    }, []);
+
+    // Success double-beep sound
+    const playSuccessBeep = useCallback(() => {
+        const ctx = audioCtxRef.current;
+        if (!ctx) return;
+
+        if (ctx.state === 'suspended') ctx.resume();
+
+        try {
+            const playTone = (freq: number, startTime: number) => {
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(freq, startTime);
+                gainNode.gain.setValueAtTime(0.1, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.1);
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.1);
+            };
+
+            // Double beep: low then high
+            playTone(880, ctx.currentTime);
+            playTone(1320, ctx.currentTime + 0.15);
+        } catch (e) {
+            console.error("Error playing success beep:", e);
+        }
+    }, []);
 
     const processImage = useCallback(async () => {
         if (!webcamRef.current || isProcessing) return;
 
         const imageSrc = webcamRef.current.getScreenshot();
         if (!imageSrc) return;
+
+        playScanBeep();
+
+        // Trigger visual flash
+        const flash = document.createElement('div');
+        flash.className = 'fixed inset-0 bg-white/30 z-[60] pointer-events-none';
+        document.body.appendChild(flash);
+        setTimeout(() => flash.remove(), 100);
 
         setIsProcessing(true);
         setStatus('AI is analyzing your ID...');
@@ -34,6 +113,7 @@ export const IdScannerModal: React.FC<IdScannerModalProps> = ({ isOpen, onClose,
             setScanProgress(100);
 
             if (extractedName && extractedName !== "Unknown") {
+                playSuccessBeep();
                 setStatus(`Verified: ${extractedName}`);
                 setTimeout(() => {
                     onScan(extractedName);
@@ -52,12 +132,28 @@ export const IdScannerModal: React.FC<IdScannerModalProps> = ({ isOpen, onClose,
         }
     }, [isProcessing, onScan, onClose]);
 
-    // We'll remove auto-scan for cloud-based OCR to save tokens and for better UX
-    // The user should click "Verify Now"
+    // Auto-snap logic
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+
+        if (isOpen && !isProcessing) {
+            // Initial delay before first auto-snap to let user align
+            interval = setInterval(() => {
+                if (!isProcessing) {
+                    processImage();
+                }
+            }, 5000); // Snap every 5 seconds
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [isOpen, isProcessing, processImage]);
 
     if (!isOpen) return null;
 
     const simulateScan = () => {
+        playScanBeep();
         setIsProcessing(true);
         setStatus('Simulating AI scan...');
         setScanProgress(0);
@@ -69,6 +165,7 @@ export const IdScannerModal: React.FC<IdScannerModalProps> = ({ isOpen, onClose,
                 clearInterval(interval);
                 const demoNames = ['John Doe', 'Jane Smith', 'Alice Johnson'];
                 const randomName = demoNames[Math.floor(Math.random() * demoNames.length)];
+                playSuccessBeep();
                 setStatus(`Found: ${randomName}`);
                 setTimeout(() => {
                     onScan(randomName);
@@ -140,7 +237,10 @@ export const IdScannerModal: React.FC<IdScannerModalProps> = ({ isOpen, onClose,
                                         <span className="text-white font-medium">{status}</span>
                                     </div>
                                 ) : (
-                                    <span className="text-white/80 font-medium">{status}</span>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                        <span className="text-white/80 font-medium">Auto-Snap Active... {status}</span>
+                                    </div>
                                 )}
                             </div>
 
@@ -175,7 +275,7 @@ export const IdScannerModal: React.FC<IdScannerModalProps> = ({ isOpen, onClose,
                                 disabled={isProcessing}
                                 className="px-6 py-2 bg-white hover:bg-neutral-100 text-black text-sm font-semibold rounded-xl shadow-lg transition-all active:scale-[0.98] disabled:opacity-50"
                             >
-                                {isProcessing ? 'Analyzing...' : 'Verify Identity'}
+                                {isProcessing ? 'Analyzing...' : 'Snap Now'}
                             </button>
                         </div>
                     </div>
