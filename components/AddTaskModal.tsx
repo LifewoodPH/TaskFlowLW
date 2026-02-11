@@ -141,12 +141,16 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
         {/* Header */}
         <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-black/5 dark:bg-white/[0.02]">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-xl ${isAdmin ? 'bg-slate-900 shadow-slate-900/20' : 'bg-blue-500 shadow-blue-500/20'}`}>
               <PlusIcon className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase">{taskToEdit ? 'Refine Directive' : 'Initialize Mission'}</h2>
-              <p className="text-[10px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-[0.2em] mt-1">Operational ID: {taskToEdit ? taskToEdit.id : 'Pending'}</p>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase">
+                {taskToEdit && (taskToEdit.id || taskToEdit.title) ? (isAdmin ? 'Edit Task' : 'Refine Directive') : (isAdmin ? 'New Task' : 'Initialize Mission')}
+              </h2>
+              <p className="text-[10px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-[0.2em] mt-1">
+                {isAdmin ? (taskToEdit?.id ? `ID: #${taskToEdit.id}` : 'Create New') : `Operational ID: ${taskToEdit?.id || 'Pending'}`}
+              </p>
             </div>
           </div>
           <button onClick={onClose} className="p-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl transition-all border border-black/5 dark:border-white/5 group">
@@ -156,37 +160,43 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
 
         <form onSubmit={handleSubmit} className="flex-grow overflow-y-auto p-8 space-y-6 scrollbar-none">
           <div className="space-y-2">
-            <label htmlFor="title" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">Main Descriptor</label>
+            <label htmlFor="title" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">
+              {isAdmin ? 'Task Title' : 'Main Descriptor'}
+            </label>
             <input
               type="text"
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-900 dark:text-white font-bold placeholder-slate-300 dark:placeholder-white/10 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 outline-none shadow-inner"
+              className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-900 dark:text-white font-bold placeholder-slate-400 dark:placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 outline-none shadow-inner"
               required
-              placeholder="Directive Title..."
+              placeholder={isAdmin ? "e.g., Q3 Financial Report" : "Directive Title..."}
             />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="description" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">Context Brief</label>
+            <label htmlFor="description" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">
+              {isAdmin ? 'Description' : 'Context Brief'}
+            </label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-700 dark:text-white/80 font-medium placeholder-slate-300 dark:placeholder-white/10 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 resize-none outline-none shadow-inner"
-              placeholder="Detailed parameters..."
+              className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-700 dark:text-white/80 font-medium placeholder-slate-400 dark:placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 resize-none outline-none shadow-inner"
+              placeholder={isAdmin ? "Add details about this task..." : "Detailed parameters..."}
             />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="tags" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">Classification Tokens</label>
-            <div className="flex flex-wrap gap-2 mb-3 bg-black/[0.02] dark:bg-white/[0.02] p-4 rounded-2xl border border-black/5 dark:border-white/5 min-h-[60px]">
+            <label htmlFor="tags" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">
+              {isAdmin ? 'Tags' : 'Classification Tokens'}
+            </label>
+            <div className="flex flex-wrap gap-2 mb-3 bg-black/[0.02] dark:bg-white/[0.02] p-3 rounded-2xl border border-black/5 dark:border-white/5 min-h-[48px]">
               {tags.map(tag => (
                 <TagPill key={tag} text={tag} onRemove={() => removeTag(tag)} />
               ))}
-              {tags.length === 0 && <span className="text-[10px] font-bold text-slate-400 dark:text-white/10 uppercase tracking-widest italic flex items-center">No tokens assigned</span>}
+              {tags.length === 0 && <span className="text-[10px] font-bold text-slate-400 dark:text-white/10 uppercase tracking-widest italic flex items-center pl-1">No tokens assigned</span>}
             </div>
             <div className="relative">
               <input
@@ -197,8 +207,8 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
                 onKeyDown={handleAddTag}
                 onFocus={() => setShowTagSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowTagSuggestions(false), 200)}
-                placeholder="Synchronize new token..."
-                className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-900 dark:text-white font-bold placeholder-slate-300 dark:placeholder-white/10 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 outline-none shadow-inner"
+                placeholder={isAdmin ? "Add new tag..." : "Synchronize new token..."}
+                className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-900 dark:text-white font-bold placeholder-slate-400 dark:placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 outline-none shadow-inner"
                 autoComplete="off"
               />
               {showTagSuggestions && suggestedTags.length > 0 && (
@@ -222,7 +232,9 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label htmlFor="assignee" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">Tactical Unit</label>
+              <label htmlFor="assignee" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">
+                {isAdmin ? 'Assignee' : 'Tactical Unit'}
+              </label>
               <select
                 id="assignee"
                 value={assigneeId}
@@ -235,7 +247,9 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
               </select>
             </div>
             <div className="space-y-2">
-              <label htmlFor="dueDate" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">Temporal Limit</label>
+              <label htmlFor="dueDate" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">
+                {isAdmin ? 'Due Date' : 'Temporal Limit'}
+              </label>
               <input
                 type="date"
                 id="dueDate"
@@ -249,7 +263,9 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4">
             <div className="space-y-2">
-              <label htmlFor="priority" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">Threat Level</label>
+              <label htmlFor="priority" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">
+                {isAdmin ? 'Priority' : 'Threat Level'}
+              </label>
               <div className="flex items-center gap-3">
                 <select
                   id="priority"
@@ -267,7 +283,9 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
               </div>
             </div>
             <div className="space-y-2">
-              <label htmlFor="blockedBy" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">Sequence Blocker</label>
+              <label htmlFor="blockedBy" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">
+                {isAdmin ? 'Blocked By' : 'Sequence Blocker'}
+              </label>
               <select
                 id="blockedBy"
                 value={blockedById || ''}
@@ -283,20 +301,20 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
           </div>
         </form>
 
-        <div className="flex justify-end gap-4 p-8 border-t border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-white/[0.01]">
+        <div className="flex justify-end gap-3 p-6 border-t border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-white/[0.01]">
           <button
             type="button"
             onClick={onClose}
             className="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-2xl transition-all duration-300"
           >
-            Abort
+            {isAdmin ? 'Cancel' : 'Abort'}
           </button>
           <button
             type="submit"
             onClick={handleSubmit}
             className="px-10 py-4 bg-blue-500 hover:bg-blue-400 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all duration-300 shadow-xl shadow-blue-500/20 active:scale-95"
           >
-            {taskToEdit ? 'Finalize Updates' : 'Commit Directive'}
+            {taskToEdit && (taskToEdit.id || taskToEdit.title) ? (isAdmin ? 'Update Task' : 'Finalize Updates') : (isAdmin ? 'Create Task' : 'Commit Directive')}
           </button>
         </div>
       </div >
