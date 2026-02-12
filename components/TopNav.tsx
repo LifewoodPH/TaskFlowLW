@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { User, Employee } from '../types';
 import { Logo } from './Logo';
 import { SearchIcon } from './icons/SearchIcon';
@@ -42,12 +43,12 @@ const TopNav: React.FC<TopNavProps> = ({
         <header className="fixed top-0 left-0 right-0 h-24 px-8 z-50 flex items-center justify-between pointer-events-none">
             {/* Brand & Context */}
             <div className="flex items-center gap-6 pointer-events-auto">
-                <div className="flex items-center gap-4 group cursor-pointer">
+                <Link to="/app/home" className="flex items-center gap-4 group cursor-pointer">
                     <div className="transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3 drop-shadow-[0_0_15px_rgba(206,253,74,0.4)]">
                         <Logo className="w-10 h-10" />
                     </div>
                     <span className="text-slate-900 dark:text-white font-extrabold text-xl tracking-[-0.03em]">TaskFlow</span>
-                </div>
+                </Link>
 
                 <div className="h-8 w-px bg-black/10 dark:bg-white/10"></div>
 
