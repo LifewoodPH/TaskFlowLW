@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Task, Employee, Priority, Subtask } from '../types';
 import { PRIORITIES } from '../constants';
-import { suggestTaskPriority } from '../services/geminiService';
 import { SparklesIcon } from './icons/SparklesIcon';
 import { PlusIcon } from './icons/PlusIcon';
 import TagPill from './TagPill';
@@ -32,7 +31,6 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
   const [showTagSuggestions, setShowTagSuggestions] = useState(false);
   const [focusedSuggestionIndex, setFocusedSuggestionIndex] = useState(-1);
   const [show, setShow] = useState(false);
-  const [isAiLoading, setIsAiLoading] = useState(false);
   const [spaceId, setSpaceId] = useState<string>('');
 
   useEffect(() => {
@@ -126,18 +124,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
     }
   };
 
-  const handleSuggestPriority = async () => {
-    if (!title.trim() && !description.trim()) return;
-    setIsAiLoading(true);
-    try {
-      const suggested = await suggestTaskPriority(title, description);
-      if (suggested) setPriority(suggested);
-    } catch (error) {
-      console.error('Priority suggestion failed:', error);
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
+
 
   const handleAddTag = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -358,9 +345,6 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
                     <option key={p} value={p} className="bg-white dark:bg-[#1E1E1E] text-slate-900 dark:text-white">{p}</option>
                   ))}
                 </select>
-                <button type="button" onClick={handleSuggestPriority} disabled={isAiLoading} className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl hover:bg-blue-500/20 transition-all group" title="Suggest Priority with AI">
-                  <SparklesIcon className={`w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:text-blue-300 ${isAiLoading ? 'animate-pulse scale-110' : ''}`} />
-                </button>
               </div>
             </div>
             <div className="space-y-2">

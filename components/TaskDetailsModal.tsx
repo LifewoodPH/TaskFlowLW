@@ -3,14 +3,13 @@ import { Task, Employee, Priority, TaskStatus } from '../types';
 import { useAuth } from '../auth/AuthContext';
 import { XMarkIcon } from './icons/XMarkIcon';
 import { FlagIcon } from './icons/FlagIcon';
-import { getTaskAdviceFromAI } from '../services/geminiService';
 import { LockClosedIcon } from './icons/LockClosedIcon';
 import { PlayIcon } from './icons/PlayIcon';
 import { StopIcon } from './icons/StopIcon';
 import { ClockIcon } from './icons/ClockIcon';
 import { CheckCircleIcon } from './icons/CheckCircleIcon';
 import TagPill from './TagPill';
-import { SparklesIcon } from './icons/SparklesIcon';
+
 
 interface TaskDetailsModalProps {
   isOpen: boolean;
@@ -44,10 +43,6 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
   const currentUser = employees.find(e => e.id === user?.employeeId);
   const blockingTask = task.blockedById ? allTasks.find(t => t.id === task.blockedById) : null;
 
-  const [aiQuestion, setAiQuestion] = useState('');
-  const [aiResponse, setAiResponse] = useState('');
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
   const [show, setShow] = useState(false);
 
   // Timer State
@@ -69,13 +64,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
     }
   }, [isOpen, onClose, task]);
 
-  useEffect(() => {
-    if (isOpen) {
-      setAiQuestion('');
-      setAiResponse('');
-      setAiError(null);
-    }
-  }, [isOpen])
+
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -99,22 +88,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
     setNewComment('');
   };
 
-  const handleAskAI = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!aiQuestion.trim()) return;
 
-    setIsAiLoading(true);
-    setAiResponse('');
-    setAiError(null);
-    try {
-      const response = await getTaskAdviceFromAI(task.title, task.description, aiQuestion);
-      setAiResponse(response);
-    } catch (err) {
-      setAiError(err instanceof Error ? err.message : 'An unknown error occurred.');
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
 
 
 
@@ -317,31 +291,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
             </div>
           </div>
 
-          <div className="bg-black/5 dark:bg-[#2A2A2D]/50 border border-black/5 dark:border-white/5 rounded-[40px] p-8 shadow-inner">
-            <div className="flex items-center gap-3 mb-6">
-              <SparklesIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              <h3 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest">AI Assistant</h3>
-            </div>
-            <form onSubmit={handleAskAI} className="space-y-4">
-              <textarea
-                value={aiQuestion}
-                onChange={(e) => setAiQuestion(e.target.value)}
-                placeholder="Ask about this task or get next steps..."
-                rows={3}
-                className="w-full px-6 py-4 bg-white dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-700 dark:text-white font-medium placeholder-slate-300 dark:placeholder-white/10 focus:ring-2 focus:ring-blue-500/50 transition-all resize-none outline-none shadow-sm"
-              />
-              <button type="submit" className="w-full py-4 bg-blue-500 hover:bg-blue-400 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl disabled:opacity-30 transition-all shadow-xl shadow-blue-500/20 active:scale-95" disabled={!aiQuestion.trim() || isAiLoading}>
-                {isAiLoading ? 'Thinking...' : 'Ask AI'}
-              </button>
-            </form>
-            {isAiLoading && <div className="text-center py-8 text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.3em] animate-pulse">Processing...</div>}
-            {aiError && <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-[10px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wide">{aiError}</div>}
-            {aiResponse && (
-              <div className="mt-6 p-6 bg-white dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-3xl text-sm font-medium text-slate-700 dark:text-white/80 leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-500 shadow-sm">
-                {aiResponse}
-              </div>
-            )}
-          </div>
+
 
           <div className="space-y-6">
             <h3 className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">Activity & Comments</h3>

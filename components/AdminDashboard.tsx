@@ -5,7 +5,6 @@ import TaskStatusPieChart from './charts/TaskStatusPieChart';
 import TasksPerEmployeeBarChart from './charts/TasksPerEmployeeBarChart';
 import TaskPriorityBarChart from './charts/TaskPriorityBarChart';
 import CompletionHistoryChart from './charts/CompletionHistoryChart';
-import { generateWeeklySummary } from '../services/geminiService';
 import { SparklesIcon } from './icons/SparklesIcon';
 import { ClockIcon } from './icons/ClockIcon';
 import { CheckCircleIcon } from './icons/CheckCircleIcon';
@@ -60,9 +59,6 @@ const getRelativeTime = (timestamp: string) => {
 };
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ tasks, employees, activityLogs, isAdmin = true }) => {
-    const [summary, setSummary] = useState('');
-    const [isSummaryLoading, setIsSummaryLoading] = useState(false);
-
     // Calculations
     const totalTasks = tasks.length;
     const completedTasks = tasks.filter((t: Task) => t.status === TaskStatus.DONE);
@@ -73,17 +69,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ tasks, employees, activ
     // Calculate average completion time (mock calculation for demo)
     const avgCompletionTime = "2.5 Days";
 
-    const handleGenerateSummary = async () => {
-        setIsSummaryLoading(true);
-        try {
-            const result = await generateWeeklySummary(tasks, employees);
-            setSummary(result);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setIsSummaryLoading(false);
-        }
-    };
 
     return (
         <div className="space-y-10 pb-20 animate-in fade-in slide-in-from-bottom-4 duration-1000">
@@ -147,44 +132,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ tasks, employees, activ
                             </div>
                         </DashboardCard>
                     )}
-
-                    {/* AI Summary Section */}
-                    <div className="relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-pink-500/5 to-transparent z-0 opacity-50"></div>
-                        <div className="relative z-10 bg-white/10 dark:bg-white/5 backdrop-blur-[40px] border border-white/20 dark:border-white/10 rounded-[32px] p-10">
-                            <div className="flex items-center gap-4 mb-8">
-                                <div className="p-3 bg-gradient-to-br from-orange-400 to-pink-600 rounded-2xl shadow-lg shadow-orange-500/20">
-                                    <SparklesIcon className="w-6 h-6 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-white tracking-tight">Intelligence Report</h3>
-                            </div>
-
-                            {!summary ? (
-                                <div className="text-center py-12">
-                                    <p className="text-white/40 mb-8 text-sm max-w-md mx-auto leading-relaxed">Let AI analyze your project flow and generate a comprehensive natural-language progress report.</p>
-                                    <button
-                                        onClick={handleGenerateSummary}
-                                        disabled={isSummaryLoading}
-                                        className="px-8 py-4 bg-white text-black text-sm font-bold rounded-2xl shadow-2xl shadow-white/10 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50"
-                                    >
-                                        {isSummaryLoading ? 'Analyzing Workspace...' : 'Generate AI Report'}
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="prose prose-sm max-w-none">
-                                    <div className="whitespace-pre-wrap text-white/70 leading-relaxed bg-black/40 p-8 rounded-3xl border border-white/5 font-medium">
-                                        {summary}
-                                    </div>
-                                    <button
-                                        onClick={() => setSummary('')}
-                                        className="mt-6 text-[10px] text-white/30 hover:text-white font-bold uppercase tracking-[0.2em] transition-colors"
-                                    >
-                                        Reset Analysis
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
                 </div>
 
                 {/* Right Column (Team & Activity) */}
@@ -218,10 +165,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ tasks, employees, activ
                         </div>
                     </DashboardCard>
                 </div>
-            </div>
+            </div >
 
             {/* Team Task Overview */}
-            <div className="pt-10 px-4">
+            < div className="pt-10 px-4" >
                 <div className="flex items-center gap-4 mb-10">
                     <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Squad Overview</h3>
                 </div>
@@ -279,8 +226,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ tasks, employees, activ
                         );
                     })}
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

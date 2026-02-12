@@ -7,7 +7,6 @@ import TaskListView from './components/TaskListView';
 import TopNav from './components/TopNav';
 import BottomDock from './components/BottomDock';
 import AddTaskModal from './components/AddTaskModal';
-import GenerateTasksModal from './components/GenerateTasksModal';
 import LoginPage from './components/LoginPage';
 import { useAuth } from './auth/AuthContext';
 import { useDailyTasks } from './hooks/useDailyTasks';
@@ -138,7 +137,6 @@ const Dashboard: React.FC = () => {
 
   // Modals
   const [isAddTaskModalOpen, setAddTaskModalOpen] = useState(false);
-  const [isGenerateTaskModalOpen, setGenerateTaskModalOpen] = useState(false);
   const [isTaskDetailsModalOpen, setTaskDetailsModalOpen] = useState(false);
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -771,21 +769,7 @@ const Dashboard: React.FC = () => {
         />
       )}
 
-      {isGenerateTaskModalOpen && (
-        <GenerateTasksModal
-          isOpen={isGenerateTaskModalOpen}
-          onClose={() => setGenerateTaskModalOpen(false)}
-          onTasksGenerated={async (gen) => {
-            if (!activeSpaceId || !user) return;
-            // Iterate and save all
-            for (const t of gen) {
-              await handleSaveTask(t, null);
-            }
-            showNotification(`Generated ${gen.length} tasks`, 'success');
-          }}
-          employees={spaceMembers}
-        />
-      )}
+
 
       {isTaskDetailsModalOpen && selectedTask && (
         <TaskDetailsModal
