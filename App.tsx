@@ -410,14 +410,34 @@ const Dashboard: React.FC = () => {
 
   const handleSaveTask = async (data: any, id: number | null) => {
     console.log("handleSaveTask called", { data, id, activeSpaceId, user });
-    const spaceId = data.spaceId || activeSpaceId;
+    let spaceId = data.spaceId || activeSpaceId;
+
+    // Fallback: If editing an existing task and spaceId is missing (e.g. Admin global view), find it from the task list
+    if (!spaceId && id) {
+      const existingTask = tasks.find(t => t.id === id);
+      if (existingTask) {
+        spaceId = existingTask.spaceId;
+        console.log("Recovered spaceId from existing task:", spaceId);
+      }
+    }
     if (!spaceId || !user) {
       console.error("Missing spaceId or user", { spaceId, user });
+      showNotification("Internal Error: Missing workspace or user context", 'error');
       return null;
     }
 
+    // MERGE with existing task to preserve status, created_at, etc.
+    let baseTask = {};
+    if (id) {
+      const existing = tasks.find(t => t.id === id);
+      if (existing) {
+        baseTask = existing;
+      }
+    }
+
     const payload = {
-      ...data,
+      ...baseTask, // Start with existing data
+      ...data,     // Override with form data
       id: id || undefined,
       spaceId: spaceId,
       assigneeId: data.assigneeId || user.employeeId
@@ -499,12 +519,17 @@ const Dashboard: React.FC = () => {
     setTasks(unblockedTasks.map(t => t.id === taskId ? updatedTask : t));
 
     try {
+      if (!updatedTask.spaceId) {
+        throw new Error("Missing workspace context (spaceId) for task");
+      }
       await dataService.upsertTask(updatedTask);
       logActivity(`moved "${taskToUpdate.title}" to ${newStatus}`);
       showNotification(`Moved to ${newStatus}`, 'success');
-    } catch (err) {
-      showNotification("Failed to update status", 'error');
-      loadTasks(activeSpaceId); // Revert
+    } catch (err: any) {
+      console.error("Failed to update status:", err);
+      showNotification("Failed to update status: " + (err.message || "Unknown error"), 'error');
+      // Revert optimism
+      setTasks(tasks.map(t => t.id === taskId ? taskToUpdate : t));
     }
   };
 
@@ -776,13 +801,6 @@ const Dashboard: React.FC = () => {
               const updatedTask = { ...selectedTask, comments: [...selectedTask.comments, newComment] };
               setTasks(tasks.map(t => t.id === taskId ? updatedTask : t));
               setSelectedTask(updatedTask);
-            } catch (err) { console.error(err); }
-          }}
-          onUpdateTask={async (updated) => {
-            try {
-              await dataService.upsertTask(updated);
-              setTasks(tasks.map(t => t.id === updated.id ? updated : t));
-              setSelectedTask(updated);
             } catch (err) { console.error(err); }
           }}
           onToggleTimer={handleToggleTimer}

@@ -65,6 +65,9 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, allTasks, employee, onEditTas
       <div className="flex justify-between items-start gap-4 mb-4">
         <div className="flex-1">
           <h3 className="font-bold text-sm text-slate-800 dark:text-white/90 leading-relaxed line-clamp-2 tracking-tight group-hover:text-slate-950 dark:group-hover:text-white transition-colors">{task.title}</h3>
+          {task.description && (
+            <p className="text-xs text-slate-500 dark:text-white/50 mt-1 line-clamp-2 font-medium">{task.description}</p>
+          )}
         </div>
         <div className="flex items-center gap-1.5 p-1.5 bg-black/5 dark:bg-black/40 rounded-xl border border-black/5 dark:border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
           <button
