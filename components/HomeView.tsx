@@ -454,7 +454,7 @@ const HomeView: React.FC<HomeViewProps> = ({ tasks, employees, currentSpace, use
         <BentoCard className="col-span-1 p-6">
           <h3 className="text-sm font-bold text-slate-400 dark:text-white/40 uppercase tracking-wider mb-6">Team Members</h3>
           <div className="flex flex-wrap gap-2">
-            {employees.slice(0, 8).map(emp => (
+            {employees.map(emp => (
               <div
                 key={emp.id}
                 className="relative group cursor-pointer"
@@ -473,9 +473,6 @@ const HomeView: React.FC<HomeViewProps> = ({ tasks, employees, currentSpace, use
                 </div>
               </div>
             ))}
-            <div className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-center text-slate-400 dark:text-white/40 font-bold text-xs hover:bg-black/10 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer">
-              +3
-            </div>
           </div>
         </BentoCard>
 
