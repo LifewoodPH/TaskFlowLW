@@ -300,8 +300,8 @@ const LoginPage: React.FC = () => {
             </form>
 
             <div className="mt-6 space-y-1 text-[10px] text-center lg:text-left uppercase tracking-widest text-slate-400 dark:text-white/20 font-bold leading-relaxed">
-              <p>By signing in, you agree to TaskFlow's <a href="#" className="underline hover:text-slate-900 dark:hover:text-white transition-colors">Terms of Service</a>,</p>
-              <p><a href="#" className="underline hover:text-slate-900 dark:hover:text-white transition-colors">Privacy Policy</a> and <a href="#" className="underline hover:text-slate-900 dark:hover:text-white transition-colors">Data Usage Properties</a>.</p>
+              <p>By signing in, you agree to TaskFlow's <a href="https://lifewood.com/terms-conditions" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-900 dark:hover:text-white transition-colors">Terms and Conditions</a></p>
+              <p>and <a href="https://lifewood.com/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-900 dark:hover:text-white transition-colors">Privacy Policy</a>.</p>
             </div>
           </div>
         </div>
