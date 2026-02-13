@@ -8,6 +8,7 @@ import { Logo } from './Logo';
 import { EyeIcon } from './icons/EyeIcon';
 import { EyeSlashIcon } from './icons/EyeSlashIcon';
 import { ClockIcon } from './icons/ClockIcon';
+import { CheckCircleIcon } from './icons/CheckCircleIcon';
 import { ViewColumnsIcon } from './icons/ViewColumnsIcon';
 import { VideoCameraIcon } from './icons/VideoCameraIcon';
 import { IdScannerView } from './IdScannerView';
@@ -31,6 +32,8 @@ const LoginPage: React.FC = () => {
   const [isAutoLoggingIn, setIsAutoLoggingIn] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
   useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -44,10 +47,12 @@ const LoginPage: React.FC = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
 
-  const { user, loading, login, signup } = useAuth();
+  const { user, loading, login, signup, logout } = useAuth(); // Ensure logout is destructured
+  // Signup flow state
+  const [isSigningUp, setIsSigningUp] = useState(false);
 
   // Redirect if already logged in
-  if (!loading && user) {
+  if (!loading && user && !isSigningUp && !successMessage) {
     const defaultPath = user.isAdmin ? '/app/overview' : '/app/home';
     let from = (location as any).state?.from?.pathname || defaultPath;
 
@@ -62,18 +67,32 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccessMessage(null);
     setIsLoading(true);
     try {
       if (isLogin) {
         await login(username, password);
       } else {
+        setIsSigningUp(true);
         await signup(username, password, fullName, department);
-        navigate('/login');
+        // Sign out immediately to prevent auto-login
+        await logout();
+        setSuccessMessage("Account created successfully! Redirecting to login...");
+        setTimeout(() => {
+          setIsSigningUp(false);
+          setSuccessMessage(null);
+          setUsername('');
+          setPassword('');
+          setFullName('');
+          setDepartment('AIE & Production');
+          navigate('/login');
+        }, 2000);
       }
     } catch (err) {
       let message = err instanceof Error ? err.message : 'An unknown error occurred';
       message = message.replace(/email address/gi, 'username').replace(/email/gi, 'username');
       setError(message);
+      setIsSigningUp(false);
     } finally {
       setIsLoading(false);
     }
@@ -102,6 +121,7 @@ const LoginPage: React.FC = () => {
 
   const toggleAuthMode = () => {
     setError(null);
+    setSuccessMessage(null);
     if (isLogin) {
       navigate('/signup');
     } else {
@@ -285,6 +305,13 @@ const LoginPage: React.FC = () => {
               {error && (
                 <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-semibold animate-shake">
                   {error}
+                </div>
+              )}
+
+              {successMessage && (
+                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-semibold animate-fade-in flex items-center gap-2">
+                  <CheckCircleIcon className="w-4 h-4" />
+                  {successMessage}
                 </div>
               )}
 
