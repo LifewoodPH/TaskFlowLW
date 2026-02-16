@@ -8,6 +8,7 @@ import { ListBulletIcon } from './icons/ListBulletIcon';
 import { PencilSquareIcon } from './icons/PencilSquareIcon';
 import { PlusIcon } from './icons/PlusIcon';
 import { UsersIcon } from './icons/UsersIcon';
+import { PresentationChartLineIcon } from './icons/PresentationChartLineIcon';
 
 interface BottomDockProps {
     currentView: string;
@@ -16,6 +17,10 @@ interface BottomDockProps {
     isAdmin?: boolean;
 }
 
+type NavItem =
+    | { id: string; icon: React.FC<{ className?: string }>; label: string; requiresSpace?: boolean; type?: undefined }
+    | { type: 'separator'; id?: undefined; icon?: undefined; label?: undefined; requiresSpace?: undefined };
+
 const BottomDock: React.FC<BottomDockProps> = ({
     currentView,
     onViewChange,
@@ -23,11 +28,13 @@ const BottomDock: React.FC<BottomDockProps> = ({
     isAdmin
 }) => {
 
-    const navItems = isAdmin
+    const navItems: NavItem[] = isAdmin
         ? [
-            { id: 'overview', icon: ChartBarIcon, label: 'Overview' },
+            { id: 'overview', icon: ChartBarIcon, label: 'Overview' }, // This is the "Overseer" view
+            { id: 'analytics', icon: PresentationChartLineIcon, label: 'Analytics' }, // New Admin Dashboard
             { id: 'timeline', icon: CalendarIcon, label: 'Timeline', requiresSpace: true },
         ]
+
         : [
             { id: 'home', icon: HomeIcon, label: 'Home' },
             { id: 'overview', icon: ChartBarIcon, label: 'Overview' },
@@ -39,6 +46,7 @@ const BottomDock: React.FC<BottomDockProps> = ({
             { type: 'separator' },
             { id: 'settings', icon: Cog6ToothIcon, label: 'Settings', requiresSpace: true },
         ];
+
 
     return (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">

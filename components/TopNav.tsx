@@ -57,7 +57,14 @@ const TopNav: React.FC<TopNavProps> = ({
                 <div className="h-6 w-px bg-black/10 dark:bg-white/10 hidden sm:block"></div>
 
                 <div className="flex flex-col hidden sm:flex">
-                    <span className="text-[9px] md:text-[10px] font-bold text-lime-600 dark:text-[#CEFD4A] uppercase tracking-widest mb-0.5">Workspace</span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[9px] md:text-[10px] font-bold text-lime-600 dark:text-[#CEFD4A] uppercase tracking-widest mb-0.5">Workspace</span>
+                        {user.isAdmin && (
+                            <span className="px-1.5 py-0.5 rounded-[4px] bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 text-[8px] font-black uppercase tracking-wider leading-none">
+                                Admin Mode
+                            </span>
+                        )}
+                    </div>
                     <span className="text-slate-900 dark:text-white font-bold text-sm md:text-lg tracking-tight truncate max-w-[120px] md:max-w-none">{activeSpaceName}</span>
                 </div>
             </div>
@@ -142,23 +149,25 @@ const TopNav: React.FC<TopNavProps> = ({
                         <img
                             src={currentUserEmployee?.avatarUrl}
                             alt=""
-                            className="w-9 h-9 rounded-full object-cover border-2 border-transparent group-hover:border-[#CEFD4A] transition-all"
+                            className={`w-9 h-9 rounded-full object-cover border-2 transition-all ${user.isAdmin ? 'border-purple-500 dark:border-purple-400' : 'border-transparent group-hover:border-[#CEFD4A]'}`}
                         />
-                        <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-lime-400 dark:bg-[#CEFD4A] border-2 border-white dark:border-black rounded-full"></div>
+                        <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 border-2 border-white dark:border-black rounded-full ${user.isAdmin ? 'bg-purple-500 dark:bg-purple-400' : 'bg-lime-400 dark:bg-[#CEFD4A]'}`}></div>
                     </div>
                     <div className="flex flex-col items-start">
                         <span className="text-xs font-bold text-slate-900 dark:text-white leading-none group-hover:text-lime-600 dark:group-hover:text-[#CEFD4A] transition-colors">
                             {user.fullName || user.username}
                         </span>
-                        <span className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-wider">Online</span>
+                        <span className={`text-[9px] font-bold uppercase tracking-wider ${user.isAdmin ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400 dark:text-white/40'}`}>
+                            {user.isAdmin ? 'Administrator' : 'Online'}
+                        </span>
                     </div>
                 </button>
-            </div>
 
-            <NotificationPanel
-                isOpen={isNotificationPanelOpen}
-                onClose={() => setNotificationPanelOpen(false)}
-            />
+                <NotificationPanel
+                    isOpen={isNotificationPanelOpen}
+                    onClose={() => setNotificationPanelOpen(false)}
+                />
+            </div>
         </header>
     );
 };

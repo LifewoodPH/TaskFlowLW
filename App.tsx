@@ -31,6 +31,7 @@ import * as dataService from './services/supabaseService';
 import { isSupabaseConfigured } from './lib/supabaseClient';
 import Background from './components/Background';
 import AdminOverseerView from './components/AdminOverseerView';
+import ClickSpark from './components/ClickSpark';
 
 
 // Setup Required Screen Component
@@ -117,7 +118,12 @@ const Dashboard: React.FC = () => {
     const path = location.pathname;
     if (path.includes('/calendar') || path.includes('/gantt') || path.includes('/timeline')) return 'timeline';
     // Fail-safe: If admin, everything else is overview
-    if (user?.isAdmin) return 'overview';
+    if (user?.isAdmin) {
+      if (path.includes('/analytics')) return 'analytics';
+      if (path.includes('/timeline')) return 'timeline';
+      // Default to overview (Overseer)
+      return 'overview';
+    }
 
     if (path.includes('/dashboard') || path.includes('/overview') || path.includes('/overseer')) return 'overview';
     if (path.includes('/board')) return 'board';
@@ -571,295 +577,312 @@ const Dashboard: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-transparent text-white selection:bg-[#CEFD4A] selection:text-black relative font-sans">
-      <Background videoSrc={backgroundVideo} />
-
-
-
-      <TopNav
-        activeSpaceName={currentSpace ? currentSpace.name : 'TaskFlow'}
-        currentUserEmployee={currentUserEmployee}
-        user={user}
-        onOpenProfile={() => setProfileModalOpen(true)}
-        onLogout={logout}
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        currentView={currentView}
-        timelineViewMode={timelineViewMode}
-        onTimelineViewModeChange={setTimelineViewMode}
+    <>
+      <ClickSpark
+        sparkSize={10}
+        sparkRadius={20}
+        sparkCount={8}
+        duration={400}
       />
-
-      <div className="flex-1 flex flex-col min-w-0 relative z-0 pt-24 pb-32 overflow-hidden">
-        <main className="flex-1 overflow-y-auto p-4 sm:p-8 scrollbar-none">
-          <div className="max-w-[1800px] mx-auto animate-in fade-in duration-500">
-
-            {/* ADMIN VIEW - Daily Overview or Timeline */}
-            {user.isAdmin ? (
-              <>
-                {(currentView === 'overview' || currentView === 'home') && (
-                  <AdminOverseerView
-                    spaces={allSpaces}
-                    tasks={allTasks}
-                    employees={employees}
-                    searchTerm={searchTerm}
-                    onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
-                    onAddTask={(assigneeId, spaceId) => handleOpenAddTaskModal({ assigneeId, spaceId })}
-                    userName={user.fullName || user.username}
-                  />
-                )}
-
-                {currentView === 'timeline' && (
-                  <>
-                    {timelineViewMode === 'calendar' ? (
-                      <CalendarView
-                        tasks={filteredTasks}
-                        onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
-                      />
-                    ) : (
-                      <GanttChart
-                        tasks={filteredTasks}
-                        employees={spaceMembers}
-                        onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
-                      />
-                    )}
-                  </>
-                )}
-              </>
-            ) : (
-              // EMPLOYEE VIEW - Normal navigation with all views
-              <>
-                {/* Home View - Always accessible */}
-                {currentView === 'home' && (
-                  <HomeView
-                    tasks={filteredTasks}
-                    employees={spaceMembers}
-                    currentSpace={currentSpace}
-                    user={user}
-                    searchTerm={searchTerm}
-                    onSearchChange={setSearchTerm}
-                    onUpdateTaskStatus={handleUpdateTaskStatus}
-                    onUpdateTask={handleUpdateTask}
-                    onAddTask={(task) => handleSaveTask(task, null)}
-                  />
-                )}
-
-                {/* Overview/Dashboard View */}
-                {currentView === 'overview' && (
-                  <AdminDashboard tasks={filteredTasks} employees={spaceMembers} activityLogs={activityLogs} isAdmin={user?.isAdmin} />
-                )}
-
-                {/* Whiteboard - Daily Task (Standalone) */}
-                {currentView === 'whiteboard' && (
-                  <div className="h-[calc(100vh-140px)]">
-                    <Whiteboard />
-                  </div>
-                )}
-
-                {/* Space-specific views */}
-                {!activeSpaceId && !['home', 'overview', 'whiteboard'].includes(currentView) ? (
-                  <div className="flex flex-col items-center justify-center h-[60vh] text-center p-8">
-                    <div className="w-20 h-20 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mb-4">
-                      <Cog6ToothIcon className="w-10 h-10 text-neutral-400" />
-                    </div>
-                    <h2 className="text-xl font-bold text-neutral-800 dark:text-white mb-2">No Space Selected</h2>
-                    <p className="text-neutral-500 dark:text-neutral-400 max-w-md mb-6">
-                      Join an existing team space using a code, or create a new one to get started.
-                    </p>
-                    <div className="flex gap-4">
-                      <button onClick={() => setCreateSpaceModalOpen(true)} className="px-6 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-100 shadow-lg transition-all duration-300">Create Space</button>
-                      <button onClick={() => setJoinSpaceModalOpen(true)} className="px-6 py-3 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-white font-semibold rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all duration-300">Join Space</button>
-                    </div>
-                  </div>
-                ) : activeSpaceId && (
-                  <>
-
-                    {/* View Switching */}
-                    {currentView === 'dashboard' && (
-                      <AdminDashboard tasks={filteredTasks} employees={spaceMembers} activityLogs={activityLogs} isAdmin={user?.isAdmin} />
-                    )}
-
-                    {currentView === 'list' && (
-                      <TaskListView
-                        tasks={filteredTasks}
-                        employees={spaceMembers}
-                        searchTerm={searchTerm}
-                        onSearchChange={setSearchTerm}
-                        onEditTask={handleOpenAddTaskModal}
-                        onDeleteTask={(id) => { setTaskToDeleteId(id); setDeleteModalOpen(true); }}
-                        onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
-                        onUpdateTaskStatus={handleUpdateTaskStatus}
-                        onToggleTimer={handleToggleTimer}
-                        currentUserId={user.employeeId}
-                        isAdmin={user.isAdmin}
-                      />
-                    )}
-
-                    {currentView === 'board' && (
-                      <TaskBoard
-                        tasks={filteredTasks}
-                        allTasks={tasks}
-                        employees={spaceMembers}
-                        onEditTask={handleOpenAddTaskModal}
-                        onDeleteTask={(id) => { setTaskToDeleteId(id); setDeleteModalOpen(true); }}
-                        onUpdateTaskStatus={handleUpdateTaskStatus}
-                        onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
-                        onToggleTimer={handleToggleTimer}
-                        currentUserId={user.employeeId}
-                        isAdmin={user.isAdmin}
-                      />
-                    )}
-
-
-                    {currentView === 'members' && (
-                      <MembersView
-                        employees={spaceMembers}
-                        tasks={filteredTasks}
-                        currentUser={{ employeeId: user?.employeeId, role: user?.role }}
-                      />
-                    )}
-
-                    {currentView === 'timeline' && (
-                      <>
-                        {timelineViewMode === 'calendar' ? (
-                          <CalendarView
-                            tasks={filteredTasks}
-                            onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
-                          />
-                        ) : (
-                          <GanttChart
-                            tasks={filteredTasks}
-                            employees={spaceMembers}
-                            onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
-                          />
-                        )}
-                      </>
-                    )}
-
-                    {currentView === 'settings' && currentSpace && (
-                      <SpaceSettingsView
-                        space={currentSpace}
-                        members={spaceMembers}
-                        allEmployees={employees}
-                        currentUserId={user?.employeeId}
-                        onAddMember={handleAddMemberToSpace}
-                        onRemoveMember={handleRemoveMemberFromSpace}
-                        onDeleteSpace={handleDeleteSpace}
-                      />
-                    )}
-                  </>
-                )}
-              </>
-            )}
-          </div>
-        </main>
-      </div>
-
-      {/* Hide BottomDock for admins - they only see Daily Overview */}
-      <div>
-        <BottomDock
-          currentView={currentView}
-          onViewChange={setCurrentView}
-          activeSpaceId={activeSpaceId}
-          isAdmin={user.isAdmin}
-        />
-      </div>
-
-      {/* Modals */}
-      {isAddTaskModalOpen && (
-        <AddTaskModal
-          isOpen={isAddTaskModalOpen}
-          onClose={() => setAddTaskModalOpen(false)}
-          onSave={handleSaveTask}
-          employees={employees} // Admin should see all employees, or at least many
-          taskToEdit={taskToEdit as Task}
-          allTasks={allTasks}
-          currentUserId={user?.employeeId}
-          isAdmin={user?.isAdmin}
-        />
-      )}
+      <div className="flex h-screen overflow-hidden bg-transparent text-white selection:bg-[#CEFD4A] selection:text-black relative font-sans">
+        <Background videoSrc={backgroundVideo} />
 
 
 
-      {isTaskDetailsModalOpen && selectedTask && (
-        <TaskDetailsModal
-          isOpen={isTaskDetailsModalOpen}
-          onClose={() => setTaskDetailsModalOpen(false)}
-          task={selectedTask}
-          employees={spaceMembers}
-          allTasks={filteredTasks}
-          onAddComment={async (taskId, content) => {
-            if (!user) return;
-            try {
-              const newComment = await dataService.addTaskComment(taskId, user.employeeId, content);
-              const updatedTask = { ...selectedTask, comments: [...selectedTask.comments, newComment] };
-              setTasks(tasks.map(t => t.id === taskId ? updatedTask : t));
-              setSelectedTask(updatedTask);
-            } catch (err) { console.error(err); }
-          }}
-          onDeleteTask={(id) => { setTaskToDeleteId(id); setDeleteModalOpen(true); }}
-          onToggleTimer={handleToggleTimer}
-          currentUserId={user.employeeId}
-          isAdmin={user.isAdmin}
-        />
-      )}
-
-      {isDeleteModalOpen && (
-        <ConfirmationModal
-          isOpen={isDeleteModalOpen}
-          onClose={() => setDeleteModalOpen(false)}
-          onConfirm={async () => {
-            if (taskToDeleteId) {
-              try {
-                await dataService.deleteTask(taskToDeleteId);
-                setTasks(tasks.filter(t => t.id !== taskToDeleteId));
-                showNotification('Deleted', 'success');
-              } catch (err) { showNotification('Delete failed', 'error'); }
-              setDeleteModalOpen(false);
-            }
-          }}
-          title="Delete Task"
-          message="This will permanently remove the task."
-        />
-      )}
-
-      {isProfileModalOpen && user && (
-        <ProfileModal
-          isOpen={isProfileModalOpen}
-          onClose={() => setProfileModalOpen(false)}
-          user={user}
+        <TopNav
+          activeSpaceName={currentSpace ? currentSpace.name : 'TaskFlow'}
           currentUserEmployee={currentUserEmployee}
-          onSave={(name, avatar) => {
-            updateUser({ fullName: name, avatarUrl: avatar });
-            showNotification('Profile updated successfully', 'success');
-          }}
-          onLogout={() => {
-            setProfileModalOpen(false);
-            logout();
-          }}
+          user={user}
+          onOpenProfile={() => setProfileModalOpen(true)}
+          onLogout={logout}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          currentView={currentView}
+          timelineViewMode={timelineViewMode}
+          onTimelineViewModeChange={setTimelineViewMode}
         />
-      )}
 
-      <CreateSpaceModal
-        isOpen={isCreateSpaceModalOpen}
-        onClose={() => setCreateSpaceModalOpen(false)}
-        onCreate={handleCreateSpace}
-      />
+        <div className="flex-1 flex flex-col min-w-0 relative z-0 pt-24 pb-32 overflow-hidden">
+          <main className="flex-1 overflow-y-auto p-4 sm:p-8 scrollbar-none">
+            <div className="max-w-[1800px] mx-auto animate-in fade-in duration-500">
 
-      <JoinSpaceModal
-        isOpen={isJoinSpaceModalOpen}
-        onClose={() => setJoinSpaceModalOpen(false)}
-        onJoin={handleJoinSpace}
-      />
+              {/* ADMIN VIEW - Daily Overview or Timeline */}
+              {user.isAdmin ? (
+                <>
+                  {(currentView === 'overview' || currentView === 'home') && (
+                    <AdminOverseerView
+                      spaces={allSpaces}
+                      tasks={allTasks}
+                      employees={employees}
+                      searchTerm={searchTerm}
+                      onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
+                      onAddTask={(assigneeId, spaceId) => handleOpenAddTaskModal({ assigneeId, spaceId })}
+                      userName={user.fullName || user.username}
+                    />
+                  )}
 
-      {currentSpace && (
-        <SpaceSettingsModal
-          isOpen={isSpaceSettingsModalOpen}
-          onClose={() => setSpaceSettingsModalOpen(false)}
-          space={currentSpace}
-          members={spaceMembers}
+                  {currentView === 'analytics' && (
+                    <AdminDashboard
+                      tasks={allTasks}
+                      employees={employees}
+                      activityLogs={activityLogs}
+                      isAdmin={true}
+                    />
+                  )}
+
+                  {currentView === 'timeline' && (
+                    <>
+                      {timelineViewMode === 'calendar' ? (
+                        <CalendarView
+                          tasks={filteredTasks}
+                          onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
+                        />
+                      ) : (
+                        <GanttChart
+                          tasks={filteredTasks}
+                          employees={spaceMembers}
+                          onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
+                        />
+                      )}
+                    </>
+                  )}
+                </>
+              ) : (
+                // EMPLOYEE VIEW - Normal navigation with all views
+                <>
+                  {/* Home View - Always accessible */}
+                  {currentView === 'home' && (
+                    <HomeView
+                      tasks={filteredTasks}
+                      employees={spaceMembers}
+                      currentSpace={currentSpace}
+                      user={user}
+                      searchTerm={searchTerm}
+                      onSearchChange={setSearchTerm}
+                      onUpdateTaskStatus={handleUpdateTaskStatus}
+                      onUpdateTask={handleUpdateTask}
+                      onAddTask={(task) => handleSaveTask(task, null)}
+                    />
+                  )}
+
+                  {/* Overview/Dashboard View */}
+                  {currentView === 'overview' && (
+                    <AdminDashboard tasks={filteredTasks} employees={spaceMembers} activityLogs={activityLogs} isAdmin={user?.isAdmin} />
+                  )}
+
+                  {/* Whiteboard - Daily Task (Standalone) */}
+                  {currentView === 'whiteboard' && (
+                    <div className="h-[calc(100vh-140px)]">
+                      <Whiteboard />
+                    </div>
+                  )}
+
+                  {/* Space-specific views */}
+                  {!activeSpaceId && !['home', 'overview', 'whiteboard'].includes(currentView) ? (
+                    <div className="flex flex-col items-center justify-center h-[60vh] text-center p-8">
+                      <div className="w-20 h-20 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mb-4">
+                        <Cog6ToothIcon className="w-10 h-10 text-neutral-400" />
+                      </div>
+                      <h2 className="text-xl font-bold text-neutral-800 dark:text-white mb-2">No Space Selected</h2>
+                      <p className="text-neutral-500 dark:text-neutral-400 max-w-md mb-6">
+                        Join an existing team space using a code, or create a new one to get started.
+                      </p>
+                      <div className="flex gap-4">
+                        <button onClick={() => setCreateSpaceModalOpen(true)} className="px-6 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-100 shadow-lg transition-all duration-300">Create Space</button>
+                        <button onClick={() => setJoinSpaceModalOpen(true)} className="px-6 py-3 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-white font-semibold rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all duration-300">Join Space</button>
+                      </div>
+                    </div>
+                  ) : activeSpaceId && (
+                    <>
+
+                      {/* View Switching */}
+                      {currentView === 'dashboard' && (
+                        <AdminDashboard tasks={filteredTasks} employees={spaceMembers} activityLogs={activityLogs} isAdmin={user?.isAdmin} />
+                      )}
+
+                      {currentView === 'list' && (
+                        <TaskListView
+                          tasks={filteredTasks}
+                          employees={spaceMembers}
+                          searchTerm={searchTerm}
+                          onSearchChange={setSearchTerm}
+                          onEditTask={handleOpenAddTaskModal}
+                          onDeleteTask={(id) => { setTaskToDeleteId(id); setDeleteModalOpen(true); }}
+                          onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
+                          onUpdateTaskStatus={handleUpdateTaskStatus}
+                          onToggleTimer={handleToggleTimer}
+                          currentUserId={user.employeeId}
+                          isAdmin={user.isAdmin}
+                        />
+                      )}
+
+                      {currentView === 'board' && (
+                        <TaskBoard
+                          tasks={filteredTasks}
+                          allTasks={tasks}
+                          employees={spaceMembers}
+                          onEditTask={handleOpenAddTaskModal}
+                          onDeleteTask={(id) => { setTaskToDeleteId(id); setDeleteModalOpen(true); }}
+                          onUpdateTaskStatus={handleUpdateTaskStatus}
+                          onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
+                          onToggleTimer={handleToggleTimer}
+                          currentUserId={user.employeeId}
+                          isAdmin={user.isAdmin}
+                        />
+                      )}
+
+
+                      {currentView === 'members' && (
+                        <MembersView
+                          employees={spaceMembers}
+                          tasks={filteredTasks}
+                          currentUser={{ employeeId: user?.employeeId, role: user?.role }}
+                        />
+                      )}
+
+                      {currentView === 'timeline' && (
+                        <>
+                          {timelineViewMode === 'calendar' ? (
+                            <CalendarView
+                              tasks={filteredTasks}
+                              onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
+                            />
+                          ) : (
+                            <GanttChart
+                              tasks={filteredTasks}
+                              employees={spaceMembers}
+                              onViewTask={(task) => { setSelectedTask(task); setTaskDetailsModalOpen(true); }}
+                            />
+                          )}
+                        </>
+                      )}
+
+                      {currentView === 'settings' && currentSpace && (
+                        <SpaceSettingsView
+                          space={currentSpace}
+                          members={spaceMembers}
+                          allEmployees={employees}
+                          currentUserId={user?.employeeId}
+                          onAddMember={handleAddMemberToSpace}
+                          onRemoveMember={handleRemoveMemberFromSpace}
+                          onDeleteSpace={handleDeleteSpace}
+                        />
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+          </main>
+        </div>
+
+        {/* Hide BottomDock for admins - they only see Daily Overview */}
+        <div>
+          <BottomDock
+            currentView={currentView}
+            onViewChange={setCurrentView}
+            activeSpaceId={activeSpaceId}
+            isAdmin={user.isAdmin}
+          />
+        </div>
+
+        {/* Modals */}
+        {isAddTaskModalOpen && (
+          <AddTaskModal
+            isOpen={isAddTaskModalOpen}
+            onClose={() => setAddTaskModalOpen(false)}
+            onSave={handleSaveTask}
+            employees={employees} // Admin should see all employees, or at least many
+            taskToEdit={taskToEdit as Task}
+            allTasks={allTasks}
+            currentUserId={user?.employeeId}
+            isAdmin={user?.isAdmin}
+          />
+        )}
+
+
+
+        {isTaskDetailsModalOpen && selectedTask && (
+          <TaskDetailsModal
+            isOpen={isTaskDetailsModalOpen}
+            onClose={() => setTaskDetailsModalOpen(false)}
+            task={selectedTask}
+            employees={spaceMembers}
+            allTasks={filteredTasks}
+            onAddComment={async (taskId, content) => {
+              if (!user) return;
+              try {
+                const newComment = await dataService.addTaskComment(taskId, user.employeeId, content);
+                const updatedTask = { ...selectedTask, comments: [...selectedTask.comments, newComment] };
+                setTasks(tasks.map(t => t.id === taskId ? updatedTask : t));
+                setSelectedTask(updatedTask);
+              } catch (err) { console.error(err); }
+            }}
+            onDeleteTask={(id) => { setTaskToDeleteId(id); setDeleteModalOpen(true); }}
+            onToggleTimer={handleToggleTimer}
+            currentUserId={user.employeeId}
+            isAdmin={user.isAdmin}
+          />
+        )}
+
+        {isDeleteModalOpen && (
+          <ConfirmationModal
+            isOpen={isDeleteModalOpen}
+            onClose={() => setDeleteModalOpen(false)}
+            onConfirm={async () => {
+              if (taskToDeleteId) {
+                try {
+                  await dataService.deleteTask(taskToDeleteId);
+                  setTasks(tasks.filter(t => t.id !== taskToDeleteId));
+                  showNotification('Deleted', 'success');
+                } catch (err) { showNotification('Delete failed', 'error'); }
+                setDeleteModalOpen(false);
+              }
+            }}
+            title="Delete Task"
+            message="This will permanently remove the task."
+          />
+        )}
+
+        {isProfileModalOpen && user && (
+          <ProfileModal
+            isOpen={isProfileModalOpen}
+            onClose={() => setProfileModalOpen(false)}
+            user={user}
+            currentUserEmployee={currentUserEmployee}
+            onSave={(name, avatar) => {
+              updateUser({ fullName: name, avatarUrl: avatar });
+              showNotification('Profile updated successfully', 'success');
+            }}
+            onLogout={() => {
+              setProfileModalOpen(false);
+              logout();
+            }}
+          />
+        )}
+
+        <CreateSpaceModal
+          isOpen={isCreateSpaceModalOpen}
+          onClose={() => setCreateSpaceModalOpen(false)}
+          onCreate={handleCreateSpace}
         />
-      )}
-    </div>
+
+        <JoinSpaceModal
+          isOpen={isJoinSpaceModalOpen}
+          onClose={() => setJoinSpaceModalOpen(false)}
+          onJoin={handleJoinSpace}
+        />
+
+        {currentSpace && (
+          <SpaceSettingsModal
+            isOpen={isSpaceSettingsModalOpen}
+            onClose={() => setSpaceSettingsModalOpen(false)}
+            space={currentSpace}
+            members={spaceMembers}
+          />
+        )}
+      </div>
+    </>
   );
 };
 
