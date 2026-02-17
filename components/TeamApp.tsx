@@ -15,6 +15,8 @@ import ProfileModal from './ProfileModal';
 import Background from './Background';
 import { useDailyTasks } from '../hooks/useDailyTasks';
 import { Cog6ToothIcon } from './icons/Cog6ToothIcon';
+import AdminDashboard from './AdminDashboard';
+import MembersView from './MembersView';
 
 interface TeamAppProps {
     user: User;
@@ -28,6 +30,7 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [spaces, setSpaces] = useState<Space[]>([]);
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [allUserTasks, setAllUserTasks] = useState<Task[]>([]);
     const [activeSpaceId, setActiveSpaceId] = useState<string>('');
 
     // View State
@@ -48,6 +51,8 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
     const currentView = useMemo(() => {
         const path = location.pathname;
         if (path.includes('/home')) return 'home';
+        if (path.includes('/overview')) return 'overview';
+        if (path.includes('/members')) return 'members';
         if (path.includes('/board')) return 'board';
         if (path.includes('/whiteboard')) return 'whiteboard';
         if (path.includes('/timeline')) return 'timeline';
@@ -66,12 +71,25 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
         }
     }, [activeSpaceId]);
 
+    const refreshAllUserTasks = async () => {
+        const spcs = await dataService.getSpaces(user.employeeId);
+        if (spcs.length > 0) {
+            const allTasksPromises = spcs.map(s => dataService.getTasks(s.id, user.employeeId));
+            const allTasksResults = await Promise.all(allTasksPromises);
+            const flattenedTasks = allTasksResults.flat();
+            setAllUserTasks(flattenedTasks);
+        }
+    };
+
     const loadData = async () => {
         try {
             const emps = await dataService.getAllEmployees();
             const spcs = await dataService.getSpaces(user.employeeId);
             setEmployees(emps);
             setSpaces(spcs);
+
+            // Fetch tasks for all user's spaces to populate overview/analytics
+            await refreshAllUserTasks();
 
             if (spcs.length > 0 && !activeSpaceId) {
                 setActiveSpaceId(spcs[0].id);
@@ -105,41 +123,46 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
     }, [currentSpace, employees]);
 
     const handleUpdateTaskStatus = async (id: number, status: TaskStatus) => {
-        // Implement update logic
         try {
-            const task = tasks.find(t => t.id === id);
+            const task = tasks.find(t => t.id === id) || allUserTasks.find(t => t.id === id);
             if (task) {
                 await dataService.upsertTask({ ...task, status, spaceId: task.spaceId });
-                loadSpaceTasks(activeSpaceId);
+                if (activeSpaceId) loadSpaceTasks(activeSpaceId);
+                refreshAllUserTasks();
             }
         } catch (e) { console.error(e); }
     };
 
     const handleSaveTask = async (task: any, id: number | null) => {
         try {
-            await dataService.upsertTask({ ...task, spaceId: activeSpaceId || '', id });
-            loadSpaceTasks(activeSpaceId);
+            const sid = activeSpaceId || (spaces.length > 0 ? spaces[0].id : '');
+            if (!sid) {
+                console.error("No active space to save task to");
+                return;
+            }
+            await dataService.upsertTask({ ...task, spaceId: sid, id });
+            loadSpaceTasks(sid);
+            // Also refresh all user tasks to keep dashboard/overview in sync
+            refreshAllUserTasks();
             setAddTaskModalOpen(false);
         } catch (e) { console.error(e); }
     };
 
     const handleUpdateTask = async (taskId: number, updates: Partial<Task>) => {
         try {
-            const existingTask = tasks.find(t => t.id === taskId);
+            const existingTask = tasks.find(t => t.id === taskId) || allUserTasks.find(t => t.id === taskId);
             if (!existingTask) return;
 
-            // Merge existing task with updates to ensure all required fields (like title, spaceId) are present
-            // and we don't overwrite with empty strings via upsertTask defaults.
             const mergedTask = { ...existingTask, ...updates };
 
-            // upsertTask expects spaceId and title explicitly in the intersection type, even if they are in mergedTask
             await dataService.upsertTask({
                 ...mergedTask,
                 spaceId: mergedTask.spaceId || activeSpaceId || '',
                 title: mergedTask.title || ''
             });
 
-            loadSpaceTasks(activeSpaceId);
+            if (activeSpaceId) loadSpaceTasks(activeSpaceId);
+            refreshAllUserTasks();
         } catch (e) { console.error(e); }
     };
 
@@ -224,7 +247,7 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
 
                             {currentView === 'home' && (
                                 <HomeView
-                                    tasks={filteredTasks}
+                                    tasks={allUserTasks}
                                     employees={spaceMembers}
                                     currentSpace={currentSpace!}
                                     user={user}
@@ -252,6 +275,23 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
                             )}
 
                             {currentView === 'whiteboard' && <Whiteboard />}
+
+                            {currentView === 'overview' && (
+                                <AdminDashboard
+                                    tasks={allUserTasks}
+                                    employees={employees}
+                                    activityLogs={[]}
+                                    isAdmin={false}
+                                />
+                            )}
+
+                            {currentView === 'members' && (
+                                <MembersView
+                                    employees={employees}
+                                    tasks={allUserTasks}
+                                    currentUser={user}
+                                />
+                            )}
 
                             {currentView === 'timeline' && (
                                 <div className="h-[calc(100vh-200px)]">
@@ -308,6 +348,7 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
                         employees={spaceMembers}
                         activeSpaceId={activeSpaceId}
                         spaces={spaces}
+                        currentUserId={user.employeeId}
                     />
                 )}
             </div>

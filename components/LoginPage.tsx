@@ -101,14 +101,14 @@ const LoginPage: React.FC = () => {
   const handleScan = async (name: string) => {
     const usernameFromScan = name.toLowerCase().replace(/\s+/g, '');
     setUsername(usernameFromScan);
-    setPassword('test123');
+    setPassword('PHCBIT@12345');
     setIsAutoLoggingIn(true);
 
     setTimeout(async () => {
       setError(null);
       setIsLoading(true);
       try {
-        await login(usernameFromScan, 'test123');
+        await login(usernameFromScan, 'PHCBIT@12345');
       } catch (err) {
         let message = err instanceof Error ? err.message : 'Login failed';
         setError(`${message} (Attempted login for ${name})`);
@@ -166,11 +166,14 @@ const LoginPage: React.FC = () => {
               <div className="bg-white/10 backdrop-blur-md p-2 rounded-xl border border-white/20">
                 <Logo className="w-8 h-8" />
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-2xl font-bold text-white tracking-tight">Task Flow</span>
-                <div className="px-2 py-0.5 bg-white/20 backdrop-blur-md border border-white/30 rounded-lg text-[10px] font-bold text-white uppercase tracking-widest">
-                  AI
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-2xl font-bold text-white tracking-tight">Task Flow</span>
+                  <div className="px-2 py-0.5 bg-white/20 backdrop-blur-md border border-white/30 rounded-lg text-[10px] font-bold text-white uppercase tracking-widest">
+                    AI
+                  </div>
                 </div>
+                <span className="text-[10px] font-medium text-white/50 tracking-wide">powered by Lifewood PH</span>
               </div>
             </div>
 
@@ -185,7 +188,10 @@ const LoginPage: React.FC = () => {
               <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-0">
                 <div className="lg:hidden flex items-center gap-3">
                   <Logo className="w-10 h-10 text-slate-900 dark:text-white" />
-                  <span className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Task Flow</span>
+                  <div className="flex flex-col">
+                    <span className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Task Flow</span>
+                    <span className="text-[10px] font-medium text-slate-500 dark:text-white/50 tracking-wide">powered by Lifewood PH</span>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-2 text-slate-500 dark:text-white/40 text-xs font-semibold tracking-wide">

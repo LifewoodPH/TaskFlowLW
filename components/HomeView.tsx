@@ -59,6 +59,11 @@ const HomeView: React.FC<HomeViewProps> = ({ tasks, employees, currentSpace, use
   const handleAddTask = async () => {
     if (!newTaskInput.trim()) return;
 
+    if (!currentSpace) {
+      alert("Please join or select a workspace before adding tasks.");
+      return;
+    }
+
     const tags = [];
     if (showUnplannedInfo) tags.push('Unplanned');
     if (isUrgent) tags.push('Unplanned');
@@ -73,6 +78,7 @@ const HomeView: React.FC<HomeViewProps> = ({ tasks, employees, currentSpace, use
       tags: tags,
       assigneeId: user.employeeId,
       dueDate: today, // Default to today, can be changed in prompt
+      spaceId: currentSpace.id
     };
 
     setDeadlinePromptTask(newTask);
@@ -92,13 +98,14 @@ const HomeView: React.FC<HomeViewProps> = ({ tasks, employees, currentSpace, use
   // Get user's tasks (Team tasks)
   const myTasks = tasks.filter(t => t.assigneeId === user.employeeId);
   const todayTasks = myTasks.filter(t => {
-    const isDueToday = t.dueDate === today;
-    const isOverdue = t.dueDate < today && t.status !== TaskStatus.DONE;
-    const isInProgress = t.status === TaskStatus.IN_PROGRESS;
+    // Show if not done, OR if done today (to see progress)
+    const isIncomplete = t.status !== TaskStatus.DONE;
     const isCompletedToday = t.completedAt?.startsWith(today);
-    return isDueToday || isOverdue || isInProgress || isCompletedToday;
+    return isIncomplete || isCompletedToday;
   });
   const overdueTasks = myTasks.filter(t => t.dueDate < today && t.status !== TaskStatus.DONE);
+
+  const allActiveTasks = myTasks.filter(t => t.status !== TaskStatus.DONE || t.completedAt?.startsWith(today));
 
   // Daily Tasks (Local)
   // All daily tasks are shown in the task list regardless of status
@@ -145,7 +152,7 @@ const HomeView: React.FC<HomeViewProps> = ({ tasks, employees, currentSpace, use
   const [priorityFilter, setPriorityFilter] = useState('All');
 
   const combinedTasks = [
-    ...todayTasks.map(t => ({ ...t, isDaily: false, originalId: t.id })),
+    ...(isExpandedTasksOpen ? allActiveTasks : todayTasks).map(t => ({ ...t, isDaily: false, originalId: t.id })),
     ...dailyTasks.map(t => ({
       id: t.id,
       title: t.text,

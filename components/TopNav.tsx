@@ -51,7 +51,10 @@ const TopNav: React.FC<TopNavProps> = ({
                     <div className="transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3 drop-shadow-[0_0_15px_rgba(206,253,74,0.4)]">
                         <Logo className="w-8 h-8 md:w-10 md:h-10" />
                     </div>
-                    <span className="text-slate-900 dark:text-white font-extrabold text-lg md:text-xl tracking-[-0.03em] hidden sm:block">TaskFlow</span>
+                    <div className="flex flex-col hidden sm:flex">
+                        <span className="text-slate-900 dark:text-white font-extrabold text-lg md:text-xl tracking-[-0.03em] leading-tight">TaskFlow</span>
+                        <span className="text-[10px] font-medium text-slate-500 dark:text-white/40 tracking-wide leading-tight">powered by Lifewood PH</span>
+                    </div>
                 </Link>
 
                 <div className="h-6 w-px bg-black/10 dark:bg-white/10 hidden sm:block"></div>
