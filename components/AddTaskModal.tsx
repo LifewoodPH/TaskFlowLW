@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Task, Employee, Priority, Subtask } from '../types';
+import { Task, Employee, Priority, Subtask, Space } from '../types';
 import { PRIORITIES } from '../constants';
 import { SparklesIcon } from './icons/SparklesIcon';
 import { PlusIcon } from './icons/PlusIcon';
@@ -12,9 +12,11 @@ interface AddTaskModalProps {
   onSave: (task: Omit<Task, 'id' | 'spaceId' | 'status' | 'comments' | 'createdAt' | 'subtasks' | 'tags' | 'timeLogs' | 'timerStartTime' | 'completedAt'> & { subtasks?: Subtask[], tags?: string[], spaceId?: string }, id: number | null) => void;
   employees: Employee[];
   taskToEdit: Task | Partial<Task> | null;
-  allTasks: Task[];
+  allTasks?: Task[];
   currentUserId?: string;
   isAdmin?: boolean;
+  activeSpaceId?: string;
+  spaces?: Space[];
 }
 
 const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, employees, taskToEdit, allTasks, currentUserId, isAdmin }) => {
@@ -80,7 +82,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
   }, [taskToEdit, employees, isOpen, currentUserId]);
 
   const existingTags = useMemo(() => {
-    const allTags = new Set(allTasks.flatMap(task => task.tags || []));
+    const allTags = new Set(allTasks?.flatMap(task => task.tags || []) || []);
     return Array.from(allTags).sort();
   }, [allTasks]);
 
@@ -164,7 +166,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
     setTags(tags.filter(t => t !== tagToRemove));
   };
 
-  const potentialBlockingTasks = allTasks.filter(t => t.id !== (taskToEdit?.id || -1));
+  const potentialBlockingTasks = (allTasks || []).filter(t => t.id !== (taskToEdit?.id || -1));
 
   return (
     <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 transition-all duration-500 overflow-hidden ${show ? 'opacity-100' : 'opacity-0'}`}>

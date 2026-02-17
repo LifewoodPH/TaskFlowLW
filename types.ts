@@ -13,15 +13,18 @@ export enum Priority {
 }
 
 export enum Position {
-  FOUNDER = 'Founder',
-  CEO = 'CEO',
+  FOUNDER_AND_CEO = 'Founder and CEO',
   MANAGING_DIRECTOR = 'Managing Director',
   ADMIN = 'Admin',
   HR_ASSISTANT = 'HR Assistant',
-  DEVELOPER = 'Developer',
-  DESIGNER = 'Designer',
-  PRODUCT_MANAGER = 'Product Manager',
-  MARKETER = 'Marketer',
+  PRODUCTION_SUPPORT = 'Production Support',
+  ADMIN_AND_RESEARCH_ASSISTANT = 'Admin and Research Assistant',
+  AI_EXECUTIVE = 'AI Executive',
+  AIE_ASSISTANT = 'AIE Assistant',
+  PROJECT_COORDINATOR = 'Project Coordinator',
+  ADMIN_ACCOUNTING = 'Admin Accounting',
+  IT_EXECUTIVE_ASSISTANT = 'IT Executive Assistant',
+  IT_ASSISTANT = 'IT Assistant',
 }
 
 export interface Employee {
@@ -31,6 +34,7 @@ export interface Employee {
   email: string;
   avatarUrl: string;
   position?: Position | string; // Optional for backward compatibility
+  phone?: string;
 }
 
 export interface Comment {
@@ -96,6 +100,8 @@ export interface User {
   isAdmin?: boolean;
   avatarUrl?: string;
   position?: Position | string;
+  phone?: string;
+  email?: string;
 }
 
 export interface ActivityLog {

@@ -11,6 +11,7 @@ import BottomDock from './BottomDock';
 import TopNav from './TopNav';
 import TaskDetailsModal from './TaskDetailsModal';
 import AddTaskModal from './AddTaskModal';
+import ProfileModal from './ProfileModal';
 import Background from './Background';
 import ClickSpark from './ClickSpark';
 import { useDailyTasks } from '../hooks/useDailyTasks';
@@ -36,6 +37,10 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
 
     // Modals
     const [isAddTaskModalOpen, setAddTaskModalOpen] = useState(false);
+    const [isProfileModalOpen, setProfileModalOpen] = useState(false);
+    const [isTaskDetailsModalOpen, setTaskDetailsModalOpen] = useState(false);
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [taskToEdit, setTaskToEdit] = useState<Task | Partial<Task> | null>(null);
 
     // Custom Hooks
     const { tasks: dailyTasks } = useDailyTasks(); // simplified usage
@@ -113,10 +118,87 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
 
     const handleSaveTask = async (task: any, id: number | null) => {
         try {
-            await dataService.upsertTask({ ...task, spaceId: activeSpaceId, id });
+            await dataService.upsertTask({ ...task, spaceId: activeSpaceId || '', id });
             loadSpaceTasks(activeSpaceId);
             setAddTaskModalOpen(false);
         } catch (e) { console.error(e); }
+    };
+
+    const handleUpdateTask = async (taskId: number, updates: Partial<Task>) => {
+        try {
+            const existingTask = tasks.find(t => t.id === taskId);
+            if (!existingTask) return;
+
+            // Merge existing task with updates to ensure all required fields (like title, spaceId) are present
+            // and we don't overwrite with empty strings via upsertTask defaults.
+            const mergedTask = { ...existingTask, ...updates };
+
+            // upsertTask expects spaceId and title explicitly in the intersection type, even if they are in mergedTask
+            await dataService.upsertTask({
+                ...mergedTask,
+                spaceId: mergedTask.spaceId || activeSpaceId || '',
+                title: mergedTask.title || ''
+            });
+
+            loadSpaceTasks(activeSpaceId);
+        } catch (e) { console.error(e); }
+    };
+
+    const handleToggleTimer = async (taskId: number) => {
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return;
+
+        try {
+            if (task.timerStartTime) {
+                // Stop timer
+                const start = new Date(task.timerStartTime);
+                const end = new Date();
+                const duration = end.getTime() - start.getTime();
+                await dataService.logTaskTime(taskId, task.timerStartTime, end.toISOString(), duration);
+
+                // Clear timer
+                await dataService.upsertTask({
+                    ...task,
+                    timerStartTime: null,
+                    spaceId: task.spaceId,
+                    title: task.title
+                });
+            } else {
+                // Start timer
+                await dataService.upsertTask({
+                    ...task,
+                    timerStartTime: new Date().toISOString(),
+                    spaceId: task.spaceId,
+                    title: task.title
+                });
+            }
+            loadSpaceTasks(activeSpaceId);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const handleAddComment = async (taskId: number, content: string) => {
+        try {
+            await dataService.addTaskComment(taskId, user.employeeId, content);
+            loadSpaceTasks(activeSpaceId); // Refresh to show comment
+        } catch (e) { console.error(e); }
+    };
+
+    const handleSaveProfile = async (data: { name: string; avatarUrl: string; phone: string; position: string; email?: string }) => {
+        try {
+            await dataService.updateProfile(user.employeeId, {
+                fullName: data.name,
+                avatarUrl: data.avatarUrl,
+                phone: data.phone,
+                position: data.position,
+                email: data.email
+            });
+            loadData();
+            setProfileModalOpen(false);
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     return (
@@ -129,7 +211,7 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
                     activeSpaceName={currentSpace?.name || 'My Workspace'}
                     currentUserEmployee={employees.find(e => e.id === user.employeeId)}
                     user={user}
-                    onOpenProfile={() => { }}
+                    onOpenProfile={() => setProfileModalOpen(true)}
                     onLogout={onLogout}
                     searchTerm={searchTerm}
                     onSearchChange={setSearchTerm}
@@ -151,7 +233,7 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
                                     searchTerm={searchTerm}
                                     onSearchChange={setSearchTerm}
                                     onUpdateTaskStatus={handleUpdateTaskStatus}
-                                    onUpdateTask={() => { }}
+                                    onUpdateTask={handleUpdateTask}
                                     onAddTask={(t) => handleSaveTask(t, null)}
                                 />
                             )}
@@ -159,10 +241,15 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
                             {currentView === 'board' && (
                                 <TaskBoard
                                     tasks={filteredTasks}
+                                    allTasks={tasks}
                                     employees={spaceMembers}
                                     onUpdateTaskStatus={handleUpdateTaskStatus}
-                                    onUpdateTask={() => { }}
-                                    onViewTask={() => { }}
+                                    onEditTask={(t) => {
+                                        setTaskToEdit(t);
+                                        setAddTaskModalOpen(true);
+                                    }}
+                                    onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }}
+                                    onToggleTimer={handleToggleTimer}
                                 />
                             )}
 
@@ -171,9 +258,9 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
                             {currentView === 'timeline' && (
                                 <div className="h-[calc(100vh-200px)]">
                                     {timelineViewMode === 'calendar' ? (
-                                        <CalendarView tasks={filteredTasks} onViewTask={() => { }} />
+                                        <CalendarView tasks={filteredTasks} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
                                     ) : (
-                                        <GanttChart tasks={filteredTasks} employees={spaceMembers} onViewTask={() => { }} />
+                                        <GanttChart tasks={filteredTasks} employees={spaceMembers} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
                                     )}
                                 </div>
                             )}
@@ -189,11 +276,37 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
                     isAdmin={false}
                 />
 
+                {isProfileModalOpen && (
+                    <ProfileModal
+                        isOpen={isProfileModalOpen}
+                        onClose={() => setProfileModalOpen(false)}
+                        user={user}
+                        currentUserEmployee={employees.find(e => e.id === user.employeeId)}
+                        onSave={handleSaveProfile}
+                        onLogout={onLogout}
+                    />
+                )}
+
+                {isTaskDetailsModalOpen && selectedTask && (
+                    <TaskDetailsModal
+                        isOpen={isTaskDetailsModalOpen}
+                        onClose={() => setTaskDetailsModalOpen(false)}
+                        task={selectedTask}
+                        employees={employees}
+                        allTasks={tasks}
+                        onAddComment={handleAddComment}
+                        onToggleTimer={handleToggleTimer}
+                        currentUserId={user.employeeId}
+                    />
+                )}
+
                 {isAddTaskModalOpen && (
                     <AddTaskModal
                         isOpen={isAddTaskModalOpen}
                         onClose={() => setAddTaskModalOpen(false)}
                         onSave={handleSaveTask}
+                        taskToEdit={taskToEdit}
+                        allTasks={tasks}
                         employees={spaceMembers}
                         activeSpaceId={activeSpaceId}
                         spaces={spaces}

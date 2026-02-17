@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { User, Employee } from '../types';
+import { User, Employee, Position } from '../types';
 import { UserIcon } from './icons/UserIcon';
 import { XMarkIcon } from './icons/XMarkIcon';
 import { LogoutIcon } from './icons/LogoutIcon';
@@ -16,7 +16,7 @@ interface ProfileModalProps {
     onClose: () => void;
     user: User;
     currentUserEmployee: Employee | undefined;
-    onSave: (name: string, avatarUrl: string) => void;
+    onSave: (data: { name: string; avatarUrl: string; phone: string; position: string; email?: string }) => void;
     onLogout?: () => void;
 }
 
@@ -62,8 +62,12 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
     const [show, setShow] = useState(false);
 
     // Profile State
-    const [name, setName] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [avatarUrl, setAvatarUrl] = useState('');
+    const [phone, setPhone] = useState('');
+    const [position, setPosition] = useState('');
+    const [email, setEmail] = useState('');
 
     // Preferences State
     const [theme, toggleTheme, colorScheme, setColorScheme] = useTheme();
@@ -77,13 +81,15 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
 
     useEffect(() => {
         if (isOpen) {
-            if (currentUserEmployee) {
-                setName(currentUserEmployee.fullName || currentUserEmployee.name);
-                setAvatarUrl(currentUserEmployee.avatarUrl);
-            } else {
-                setName(user.fullName || user.username);
-                setAvatarUrl(user.avatarUrl || '');
-            }
+            const data = currentUserEmployee || user;
+            const fullName = data.fullName || (data as Employee).name || (data as User).username || '';
+            const names = fullName.split(' ');
+            setFirstName(names[0] || '');
+            setLastName(names.slice(1).join(' ') || '');
+            setAvatarUrl(data.avatarUrl || '');
+            setPhone(data.phone || '');
+            setPosition((data.position as string) || '');
+            setEmail(data.email || '');
 
             const timer = setTimeout(() => setShow(true), 10);
             const handleKeyDown = (e: KeyboardEvent) => {
@@ -105,8 +111,15 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
 
     const handleSaveProfile = (e: React.FormEvent) => {
         e.preventDefault();
-        if (name.trim()) {
-            onSave(name, avatarUrl);
+        const fullName = `${firstName} ${lastName}`.trim();
+        if (fullName) {
+            onSave({
+                name: fullName,
+                avatarUrl,
+                phone,
+                position,
+                email
+            });
         }
     };
 
@@ -213,7 +226,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
 
                 {/* Content Area */}
                 <div className="flex-1 flex flex-col bg-transparent overflow-y-auto scrollbar-none">
-                    <div className="flex items-center justify-between p-8 border-b border-black/5 dark:border-white/5 sticky top-0 bg-transparent backdrop-blur-xl z-10">
+                    <div className="flex items-center justify-between p-8 border-b border-black/5 dark:border-white/5 sticky top-0 bg-white dark:bg-slate-900 z-10">
                         <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">{activeTab} Interface</h3>
                         <button onClick={onClose} className="p-3 bg-black/5 dark:bg-white/5 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-2xl transition-all">
                             <XMarkIcon className="w-5 h-5" />
@@ -231,7 +244,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
                                             alt="Profile"
                                             className={`w-24 h-24 rounded-full object-cover border-4 border-slate-100 dark:border-slate-800 shadow-md ${isUploading ? 'blur-[2px]' : ''}`}
                                             onError={(e) => {
-                                                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${name}&background=random`;
+                                                const fullName = `${firstName} ${lastName}`.trim();
+                                                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${fullName}&background=random`;
                                             }}
                                         />
                                         <label htmlFor="avatar-upload" className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
@@ -263,28 +277,68 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
                                 <hr className="border-slate-200 dark:border-slate-800" />
 
                                 {/* Personal Details */}
-                                <div className="space-y-4">
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">First Name</label>
+                                            <input
+                                                type="text"
+                                                value={firstName}
+                                                onChange={(e) => setFirstName(e.target.value)}
+                                                placeholder="First name"
+                                                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 transition-all font-medium"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Last Name</label>
+                                            <input
+                                                type="text"
+                                                value={lastName}
+                                                onChange={(e) => setLastName(e.target.value)}
+                                                placeholder="Last name"
+                                                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 transition-all font-medium"
+                                            />
+                                        </div>
+                                    </div>
+
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Display Name</label>
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Gmail / Email</label>
                                         <input
-                                            type="text"
-                                            value={name}
-                                            onChange={(e) => setName(e.target.value)}
-                                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-slate-900 dark:text-white sm:text-sm"
+                                            type="email"
+                                            value={email}
+                                            readOnly
+                                            className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 font-mono cursor-not-allowed"
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Role</label>
-                                            <div className="px-3 py-2 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-md text-slate-500 dark:text-slate-400 text-sm capitalize">
-                                                {user.role}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Employee ID</label>
-                                            <div className="px-3 py-2 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-md text-slate-500 dark:text-slate-400 text-sm font-mono">
-                                                {user.employeeId}
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Phone Number</label>
+                                        <input
+                                            type="tel"
+                                            value={phone}
+                                            onChange={(e) => setPhone(e.target.value)}
+                                            placeholder="+63 9XX XXX XXXX"
+                                            className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 transition-all font-mono"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Position</label>
+                                        <div className="relative">
+                                            <select
+                                                value={position}
+                                                onChange={(e) => setPosition(e.target.value)}
+                                                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-slate-900 dark:text-white appearance-none cursor-pointer transition-all font-medium"
+                                            >
+                                                <option value="" disabled>Select your position</option>
+                                                {Object.values(Position).map((pos) => (
+                                                    <option key={pos} value={pos}>{pos}</option>
+                                                ))}
+                                            </select>
+                                            <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500 dark:text-slate-400">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                </svg>
                                             </div>
                                         </div>
                                     </div>

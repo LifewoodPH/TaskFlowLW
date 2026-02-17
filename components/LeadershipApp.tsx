@@ -10,6 +10,7 @@ import BottomDock from './BottomDock';
 import TopNav from './TopNav';
 import TaskDetailsModal from './TaskDetailsModal';
 import AddTaskModal from './AddTaskModal';
+import ProfileModal from './ProfileModal';
 import Background from './Background';
 import ClickSpark from './ClickSpark';
 import { Cog6ToothIcon } from './icons/Cog6ToothIcon';
@@ -35,6 +36,7 @@ const LeadershipApp: React.FC<LeadershipAppProps> = ({ user, onLogout }) => {
     // Modals
     const [isTaskDetailsModalOpen, setTaskDetailsModalOpen] = useState(false);
     const [isAddTaskModalOpen, setAddTaskModalOpen] = useState(false);
+    const [isProfileModalOpen, setProfileModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [taskToEdit, setTaskToEdit] = useState<Task | Partial<Task> | null>(null);
 
@@ -84,6 +86,64 @@ const LeadershipApp: React.FC<LeadershipAppProps> = ({ user, onLogout }) => {
     };
 
 
+    const handleAddComment = async (taskId: number, content: string) => {
+        try {
+            await dataService.addTaskComment(taskId, user.employeeId, content);
+            loadData();
+        } catch (e) { console.error(e); }
+    };
+
+    const handleToggleTimer = async (taskId: number) => {
+        const task = allTasks.find(t => t.id === taskId);
+        if (!task) return;
+
+        try {
+            if (task.timerStartTime) {
+                // Stop timer
+                const start = new Date(task.timerStartTime);
+                const end = new Date();
+                const duration = end.getTime() - start.getTime();
+                await dataService.logTaskTime(taskId, task.timerStartTime, end.toISOString(), duration);
+
+                // Clear timer
+                await dataService.upsertTask({
+                    ...task,
+                    timerStartTime: null,
+                    title: task.title,
+                    spaceId: task.spaceId
+                });
+            } else {
+                // Start timer
+                await dataService.upsertTask({
+                    ...task,
+                    timerStartTime: new Date().toISOString(),
+                    title: task.title,
+                    spaceId: task.spaceId
+                });
+            }
+            loadData();
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const handleSaveProfile = async (data: { name: string; avatarUrl: string; phone: string; position: string; email?: string }) => {
+        try {
+            await dataService.updateProfile(user.employeeId, {
+                fullName: data.name,
+                avatarUrl: data.avatarUrl,
+                phone: data.phone,
+                position: data.position,
+                email: data.email
+            });
+            loadData(); // Reload to reflect changes
+            setProfileModalOpen(false);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+
     return (
         <>
             <ClickSpark sparkSize={10} sparkRadius={20} sparkCount={8} duration={400} />
@@ -94,7 +154,7 @@ const LeadershipApp: React.FC<LeadershipAppProps> = ({ user, onLogout }) => {
                     activeSpaceName="Command Center"
                     currentUserEmployee={employees.find(e => e.id === user.employeeId)}
                     user={user}
-                    onOpenProfile={() => { }}
+                    onOpenProfile={() => setProfileModalOpen(true)}
                     onLogout={onLogout}
                     searchTerm={searchTerm}
                     onSearchChange={setSearchTerm}
@@ -131,9 +191,9 @@ const LeadershipApp: React.FC<LeadershipAppProps> = ({ user, onLogout }) => {
                             {currentView === 'timeline' && (
                                 <div className="h-[calc(100vh-200px)]">
                                     {timelineViewMode === 'calendar' ? (
-                                        <CalendarView tasks={allTasks} onViewTask={() => { }} />
+                                        <CalendarView tasks={allTasks} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
                                     ) : (
-                                        <GanttChart tasks={allTasks} employees={employees} onViewTask={() => { }} />
+                                        <GanttChart tasks={allTasks} employees={employees} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
                                     )}
                                 </div>
                             )}
@@ -157,6 +217,17 @@ const LeadershipApp: React.FC<LeadershipAppProps> = ({ user, onLogout }) => {
                     isAdmin={true}
                 />
 
+                {isProfileModalOpen && (
+                    <ProfileModal
+                        isOpen={isProfileModalOpen}
+                        onClose={() => setProfileModalOpen(false)}
+                        user={user}
+                        currentUserEmployee={employees.find(e => e.id === user.employeeId)}
+                        onSave={handleSaveProfile}
+                        onLogout={onLogout}
+                    />
+                )}
+
                 {isAddTaskModalOpen && (
                     <AddTaskModal
                         isOpen={isAddTaskModalOpen}
@@ -174,8 +245,11 @@ const LeadershipApp: React.FC<LeadershipAppProps> = ({ user, onLogout }) => {
                         isOpen={isTaskDetailsModalOpen}
                         onClose={() => setTaskDetailsModalOpen(false)}
                         task={selectedTask}
-                        onUpdate={(t) => { }} // Read only for now or implement update
-                        currentUser={user}
+                        employees={employees}
+                        allTasks={allTasks}
+                        onAddComment={handleAddComment}
+                        onToggleTimer={handleToggleTimer}
+                        currentUserId={user.employeeId}
                     />
                 )}
             </div>

@@ -92,6 +92,7 @@ const mapDbProfileToEmployee = (dbProfile: any): Employee => ({
   email: dbProfile.email || '',
   avatarUrl: dbProfile.avatar_url || 'https://via.placeholder.com/150',
   position: dbProfile.position,
+  phone: dbProfile.phone,
 });
 
 // --- Services ---
@@ -210,44 +211,83 @@ export const getTasks = async (spaceId: string, currentUserId?: string) => {
 };
 
 export const upsertTask = async (task: Partial<Task> & { spaceId: string, title: string }) => {
-  const payload: DbTask = {
-    space_id: task.spaceId,
-    title: task.title,
-    description: task.description || '',
-    assignee_id: task.assigneeId || '',
-    due_date: task.dueDate || new Date().toISOString(),
-    status: task.status || 'To Do',
-    priority: task.priority || 'Medium',
-    tags: task.tags || [],
-    timer_start_time: task.timerStartTime || null,
-    blocked_by_id: task.blockedById || null,
-    completed_at: task.completedAt || null,
-  };
+  // If we have an ID, we perform a PATCH (update) to avoid overwriting missing fields with defaults.
+  if (task.id) {
+    const payload: any = {};
+    // Only map fields that are present in the update object
+    if (task.spaceId !== undefined) payload.space_id = task.spaceId;
+    if (task.title !== undefined) payload.title = task.title;
+    if (task.description !== undefined) payload.description = task.description;
+    if (task.assigneeId !== undefined) payload.assignee_id = task.assigneeId;
+    if (task.dueDate !== undefined) payload.due_date = task.dueDate;
+    if (task.status !== undefined) payload.status = task.status;
+    if (task.priority !== undefined) payload.priority = task.priority;
+    if (task.tags !== undefined) payload.tags = task.tags;
+    if (task.timerStartTime !== undefined) payload.timer_start_time = task.timerStartTime;
+    if (task.blockedById !== undefined) payload.blocked_by_id = task.blockedById;
+    if (task.completedAt !== undefined) payload.completed_at = task.completedAt;
 
-  if (task.id) payload.id = task.id;
+    const { data, error } = await supabase
+      .from('tasks')
+      .update(payload)
+      .eq('id', task.id)
+      .select()
+      .single();
 
-  const { data, error } = await supabase
-    .from('tasks')
-    .upsert(payload)
-    .select()
-    .single();
+    if (error) throw error;
 
-  if (error) throw error;
-
-  const savedTask = mapDbTaskToApp(data);
-
-  if (task.subtasks) {
-    if (task.id) {
+    // Handle Subtasks for Update
+    if (task.subtasks) {
+      // Naive replace for subtasks (delete all, insert new) - reasonable for now
       await supabase.from('subtasks').delete().eq('task_id', task.id);
+      if (task.subtasks.length > 0) {
+        await supabase.from('subtasks').insert(
+          task.subtasks.map((st: Subtask) => ({ task_id: task.id, title: st.title, is_completed: st.isCompleted }))
+        );
+      }
+      // Fetch fresh subtasks to return complete object?
+      // data already has basic fields. mapDbTaskToApp might fail if subtasks are missing?
+      // mapDbTaskToApp checks dbTask.subtasks ? ... : []
     }
-    if (task.subtasks.length > 0) {
+
+    // Re-fetch to return full object including subtasks, comments etc?
+    // The update().select() usually returns the row.
+    // If we want subtasks included in the return, we might need to query them or map locally.
+    // But mapDbTaskToApp handles missing subtasks gracefully.
+    return mapDbTaskToApp(data);
+
+  } else {
+    // New Task - Insert with defaults
+    const payload: DbTask = {
+      space_id: task.spaceId,
+      title: task.title,
+      description: task.description || '',
+      assignee_id: task.assigneeId || '',
+      due_date: task.dueDate || new Date().toISOString(),
+      status: task.status || 'To Do',
+      priority: task.priority || 'Medium',
+      tags: task.tags || [],
+      timer_start_time: task.timerStartTime || null,
+      blocked_by_id: task.blockedById || null,
+      completed_at: task.completedAt || null,
+    };
+
+    const { data, error } = await supabase
+      .from('tasks')
+      .insert(payload)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    if (task.subtasks && task.subtasks.length > 0) {
       await supabase.from('subtasks').insert(
         task.subtasks.map((st: Subtask) => ({ task_id: data.id, title: st.title, is_completed: st.isCompleted }))
       );
     }
-  }
 
-  return savedTask;
+    return mapDbTaskToApp(data);
+  }
 };
 
 export const addTaskComment = async (taskId: number, authorId: string, content: string) => {
@@ -271,6 +311,25 @@ export const getAllEmployees = async () => {
   const { data, error } = await supabase.from('profiles').select('*');
   if (error) throw error;
   return data.map(mapDbProfileToEmployee);
+};
+
+export const updateProfile = async (userId: string, updates: { fullName?: string; avatarUrl?: string; phone?: string; position?: string; email?: string }) => {
+  const payload: any = {};
+  if (updates.fullName) payload.full_name = updates.fullName;
+  if (updates.avatarUrl) payload.avatar_url = updates.avatarUrl;
+  if (updates.phone) payload.phone = updates.phone;
+  if (updates.position) payload.position = updates.position;
+  if (updates.email) payload.email = updates.email;
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .update(payload)
+    .eq('id', userId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return mapDbProfileToEmployee(data);
 };
 
 export const deleteTask = async (taskId: number) => {
