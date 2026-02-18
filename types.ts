@@ -83,6 +83,7 @@ export interface Task {
   createdAt: string;
   completedAt?: string | null;
   blockedById?: number | null;
+  listId?: number | null;
   isUnplanned?: boolean;
 }
 
@@ -94,6 +95,15 @@ export interface Space {
   members: string[]; // Array of employee IDs
   theme?: string; // Optional per-space theme override
   description?: string; // Used for "Today's Task"
+  createdAt: string;
+}
+
+export interface List {
+  id: number;
+  spaceId: string;
+  name: string;
+  color?: string;
+  position: number;
   createdAt: string;
 }
 

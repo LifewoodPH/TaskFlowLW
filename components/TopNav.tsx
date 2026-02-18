@@ -22,6 +22,7 @@ interface TopNavProps {
     timelineViewMode?: 'calendar' | 'gantt';
     onTimelineViewModeChange?: (mode: 'calendar' | 'gantt') => void;
     onToggleSidebar?: () => void;
+    hideBrandOnDesktop?: boolean;
 }
 
 const TopNav: React.FC<TopNavProps> = ({
@@ -35,19 +36,19 @@ const TopNav: React.FC<TopNavProps> = ({
     currentView,
     timelineViewMode,
     onTimelineViewModeChange,
-    onToggleSidebar
+    onToggleSidebar,
+    hideBrandOnDesktop
 }) => {
     const { theme, toggleTheme } = useTheme();
     const { unreadCount } = useAppNotifications();
     const [isNotificationPanelOpen, setNotificationPanelOpen] = React.useState(false);
 
     return (
-        <header className="fixed top-0 left-0 right-0 h-20 md:h-24 px-4 md:px-8 z-50 flex items-center justify-between pointer-events-none">
+        <header className="w-full h-20 md:h-24 px-4 md:px-8 flex-none z-40 flex items-center justify-between pointer-events-none bg-transparent">
             {/* Brand & Context */}
             <div className="flex items-center gap-4 md:gap-6 pointer-events-auto">
 
-
-                <Link to="/app/home" className="flex items-center gap-3 md:gap-4 group cursor-pointer">
+                <Link to="/app/home" className={`flex items-center gap-3 md:gap-4 group cursor-pointer ${hideBrandOnDesktop ? 'md:hidden' : ''}`}>
                     <div className="transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3 drop-shadow-[0_0_15px_rgba(206,253,74,0.4)]">
                         <Logo className="w-8 h-8 md:w-10 md:h-10" />
                     </div>
@@ -57,7 +58,7 @@ const TopNav: React.FC<TopNavProps> = ({
                     </div>
                 </Link>
 
-                <div className="h-6 w-px bg-black/10 dark:bg-white/10 hidden sm:block"></div>
+                <div className={`h-6 w-px bg-black/10 dark:bg-white/10 hidden sm:block ${hideBrandOnDesktop ? 'md:hidden' : ''}`}></div>
 
                 <div className="flex flex-col hidden sm:flex">
                     <div className="flex items-center gap-2">

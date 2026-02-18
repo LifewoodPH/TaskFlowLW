@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { User, Employee, Task, Space, ActivityLog, TaskStatus } from '../types';
+import { User, Employee, Task, Space, ActivityLog, TaskStatus, List } from '../types';
 import * as dataService from '../services/supabaseService';
 import HomeView from './HomeView';
 import TaskBoard from './TaskBoard';
@@ -10,8 +11,13 @@ import GanttChart from './GanttChart';
 import BottomDock from './BottomDock';
 import TopNav from './TopNav';
 import TaskDetailsModal from './TaskDetailsModal';
-import AddTaskModal from './AddTaskModal';
+// import AddTaskModal from './AddTaskModal';
+import CreateTaskModal from './CreateTaskModal';
 import ProfileModal from './ProfileModal';
+import CreateSpaceModal from './CreateSpaceModal';
+import JoinSpaceModal from './JoinSpaceModal';
+import CreateListModal from './CreateListModal';
+import Sidebar from './Sidebar';
 import Background from './Background';
 import { useDailyTasks } from '../hooks/useDailyTasks';
 import { Cog6ToothIcon } from './icons/Cog6ToothIcon';
@@ -33,14 +39,23 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
     const [allUserTasks, setAllUserTasks] = useState<Task[]>([]);
     const [activeSpaceId, setActiveSpaceId] = useState<string>('');
     const [memberships, setMemberships] = useState<{ space_id: string; user_id: string; role: string }[]>([]);
+    const [lists, setLists] = useState<List[]>([]);
+    const [activeListId, setActiveListId] = useState<number | null>(null);
+
+    // Sidebar State
+    const [isSidebarOpen, setSidebarOpen] = useState(true);
 
     // View State
     const [searchTerm, setSearchTerm] = useState('');
     const [timelineViewMode, setTimelineViewMode] = useState<'calendar' | 'gantt'>('calendar');
 
     // Modals
-    const [isAddTaskModalOpen, setAddTaskModalOpen] = useState(false);
+    const [isCreateTaskModalOpen, setCreateTaskModalOpen] = useState(false);
     const [isProfileModalOpen, setProfileModalOpen] = useState(false);
+    const [isCreateSpaceModalOpen, setCreateSpaceModalOpen] = useState(false);
+    const [isJoinSpaceModalOpen, setJoinSpaceModalOpen] = useState(false);
+    const [isCreateListModalOpen, setCreateListModalOpen] = useState(false);
+    const [createListSpaceId, setCreateListSpaceId] = useState<string | null>(null);
     const [isTaskDetailsModalOpen, setTaskDetailsModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [taskToEdit, setTaskToEdit] = useState<Task | Partial<Task> | null>(null);
@@ -89,6 +104,13 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
             setEmployees(emps);
             setSpaces(spcs);
 
+            // Fetch lists for all spaces
+            if (spcs.length > 0) {
+                const allListsPromises = spcs.map(s => dataService.getLists(s.id));
+                const allListsResults = await Promise.all(allListsPromises);
+                setLists(allListsResults.flat());
+            }
+
             // Fetch memberships to correctly identify roles in each space
             const spaceIds = spcs.map(s => s.id);
             if (spaceIds.length > 0) {
@@ -114,16 +136,27 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
         } catch (e) { console.error(e); }
     };
 
+    const loadLists = async () => {
+        if (spaces.length > 0) {
+            const allListsPromises = spaces.map(s => dataService.getLists(s.id));
+            const allListsResults = await Promise.all(allListsPromises);
+            setLists(allListsResults.flat());
+        }
+    };
+
     const currentSpace = spaces.find(s => s.id === activeSpaceId);
 
     // Filtering
     const filteredTasks = useMemo(() => {
         let t = tasks;
+        if (activeListId) {
+            t = t.filter(task => task.listId === activeListId);
+        }
         if (searchTerm) {
             t = t.filter(task => task.title.toLowerCase().includes(searchTerm.toLowerCase()));
         }
         return t;
-    }, [tasks, searchTerm]);
+    }, [tasks, searchTerm, activeListId]);
 
     const spaceMembers = useMemo(() => {
         if (!currentSpace) return [];
@@ -162,8 +195,11 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
             await dataService.upsertTask({ ...task, spaceId: sid, id });
             loadSpaceTasks(sid);
             // Also refresh all user tasks to keep dashboard/overview in sync
+            await dataService.upsertTask({ ...task, spaceId: sid, id });
+            loadSpaceTasks(sid);
+            // Also refresh all user tasks to keep dashboard/overview in sync
             refreshAllUserTasks();
-            setAddTaskModalOpen(false);
+            setCreateTaskModalOpen(false);
         } catch (e) { console.error(e); }
     };
 
@@ -242,96 +278,148 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
         }
     };
 
+    const handleCreateSpace = async (name: string, description?: string) => {
+        try {
+            await dataService.createSpace(name, user.employeeId, description);
+            loadData();
+            setCreateSpaceModalOpen(false);
+        } catch (e) { console.error(e); }
+    };
+
+    const handleJoinSpace = async (code: string) => {
+        try {
+            await dataService.joinSpace(code, user.employeeId);
+            loadData();
+            setJoinSpaceModalOpen(false);
+        } catch (e) { console.error(e); }
+    };
+
+    const handleCreateList = async (name: string) => {
+        if (!createListSpaceId) return;
+        try {
+            await dataService.createList(createListSpaceId, name);
+            loadLists(); // Refresh lists
+            setCreateListModalOpen(false);
+            setCreateListSpaceId(null);
+        } catch (e) { console.error(e); }
+    };
+
     return (
         <>
             <div className="flex h-screen overflow-hidden bg-transparent text-white relative font-sans">
                 <Background videoSrc="/background.gif" />
 
-                <TopNav
-                    activeSpaceName={currentSpace?.name || 'My Workspace'}
-                    currentUserEmployee={employees.find(e => e.id === user.employeeId)}
-                    user={user}
-                    onOpenProfile={() => setProfileModalOpen(true)}
-                    onLogout={onLogout}
-                    searchTerm={searchTerm}
-                    onSearchChange={setSearchTerm}
-                    currentView={currentView}
-                    timelineViewMode={timelineViewMode}
-                    onTimelineViewModeChange={setTimelineViewMode}
-                />
+                <div className="flex flex-col h-full w-full relative z-0">
+                    <TopNav
+                        activeSpaceName={currentSpace?.name || 'My Workspace'}
+                        currentUserEmployee={employees.find(e => e.id === user.employeeId)}
+                        user={user}
+                        onOpenProfile={() => setProfileModalOpen(true)}
+                        onLogout={onLogout}
+                        searchTerm={searchTerm}
+                        onSearchChange={setSearchTerm}
+                        currentView={currentView}
+                        timelineViewMode={timelineViewMode}
+                        onTimelineViewModeChange={setTimelineViewMode}
+                        onToggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
+                        hideBrandOnDesktop={false}
+                    />
 
-                <div className="flex-1 flex flex-col min-w-0 relative z-0 pt-24 pb-32 overflow-hidden">
-                    <main className="flex-1 overflow-y-auto p-4 sm:p-8 scrollbar-none">
-                        <div className="max-w-[1800px] mx-auto animate-in fade-in duration-500">
+                    <div className="flex-1 flex overflow-hidden">
+                        <Sidebar
+                            isOpen={isSidebarOpen}
+                            onToggle={() => setSidebarOpen(!isSidebarOpen)}
+                            activeSpaceId={activeSpaceId}
+                            activeListId={activeListId}
+                            spaces={spaces}
+                            lists={lists}
+                            currentView={currentView}
+                            onSelectSpace={(sid: string) => setActiveSpaceId(sid)}
+                            onViewChange={(v: string) => navigate(`/app/${v}`)}
+                            onOpenProfile={() => setProfileModalOpen(true)}
+                            onLogout={onLogout}
+                            onCreateSpace={() => setCreateSpaceModalOpen(true)}
+                            onJoinSpace={() => setJoinSpaceModalOpen(true)}
+                            onCreateList={(sid: string) => { setCreateListSpaceId(sid); setCreateListModalOpen(true); }}
+                            onCreateTask={() => setCreateTaskModalOpen(true)}
+                            onSelectList={(lid: number | null) => setActiveListId(lid)}
+                            currentUserEmployee={employees.find(e => e.id === user.employeeId)}
+                            user={user}
+                        />
 
-                            {currentView === 'home' && (
-                                <HomeView
-                                    tasks={allUserTasks}
-                                    employees={spaceMembers}
-                                    currentSpace={currentSpace!}
-                                    user={user}
-                                    searchTerm={searchTerm}
-                                    onSearchChange={setSearchTerm}
-                                    onUpdateTaskStatus={handleUpdateTaskStatus}
-                                    onUpdateTask={handleUpdateTask}
-                                    onAddTask={(t) => handleSaveTask(t, null)}
-                                />
-                            )}
+                        <main className="flex-1 overflow-y-auto p-4 sm:p-8 scrollbar-none">
+                            <div className="max-w-[1800px] mx-auto animate-in fade-in duration-500">
 
-                            {currentView === 'board' && (
-                                <TaskBoard
-                                    tasks={filteredTasks}
-                                    allTasks={tasks}
-                                    employees={spaceMembers}
-                                    onUpdateTaskStatus={handleUpdateTaskStatus}
-                                    onEditTask={(t) => {
-                                        setTaskToEdit(t);
-                                        setAddTaskModalOpen(true);
-                                    }}
-                                    onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }}
-                                    onToggleTimer={handleToggleTimer}
-                                />
-                            )}
+                                {currentView === 'home' && (
+                                    <HomeView
+                                        tasks={allUserTasks}
+                                        employees={spaceMembers}
+                                        currentSpace={currentSpace!}
+                                        user={user}
+                                        searchTerm={searchTerm}
+                                        onSearchChange={setSearchTerm}
+                                        onUpdateTaskStatus={handleUpdateTaskStatus}
+                                        onUpdateTask={handleUpdateTask}
+                                        onAddTask={() => Promise.resolve(setCreateTaskModalOpen(true))}
+                                    />
+                                )}
 
-                            {currentView === 'whiteboard' && <Whiteboard />}
+                                {currentView === 'board' && (
+                                    <TaskBoard
+                                        tasks={filteredTasks}
+                                        allTasks={tasks}
+                                        employees={spaceMembers}
+                                        onUpdateTaskStatus={handleUpdateTaskStatus}
+                                        onEditTask={(t) => {
+                                            setTaskToEdit(t);
+                                            setCreateTaskModalOpen(true);
+                                        }}
+                                        onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }}
+                                        onToggleTimer={handleToggleTimer}
+                                    />
+                                )}
 
-                            {currentView === 'overview' && (
-                                <AdminDashboard
-                                    tasks={allUserTasks}
-                                    employees={employees}
-                                    activityLogs={[]}
-                                    isAdmin={false}
-                                />
-                            )}
+                                {currentView === 'whiteboard' && <Whiteboard />}
 
-                            {currentView === 'members' && (
-                                <MembersView
-                                    employees={employees}
-                                    tasks={allUserTasks}
-                                    currentUser={user}
-                                />
-                            )}
+                                {currentView === 'overview' && (
+                                    <AdminDashboard
+                                        tasks={allUserTasks}
+                                        employees={employees}
+                                        activityLogs={[]}
+                                        isAdmin={false}
+                                    />
+                                )}
 
-                            {currentView === 'timeline' && (
-                                <div className="h-[calc(100vh-200px)]">
-                                    {timelineViewMode === 'calendar' ? (
-                                        <CalendarView tasks={filteredTasks} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
-                                    ) : (
-                                        <GanttChart tasks={filteredTasks} employees={spaceMembers} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
-                                    )}
-                                </div>
-                            )}
+                                {currentView === 'members' && (
+                                    <MembersView
+                                        employees={employees}
+                                        tasks={allUserTasks}
+                                        currentUser={user}
+                                    />
+                                )}
 
-                        </div>
-                    </main>
+                                {currentView === 'timeline' && (
+                                    <div className="h-[calc(100vh-200px)]">
+                                        {timelineViewMode === 'calendar' ? (
+                                            <CalendarView tasks={filteredTasks} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
+                                        ) : (
+                                            <GanttChart tasks={filteredTasks} employees={spaceMembers} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
+                                        )}
+                                    </div>
+                                )}
+
+                            </div>
+                        </main>
+                    </div>
                 </div>
 
-                <BottomDock
+                {/* BottomDock removed in favor of Sidebar for desktop layout */}
+                {/* <BottomDock
                     currentView={currentView}
                     onViewChange={(v) => navigate(`/app/${v}`)}
                     activeSpaceId={activeSpaceId}
                     isAdmin={false}
-                />
+                /> */}
 
                 {isProfileModalOpen && (
                     <ProfileModal
@@ -357,18 +445,42 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
                     />
                 )}
 
-                {isAddTaskModalOpen && (
-                    <AddTaskModal
-                        isOpen={isAddTaskModalOpen}
-                        onClose={() => setAddTaskModalOpen(false)}
+                {isCreateTaskModalOpen && (
+                    <CreateTaskModal
+                        isOpen={isCreateTaskModalOpen}
+                        onClose={() => setCreateTaskModalOpen(false)}
                         onSave={handleSaveTask}
                         taskToEdit={taskToEdit}
-                        allTasks={tasks}
                         employees={spaceMembers}
                         activeSpaceId={activeSpaceId}
                         spaces={spaces}
+                        lists={lists}
                         currentUserId={user.employeeId}
                         isAdmin={user.isAdmin}
+                    />
+                )}
+
+                {isCreateSpaceModalOpen && (
+                    <CreateSpaceModal
+                        isOpen={isCreateSpaceModalOpen}
+                        onClose={() => setCreateSpaceModalOpen(false)}
+                        onCreate={handleCreateSpace}
+                    />
+                )}
+
+                {isJoinSpaceModalOpen && (
+                    <JoinSpaceModal
+                        isOpen={isJoinSpaceModalOpen}
+                        onClose={() => setJoinSpaceModalOpen(false)}
+                        onJoin={handleJoinSpace}
+                    />
+                )}
+
+                {isCreateListModalOpen && (
+                    <CreateListModal
+                        isOpen={isCreateListModalOpen}
+                        onClose={() => setCreateListModalOpen(false)}
+                        onCreate={handleCreateList}
                     />
                 )}
             </div>

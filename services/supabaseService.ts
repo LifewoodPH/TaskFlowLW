@@ -1,6 +1,6 @@
 
 import { supabase } from '../lib/supabaseClient';
-import { Task, Space, Employee, TaskStatus, Priority, Comment, Subtask, TimeLogEntry } from '../types';
+import { Task, Space, Employee, TaskStatus, Priority, Comment, Subtask, TimeLogEntry, List } from '../types';
 
 // --- Types for DB Insert/Update ---
 interface DbTask {
@@ -16,6 +16,16 @@ interface DbTask {
   timer_start_time: string | null;
   blocked_by_id: number | null;
   completed_at: string | null;
+  list_id?: number | null;
+}
+
+interface DbList {
+  id: number;
+  space_id: string;
+  name: string;
+  color?: string;
+  position: number;
+  created_at: string;
 }
 
 interface DbDailyTask {
@@ -49,6 +59,7 @@ const mapDbTaskToApp = (dbTask: any): Task => ({
   createdAt: dbTask.created_at,
   completedAt: dbTask.completed_at,
   blockedById: dbTask.blocked_by_id,
+  listId: dbTask.list_id,
   comments: dbTask.comments ? dbTask.comments.map(mapDbCommentToApp) : [],
   subtasks: dbTask.subtasks ? dbTask.subtasks.map(mapDbSubtaskToApp) : [],
   timeLogs: dbTask.time_logs ? dbTask.time_logs.map(mapDbTimeLogToApp) : [],
@@ -94,6 +105,17 @@ const mapDbProfileToEmployee = (dbProfile: any): Employee => ({
   position: dbProfile.position,
   phone: dbProfile.phone,
   isSuperAdmin: dbProfile.is_admin,
+});
+
+
+
+const mapDbListToApp = (dbList: any): List => ({
+  id: dbList.id,
+  spaceId: dbList.space_id,
+  name: dbList.name,
+  color: dbList.color,
+  position: dbList.position,
+  createdAt: dbList.created_at,
 });
 
 // --- Services ---
@@ -238,6 +260,7 @@ export const upsertTask = async (task: Partial<Task> & { spaceId: string, title:
     if (task.timerStartTime !== undefined) payload.timer_start_time = task.timerStartTime;
     if (task.blockedById !== undefined) payload.blocked_by_id = task.blockedById;
     if (task.completedAt !== undefined) payload.completed_at = task.completedAt;
+    if (task.listId !== undefined) payload.list_id = task.listId;
 
     const { data, error } = await supabase
       .from('tasks')
@@ -282,6 +305,7 @@ export const upsertTask = async (task: Partial<Task> & { spaceId: string, title:
       timer_start_time: task.timerStartTime || null,
       blocked_by_id: task.blockedById || null,
       completed_at: task.completedAt || null,
+      list_id: task.listId || null,
     };
 
     const { data, error } = await supabase
@@ -645,4 +669,55 @@ export const createNotification = async (notification: {
 
   if (error) throw error;
   return data;
+};
+
+// --- List Services ---
+
+export const getLists = async (spaceId: string) => {
+  const { data, error } = await supabase
+    .from('lists')
+    .select('*')
+    .eq('space_id', spaceId)
+    .order('position', { ascending: true });
+
+  if (error) throw error;
+  return data.map(mapDbListToApp);
+};
+
+export const createList = async (spaceId: string, name: string) => {
+  const { data, error } = await supabase
+    .from('lists')
+    .insert({ space_id: spaceId, name })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return mapDbListToApp(data);
+};
+
+export const updateList = async (listId: number, updates: Partial<List>) => {
+  const payload: any = {};
+  if (updates.name) payload.name = updates.name;
+  if (updates.color) payload.color = updates.color;
+  if (updates.position) payload.position = updates.position;
+
+  const { data, error } = await supabase
+    .from('lists')
+    .update(payload)
+    .eq('id', listId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return mapDbListToApp(data);
+};
+
+export const deleteList = async (listId: number) => {
+  // Tasks specifically in this list will have list_id set to null due to ON DELETE SET NULL
+  const { error } = await supabase
+    .from('lists')
+    .delete()
+    .eq('id', listId);
+
+  if (error) throw error;
 };

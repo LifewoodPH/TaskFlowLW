@@ -241,95 +241,33 @@ const HomeView: React.FC<HomeViewProps> = ({ tasks, employees, currentSpace, use
 
         {/* 2. Quick Actions / Time (Span 1) */}
         {/* 2. Add New Task (Span 1) */}
-        <BentoCard className="col-span-1 p-0 flex flex-col justify-between relative overflow-hidden group">
+        {/* 2. Add New Task (Span 1) */}
+        <BentoCard className="col-span-1 p-0 flex flex-col justify-between relative overflow-hidden group min-h-[220px]">
           <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
             <div className="w-24 h-24 bg-lime-500 blur-[60px] rounded-full"></div>
           </div>
 
-          <div className="p-6 pb-2 relative z-10">
+          <div className="p-6 relative z-10 flex flex-col h-full justify-between">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-[10px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">Add New Task</h3>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setShowUnplannedInfo(!showUnplannedInfo)}
-                  className={`flex items-center justify-center w-5 h-5 rounded-full border transition-all ${showUnplannedInfo
-                    ? 'bg-lime-500/20 border-lime-500/50 text-lime-600 dark:text-[#CEFD4A]'
-                    : 'bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/10 text-slate-400'
-                    }`}
-                >
-                  <QuestionMarkIcon className="w-3 h-3" />
-                </button>
-                <button
-                  onClick={() => setIsUrgent(!isUrgent)}
-                  className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all border ${isUrgent
-                    ? 'bg-red-500 text-white border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.4)]'
-                    : 'bg-white/10 text-slate-400 dark:text-white/40 border-black/5 dark:border-white/10 hover:bg-white/20 hover:text-slate-600 dark:hover:text-white'
-                    }`}
-                >
-                  <BoltIcon className="w-3 h-3" />
-                  Unplanned
-                </button>
-              </div>
+              <h3 className="text-[10px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">Quick Actions</h3>
             </div>
 
-            {showUnplannedInfo && (
-              <div className="mb-3 p-3 bg-lime-500/5 border border-lime-500/20 rounded-xl animate-fade-in relative z-20">
-                <p className="text-[10px] text-lime-600 dark:text-[#CEFD4A] font-bold leading-tight uppercase tracking-wider">
-                  Unplanned tasks are urgent items that weren't part of your initial daily schedule.
-                </p>
+            <div className="flex-1 flex flex-col items-center justify-center text-center">
+              <div className="w-16 h-16 rounded-2xl bg-lime-500/10 dark:bg-[#CEFD4A]/10 flex items-center justify-center text-lime-600 dark:text-[#CEFD4A] mb-4 group-hover:scale-110 transition-transform duration-300">
+                <PlusIcon className="w-8 h-8" />
               </div>
-            )}
-
-            <div className="flex gap-1 mb-3 relative z-10 overflow-x-auto scrollbar-none pb-1">
-              {(['Urgent', 'High', 'Medium', 'Low'] as DailyTaskPriority[]).map(p => (
-                <button
-                  key={p}
-                  onClick={() => setNewTaskPriority(p)}
-                  className={`flex-shrink-0 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider border transition-all ${newTaskPriority === p
-                    ? 'bg-lime-500 text-black border-lime-500'
-                    : 'bg-white/5 border-black/5 dark:border-white/10 text-slate-400 hover:bg-white/10'
-                    }`}
-                >
-                  {p}
-                </button>
-              ))}
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Create New Task</h3>
+              <p className="text-xs text-slate-500 dark:text-white/40 max-w-[200px]">
+                Add a task to a list with assignee, due date, and priority.
+              </p>
             </div>
 
-            <div className="relative z-10 flex-1 flex flex-col">
-              <textarea
-                value={newTaskInput}
-                onChange={(e) => setNewTaskInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="w-full h-[50px] bg-transparent border-b border-black/10 dark:border-white/10 p-3 text-slate-900 dark:text-white focus:outline-none focus:border-lime-500 text-sm resize-none placeholder:text-slate-400 dark:placeholder:text-white/20 font-bold"
-                placeholder="Task Title..."
-              />
-              <textarea
-                value={newTaskDescription}
-                onChange={(e) => setNewTaskDescription(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && e.ctrlKey) {
-                    e.preventDefault();
-                    handleAddTask();
-                  }
-                }}
-                className="w-full h-[60px] bg-transparent border-none p-3 text-slate-700 dark:text-white/80 focus:outline-none text-xs resize-none placeholder:text-slate-400 dark:placeholder:text-white/20"
-                placeholder="Description (optional)..."
-              />
-              <div className="mt-3 flex items-center justify-between">
-                <div className={`text-xs font-bold text-emerald-500 transition-opacity duration-300 flex items-center gap-1.5 ${showSuccess ? 'opacity-100' : 'opacity-0'}`}>
-                  <CheckCircleIcon className="w-4 h-4" />
-                  Task Added!
-                </div>
-                <button
-                  onClick={handleAddTask}
-                  disabled={!newTaskInput.trim()}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-lime-500 disabled:opacity-50 disabled:cursor-not-allowed text-black text-xs font-bold rounded-lg hover:bg-lime-400 transition-colors"
-                >
-                  <PlusIcon className="w-3.5 h-3.5" />
-                  Add
-                </button>
-              </div>
-            </div>
+            <button
+              onClick={() => onAddTask({})}
+              className="w-full py-3 rounded-xl bg-lime-500 dark:bg-[#CEFD4A] text-black text-xs font-black uppercase tracking-widest hover:shadow-lg hover:shadow-lime-500/20 transition-all active:scale-[0.98]"
+            >
+              Open Task Creator
+            </button>
           </div>
         </BentoCard>
 

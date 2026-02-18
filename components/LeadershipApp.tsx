@@ -6,7 +6,7 @@ import AdminDashboard from './AdminDashboard';
 import AdminOverseerView from './AdminOverseerView';
 import CalendarView from './CalendarView';
 import GanttChart from './GanttChart';
-import BottomDock from './BottomDock';
+import Sidebar from './Sidebar';
 import TopNav from './TopNav';
 import TaskDetailsModal from './TaskDetailsModal';
 import AddTaskModal from './AddTaskModal';
@@ -28,6 +28,7 @@ const LeadershipApp: React.FC<LeadershipAppProps> = ({ user, onLogout }) => {
     const [spaces, setSpaces] = useState<Space[]>([]);
     const [allTasks, setAllTasks] = useState<Task[]>([]);
     const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
+    const [isSidebarOpen, setSidebarOpen] = useState(true);
 
     // View State
     const [timelineViewMode, setTimelineViewMode] = useState<'calendar' | 'gantt'>('calendar');
@@ -150,77 +151,92 @@ const LeadershipApp: React.FC<LeadershipAppProps> = ({ user, onLogout }) => {
             <div className="flex h-screen overflow-hidden bg-transparent text-white relative font-sans">
                 <Background videoSrc="/background.gif" />
 
-                <TopNav
-                    activeSpaceName="Command Center"
-                    currentUserEmployee={employees.find(e => e.id === user.employeeId)}
-                    user={user}
-                    onOpenProfile={() => setProfileModalOpen(true)}
-                    onLogout={onLogout}
-                    searchTerm={searchTerm}
-                    onSearchChange={setSearchTerm}
-                    currentView={currentView}
-                    timelineViewMode={timelineViewMode}
-                    onTimelineViewModeChange={setTimelineViewMode}
-                />
+                <div className="flex flex-col h-full w-full relative z-0">
+                    <TopNav
+                        activeSpaceName="Command Center"
+                        currentUserEmployee={employees.find(e => e.id === user.employeeId)}
+                        user={user}
+                        onOpenProfile={() => setProfileModalOpen(true)}
+                        onLogout={onLogout}
+                        searchTerm={searchTerm}
+                        onSearchChange={setSearchTerm}
+                        currentView={currentView}
+                        timelineViewMode={timelineViewMode}
+                        onTimelineViewModeChange={setTimelineViewMode}
+                        hideBrandOnDesktop={false}
+                    />
 
-                <div className="flex-1 flex flex-col min-w-0 relative z-0 pt-24 pb-32 overflow-hidden">
-                    <main className="flex-1 overflow-y-auto p-4 sm:p-8 scrollbar-none">
-                        <div className="max-w-[1800px] mx-auto animate-in fade-in duration-500">
+                    <div className="flex-1 flex overflow-hidden">
+                        <Sidebar
+                            isOpen={isSidebarOpen}
+                            onToggle={() => setSidebarOpen(!isSidebarOpen)}
+                            activeSpaceId=""
+                            activeListId={null}
+                            spaces={spaces}
+                            lists={[]}
+                            currentView={currentView}
+                            onSelectSpace={() => { }}
+                            onViewChange={handleViewChange}
+                            onOpenProfile={() => setProfileModalOpen(true)}
+                            onLogout={onLogout}
+                            onCreateSpace={() => { }}
+                            onJoinSpace={() => { }}
+                            onCreateList={() => { }}
+                            onCreateTask={() => setAddTaskModalOpen(true)}
+                            onSelectList={() => { }}
+                            currentUserEmployee={employees.find(e => e.id === user.employeeId)}
+                            user={user}
+                        />
 
-                            {currentView === 'analytics' && (
-                                <AdminDashboard
-                                    tasks={allTasks}
-                                    employees={employees}
-                                    activityLogs={activityLogs}
-                                    isAdmin={true}
-                                />
-                            )}
+                        <main className="flex-1 overflow-y-auto p-4 sm:p-8 scrollbar-none">
+                            <div className="max-w-[1800px] mx-auto animate-in fade-in duration-500">
 
-                            {currentView === 'overview' && (
-                                <AdminOverseerView
-                                    spaces={spaces}
-                                    tasks={allTasks}
-                                    employees={employees}
-                                    searchTerm={searchTerm}
-                                    onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }}
-                                    onAddTask={(mid, sid) => { setTaskToEdit({ assigneeId: mid, spaceId: sid }); setAddTaskModalOpen(true); }}
-                                    userName={user.fullName}
-                                />
-                            )}
+                                {currentView === 'analytics' && (
+                                    <AdminDashboard
+                                        tasks={allTasks}
+                                        employees={employees}
+                                        activityLogs={activityLogs}
+                                        isAdmin={true}
+                                    />
+                                )}
 
-                            {currentView === 'team' && user.isAdmin && (
-                                <UserManagementView currentUserId={user.employeeId} />
-                            )}
+                                {currentView === 'overview' && (
+                                    <AdminOverseerView
+                                        spaces={spaces}
+                                        tasks={allTasks}
+                                        employees={employees}
+                                        searchTerm={searchTerm}
+                                        onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }}
+                                        onAddTask={(mid, sid) => { setTaskToEdit({ assigneeId: mid, spaceId: sid }); setAddTaskModalOpen(true); }}
+                                        userName={user.fullName}
+                                    />
+                                )}
 
-                            {currentView === 'timeline' && (
-                                <div className="h-[calc(100vh-200px)]">
-                                    {timelineViewMode === 'calendar' ? (
-                                        <CalendarView tasks={allTasks} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
-                                    ) : (
-                                        <GanttChart tasks={allTasks} employees={employees} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
-                                    )}
-                                </div>
-                            )}
+                                {currentView === 'team' && user.isAdmin && (
+                                    <UserManagementView currentUserId={user.employeeId} />
+                                )}
 
-                            {currentView === 'settings' && (
-                                <div className="p-8 text-center text-slate-500">
-                                    <Cog6ToothIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                                    <h2 className="text-xl font-bold">System Settings</h2>
-                                    <p>Configure workspace defaults and permissions.</p>
-                                </div>
-                            )}
+                                {currentView === 'timeline' && (
+                                    <div className="h-[calc(100vh-200px)]">
+                                        {timelineViewMode === 'calendar' ? (
+                                            <CalendarView tasks={allTasks} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
+                                        ) : (
+                                            <GanttChart tasks={allTasks} employees={employees} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
+                                        )}
+                                    </div>
+                                )}
 
-                        </div>
-                    </main>
+                                {currentView === 'settings' && (
+                                    <div className="p-8 text-center text-slate-500">
+                                        <Cog6ToothIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                                        <h2 className="text-xl font-bold">System Settings</h2>
+                                        <p>Configure workspace defaults and permissions.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </main>
+                    </div>
                 </div>
-
-                <BottomDock
-                    currentView={currentView}
-                    onViewChange={handleViewChange}
-                    activeSpaceId="" // Admin view doesn't focus one space
-                    isAdmin={true}
-                    isSuperAdmin={user.isAdmin}
-                />
 
                 {isProfileModalOpen && (
                     <ProfileModal
@@ -240,8 +256,8 @@ const LeadershipApp: React.FC<LeadershipAppProps> = ({ user, onLogout }) => {
                         onSave={handleSaveTask}
                         taskToEdit={taskToEdit}
                         employees={employees}
-                        activeSpaceId={allTasks[0]?.spaceId || ''} // Fallback
-                        spaces={spaces} // Pass all spaces for admin to choose
+                        activeSpaceId={allTasks[0]?.spaceId || ''}
+                        spaces={spaces}
                         currentUserId={user.employeeId}
                         isAdmin={user.isAdmin}
                     />
