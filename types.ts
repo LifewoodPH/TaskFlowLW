@@ -86,6 +86,7 @@ export interface Task {
   listId?: number | null;
   isUnplanned?: boolean;
   updated_at?: string;
+  dueTime?: string; // HH:mm
 }
 
 export interface Space {

@@ -256,19 +256,19 @@ const LoginPage: React.FC = () => {
                       onChange={(e) => setDepartment(e.target.value)}
                       className="w-full bg-white/40 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl py-3 px-5 text-slate-900 dark:text-white appearance-none focus:outline-none focus:border-black/10 dark:focus:border-white/10 transition-all duration-300 cursor-pointer"
                     >
-                      <option value="AIE & Production">AIE & Production</option>
-                      <option value="Founder and CEO">Founder and CEO</option>
-                      <option value="Managing Director">Managing Director</option>
-                      <option value="Admin">Admin</option>
-                      <option value="HR Assistant">HR Assistant</option>
-                      <option value="Production Support">Production Support</option>
-                      <option value="Admin and Research Assistant">Admin and Research Assistant</option>
-                      <option value="AI Executive">AI Executive</option>
-                      <option value="AIE Assistant">AIE Assistant</option>
-                      <option value="Project Coordinator">Project Coordinator</option>
-                      <option value="Admin Accounting">Admin Accounting</option>
-                      <option value="IT Executive Assistant">IT Executive Assistant</option>
-                      <option value="IT Assistant">IT Assistant</option>
+                      <option value="AIE & Production" className="dark:bg-slate-900">AIE & Production</option>
+                      <option value="Founder and CEO" className="dark:bg-slate-900">Founder and CEO</option>
+                      <option value="Managing Director" className="dark:bg-slate-900">Managing Director</option>
+                      <option value="Admin" className="dark:bg-slate-900">Admin</option>
+                      <option value="HR Assistant" className="dark:bg-slate-900">HR Assistant</option>
+                      <option value="Production Support" className="dark:bg-slate-900">Production Support</option>
+                      <option value="Admin and Research Assistant" className="dark:bg-slate-900">Admin and Research Assistant</option>
+                      <option value="AI Executive" className="dark:bg-slate-900">AI Executive</option>
+                      <option value="AIE Assistant" className="dark:bg-slate-900">AIE Assistant</option>
+                      <option value="Project Coordinator" className="dark:bg-slate-900">Project Coordinator</option>
+                      <option value="Admin Accounting" className="dark:bg-slate-900">Admin Accounting</option>
+                      <option value="IT Executive Assistant" className="dark:bg-slate-900">IT Executive Assistant</option>
+                      <option value="IT Assistant" className="dark:bg-slate-900">IT Assistant</option>
                     </select>
                     <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
                       <svg className="w-4 h-4 text-slate-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>

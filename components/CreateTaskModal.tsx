@@ -43,6 +43,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     const [priority, setPriority] = useState<Priority>(Priority.MEDIUM);
     const [assigneeId, setAssigneeId] = useState<string>(currentUserId);
     const [dueDate, setDueDate] = useState<string>('');
+    const [dueTime, setDueTime] = useState<string>('');
     const [tags, setTags] = useState<string[]>([]);
     const [subtasks, setSubtasks] = useState<Subtask[]>([]);
 
@@ -64,6 +65,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                 setPriority(taskToEdit.priority || Priority.MEDIUM);
                 setAssigneeId(taskToEdit.assigneeId || currentUserId);
                 setDueDate(taskToEdit.dueDate || '');
+                setDueTime(taskToEdit.dueTime || '');
                 setTags(taskToEdit.tags || []);
                 setSubtasks(taskToEdit.subtasks || []);
             } else {
@@ -76,6 +78,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                 setPriority(Priority.MEDIUM);
                 setAssigneeId(currentUserId);
                 setDueDate('');
+                setDueTime('');
                 setTags([]);
                 setSubtasks([]);
             }
@@ -98,6 +101,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             priority,
             assigneeId,
             dueDate,
+            dueTime,
             tags,
             subtasks,
         };
@@ -271,6 +275,18 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                                 className="absolute inset-0 opacity-0 cursor-pointer"
                             />
                             <span className="text-sm font-medium">{dueDate || 'Set Date'}</span>
+                        </div>
+
+                        {/* Time Input */}
+                        <div className="flex items-center gap-2 px-3 py-1.5 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-full hover:bg-neutral-50 dark:hover:bg-white/5 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer relative group">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <input
+                                type="time"
+                                value={dueTime}
+                                onChange={(e) => setDueTime(e.target.value)}
+                                className="absolute inset-0 opacity-0 cursor-pointer"
+                            />
+                            <span className="text-sm font-medium">{dueTime || 'Set Time'}</span>
                         </div>
                     </div>
 
