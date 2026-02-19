@@ -278,9 +278,15 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <p className="text-xs font-medium text-slate-500 dark:text-white/40 mb-4">No workspaces yet</p>
                 <button
                   onClick={onCreateSpace}
-                  className="w-full py-2.5 bg-slate-900 dark:bg-white text-white dark:text-black text-sm font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-neutral-200 transition-all duration-300"
+                  className="w-full py-2.5 bg-slate-900 dark:bg-white text-white dark:text-black text-sm font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-neutral-200 transition-all duration-300 mb-2"
                 >
                   Create One
+                </button>
+                <button
+                  onClick={onJoinSpace}
+                  className="w-full py-2.5 bg-transparent border border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/60 text-sm font-bold rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all duration-300"
+                >
+                  Join with Code
                 </button>
               </div>
             )}

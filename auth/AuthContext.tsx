@@ -47,6 +47,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .eq('id', sbUser.id)
         .single();
 
+      // Verify session is still active and matches the user we are mapping
+      // This prevents race conditions where a logout happens while profile is fetching
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session || session.user.id !== sbUser.id) {
+        return;
+      }
+
       setUser({
         username: profile?.username || sbUser.email?.split('@')[0],
         fullName: profile?.full_name || profile?.username || sbUser.email?.split('@')[0],
@@ -107,66 +114,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (signUpError) throw signUpError;
 
     if (signUpData.user) {
-      // 1. Check if workspace exists
-      const { data: workspaces, error: fetchError } = await supabase
-        .from('spaces')
-        .select('id')
-        .eq('name', department)
-        .maybeSingle();
-
-      if (fetchError) {
-        console.error("Error fetching workspace:", fetchError);
-      }
-
-      let spaceId = workspaces?.id;
-      let isNewSpace = false;
-
-      // 2. If not, create it
-      if (!spaceId) {
-        isNewSpace = true;
-        // Generate a random 6-char join code
-        const joinCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-
-        const { data: newSpace, error: spaceError } = await supabase
-          .from('spaces')
-          .insert({
-            name: department,
-            owner_id: signUpData.user.id,
-            join_code: joinCode,
-            description: `${department} Workspace`
-          })
-          .select('id')
-          .maybeSingle();
-
-        if (spaceError) {
-          console.error("Error creating workspace:", spaceError);
-        } else if (newSpace) {
-          spaceId = newSpace.id;
-        }
-      }
-
-      // 3. Add user to workspace members
-      if (spaceId) {
-        // Role Logic: Admin if they created the space, Member otherwise
-        const role = isNewSpace ? 'admin' : 'member';
-
-        const { error: memberError } = await supabase
-          .from('space_members')
-          .insert({
-            space_id: spaceId,
-            user_id: signUpData.user.id,
-            role: role
-          });
-
-        if (memberError) {
-          console.error("Error adding user to workspace:", memberError);
-        }
-      }
-
-      // 4. System Admin Check
-      // REMOVED hardcoded 'adrian' check.
-      // System Admin rights should be assigned manually in the database or via an Admin Console.
-      // For now, no automatic System Admin assignment on signup to keep it secure.
+      // Workspace assignment is now manual. 
+      // User will start with no workspace and must create or join one.
     }
   };
 
