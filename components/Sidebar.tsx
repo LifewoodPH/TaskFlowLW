@@ -261,7 +261,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             ))}
 
             {/* Join/Create Space Actions */}
-            {isOpen && (
+            {isOpen && spaces.length > 0 && (
               <div className="pt-2 space-y-2">
                 <button
                   onClick={onJoinSpace}

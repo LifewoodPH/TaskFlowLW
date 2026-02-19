@@ -11,6 +11,8 @@ import TopNav from './TopNav';
 import TaskDetailsModal from './TaskDetailsModal';
 import AddTaskModal from './AddTaskModal';
 import ProfileModal from './ProfileModal';
+import CreateSpaceModal from './CreateSpaceModal';
+import JoinSpaceModal from './JoinSpaceModal';
 import Background from './Background';
 import UserManagementView from './UserManagementView';
 import { Cog6ToothIcon } from './icons/Cog6ToothIcon';
@@ -38,6 +40,8 @@ const LeadershipApp: React.FC<LeadershipAppProps> = ({ user, onLogout }) => {
     const [isTaskDetailsModalOpen, setTaskDetailsModalOpen] = useState(false);
     const [isAddTaskModalOpen, setAddTaskModalOpen] = useState(false);
     const [isProfileModalOpen, setProfileModalOpen] = useState(false);
+    const [isCreateSpaceModalOpen, setCreateSpaceModalOpen] = useState(false);
+    const [isJoinSpaceModalOpen, setJoinSpaceModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [taskToEdit, setTaskToEdit] = useState<Task | Partial<Task> | null>(null);
 
@@ -129,6 +133,22 @@ const LeadershipApp: React.FC<LeadershipAppProps> = ({ user, onLogout }) => {
         }
     };
 
+    const handleCreateSpace = async (name: string, description?: string) => {
+        try {
+            await dataService.createSpace(name, user.employeeId, description);
+            loadData();
+            setCreateSpaceModalOpen(false);
+        } catch (e) { console.error(e); }
+    };
+
+    const handleJoinSpace = async (code: string) => {
+        try {
+            await dataService.joinSpace(code, user.employeeId);
+            loadData();
+            setJoinSpaceModalOpen(false);
+        } catch (e) { console.error(e); }
+    };
+
     const handleSaveProfile = async (data: { name: string; avatarUrl: string; phone: string; position: string; email?: string }) => {
         try {
             await dataService.updateProfile(user.employeeId, {
@@ -179,8 +199,8 @@ const LeadershipApp: React.FC<LeadershipAppProps> = ({ user, onLogout }) => {
                             onViewChange={handleViewChange}
                             onOpenProfile={() => setProfileModalOpen(true)}
                             onLogout={onLogout}
-                            onCreateSpace={() => { }}
-                            onJoinSpace={() => { }}
+                            onCreateSpace={() => setCreateSpaceModalOpen(true)}
+                            onJoinSpace={() => setJoinSpaceModalOpen(true)}
                             onCreateList={() => { }}
                             onCreateTask={() => setAddTaskModalOpen(true)}
                             onSelectList={() => { }}
@@ -273,6 +293,21 @@ const LeadershipApp: React.FC<LeadershipAppProps> = ({ user, onLogout }) => {
                         onAddComment={handleAddComment}
                         onToggleTimer={handleToggleTimer}
                         currentUserId={user.employeeId}
+                    />
+                )}
+                {isCreateSpaceModalOpen && (
+                    <CreateSpaceModal
+                        isOpen={isCreateSpaceModalOpen}
+                        onClose={() => setCreateSpaceModalOpen(false)}
+                        onCreate={handleCreateSpace}
+                    />
+                )}
+
+                {isJoinSpaceModalOpen && (
+                    <JoinSpaceModal
+                        isOpen={isJoinSpaceModalOpen}
+                        onClose={() => setJoinSpaceModalOpen(false)}
+                        onJoin={handleJoinSpace}
                     />
                 )}
             </div>
