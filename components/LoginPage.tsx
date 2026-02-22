@@ -51,12 +51,9 @@ const LoginPage: React.FC = () => {
   // Signup flow state
   const [isSigningUp, setIsSigningUp] = useState(false);
 
-  // Redirect if already logged in - all users go to /app/home (routing handled inside MainApp)
+  // Always redirect to home after login — MainApp handles routing from there
   if (!loading && user && !isSigningUp && !successMessage) {
-    const from = (location as any).state?.from?.pathname || '/app/home';
-    // If the "from" path is an old-style route, always redirect to home
-    const safeFrom = from.startsWith('/app/') && !from.includes('/app/login') ? from : '/app/home';
-    return <Navigate to={safeFrom} replace />;
+    return <Navigate to="/app/home" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

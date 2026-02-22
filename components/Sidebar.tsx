@@ -150,22 +150,22 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </div>
               )}
 
-              {/* Stats row */}
+              {/* Stats */}
               {isOpen ? (
-                <div className="grid grid-cols-3 gap-2 mb-4">
+                <div className="space-y-1.5 mb-5">
                   {[
-                    { label: 'Overdue', count: overdue.length, color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-500/10', border: 'border-red-200 dark:border-red-500/20' },
-                    { label: 'Due Today', count: dueToday.length, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-500/10', border: 'border-amber-200 dark:border-amber-500/20' },
-                    { label: 'In Progress', count: inProg.length, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10', border: 'border-blue-200 dark:border-blue-500/20' },
-                  ].map(({ label, count, color, bg, border }) => (
-                    <div key={label} className={`flex flex-col items-center justify-center py-3 rounded-2xl border ${bg} ${border}`}>
-                      <span className={`text-xl font-black ${color}`}>{count}</span>
-                      <span className="text-[9px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-wide mt-0.5 text-center leading-tight">{label}</span>
+                    { label: 'Overdue', count: overdue.length, dot: 'bg-red-500', num: 'text-red-500', row: overdue.length > 0 ? 'bg-red-50   dark:bg-red-500/8   hover:bg-red-100   dark:hover:bg-red-500/12' : 'opacity-50' },
+                    { label: 'Due Today', count: dueToday.length, dot: 'bg-amber-500', num: 'text-amber-500', row: dueToday.length > 0 ? 'bg-amber-50 dark:bg-amber-500/8 hover:bg-amber-100 dark:hover:bg-amber-500/12' : 'opacity-50' },
+                    { label: 'In Progress', count: inProg.length, dot: 'bg-blue-500', num: 'text-blue-500', row: inProg.length > 0 ? 'bg-blue-50  dark:bg-blue-500/8  hover:bg-blue-100  dark:hover:bg-blue-500/12' : 'opacity-50' },
+                  ].map(({ label, count, dot, num, row }) => (
+                    <div key={label} className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl transition-colors ${row}`}>
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${dot}`} />
+                      <span className="text-xs font-semibold text-slate-600 dark:text-white/60 flex-1">{label}</span>
+                      <span className={`text-sm font-black ${num}`}>{count}</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                // Collapsed: show dot indicators
                 <div className="flex flex-col items-center gap-2 mb-4">
                   {overdue.length > 0 && <div className="w-2 h-2 rounded-full bg-red-500" title={`${overdue.length} overdue`} />}
                   {dueToday.length > 0 && <div className="w-2 h-2 rounded-full bg-amber-500" title={`${dueToday.length} due today`} />}
