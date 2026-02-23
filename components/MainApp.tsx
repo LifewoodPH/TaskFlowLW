@@ -429,6 +429,8 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
                                         onEditTask={(t) => { setTaskToEdit(t); setCreateTaskModalOpen(true); }}
                                         onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }}
                                         onToggleTimer={handleToggleTimer}
+                                        currentUserId={user.employeeId}
+                                        isAdmin={currentSpaceRole === 'admin' || isSuperAdmin}
                                     />
                                 )}
 

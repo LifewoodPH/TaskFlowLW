@@ -395,6 +395,7 @@ const TeamApp: React.FC<TeamAppProps> = ({ user, onLogout }) => {
                                         }}
                                         onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }}
                                         onToggleTimer={handleToggleTimer}
+                                        currentUserId={user.employeeId}
                                     />
                                 )}
 

@@ -122,239 +122,270 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
 
   return (
     <div
-      className={`fixed inset-0 z-[100] flex justify-center items-center p-4 transition-all duration-500 ${show ? 'opacity-100' : 'opacity-0'}`}
+      className={`fixed inset-0 z-[100] flex justify-center items-center p-4 sm:p-6 transition-all duration-500 ${show ? 'opacity-100' : 'opacity-0'}`}
       role="dialog"
       aria-modal="true"
     >
       <div
-        className="absolute inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-xl transition-all duration-500"
+        className="absolute inset-0 bg-slate-900/20 dark:bg-black/60 backdrop-blur-sm transition-all duration-500"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      <div className={`bg-white/80 dark:bg-[#1E1E1E]/90 backdrop-blur-3xl rounded-[40px] border border-black/10 dark:border-white/10 shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col transition-all duration-500 relative z-10 transform ${show ? 'translate-y-0 scale-100' : 'translate-y-8 scale-95'}`}>
-        <header className="p-8 border-b border-black/5 dark:border-white/5 flex justify-between items-center flex-shrink-0 bg-black/5 dark:bg-white/[0.02]">
-          <div className="flex-1 mr-4">
-            <h2
-              className="text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase truncate max-w-[400px]"
-              title={task.title}
-            >
-              {task.title}
-            </h2>
-            <div className="flex items-center gap-2 mt-1">
-              <div className={`w-1.5 h-1.5 rounded-full ${task.status === TaskStatus.DONE ? 'bg-green-500' : 'bg-blue-500'} shadow-[0_0_8px_rgba(59,130,246,0.5)]`}></div>
-              <p className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-[0.2em]">{task.status === TaskStatus.DONE ? 'Completed' : 'Task Details'}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {onDeleteTask && canDelete && (
-              <button
-                onClick={() => { onDeleteTask(task.id); onClose(); }}
-                className="p-3 bg-black/5 dark:bg-white/5 hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 dark:text-white/40 hover:text-red-600 dark:hover:text-red-400 rounded-2xl transition-all border border-black/5 dark:border-white/5 group"
-                title="Delete Task"
+      <div className={`w-full max-w-3xl max-h-[90vh] flex flex-col relative z-10 transform transition-all duration-500 ${show ? 'translate-y-0 scale-100' : 'translate-y-8 scale-95'}`}>
+        {/* Glow effect behind modal */}
+        <div className="absolute -inset-4 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-lime-500/20 rounded-[48px] blur-2xl -z-10 opacity-50 dark:opacity-30"></div>
+
+        <div className="bg-white/70 dark:bg-[#0A0A0A]/80 backdrop-blur-3xl rounded-[32px] sm:rounded-[40px] border border-white/50 dark:border-white/10 shadow-2xl overflow-hidden flex flex-col h-full max-h-[90vh]">
+          {/* Header */}
+          <header className="p-6 sm:p-8 flex justify-between items-start flex-shrink-0 relative overflow-hidden">
+            {/* Header background gradient */}
+            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-blue-500/10 dark:from-blue-500/5 to-transparent pointer-events-none"></div>
+
+            <div className="flex-1 mr-4 relative z-10">
+              <div className="flex items-center gap-3 mb-3">
+                <div className={`w-2.5 h-2.5 rounded-full ${task.status === TaskStatus.DONE ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]' : 'bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.5)]'}`}></div>
+                <p className="text-[10px] font-black text-slate-500 dark:text-white/40 uppercase tracking-[0.3em]">{task.status === TaskStatus.DONE ? 'Completed' : 'Task Details'}</p>
+              </div>
+              <h2
+                className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase leading-tight"
+                title={task.title}
               >
-                <TrashIcon className="w-5 h-5" />
-              </button>
-            )}
-            <button onClick={onClose} className="p-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl transition-all border border-black/5 dark:border-white/5 group">
-              <XMarkIcon className="w-5 h-5 text-slate-400 dark:text-white/40 group-hover:text-slate-900 dark:group-hover:text-white" />
-            </button>
-          </div>
-        </header>
-
-        <main className="p-8 overflow-y-auto flex-grow scrollbar-none space-y-8">
-          {blockingTask && (
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-[24px] p-4 flex items-center gap-4 animate-pulse">
-              <LockClosedIcon className="w-6 h-6 text-amber-600 dark:text-amber-500 flex-shrink-0" />
-              <p className="text-xs font-bold text-amber-700 dark:text-amber-200 uppercase tracking-wide">Blocked by: <span className="font-black text-slate-900 dark:text-white">"{blockingTask.title}"</span></p>
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl shadow-sm">
-              <span className="text-[9px] font-black text-slate-400 dark:text-white/20 uppercase tracking-widest block mb-2">Assignee</span>
-              <div className="flex items-center gap-3">
-                {assignee ? (
-                  <img src={assignee.avatarUrl} alt={assignee.name} className="w-6 h-6 rounded-full border border-black/10 dark:border-white/10 shadow-sm" />
-                ) : (
-                  <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-white/10 border border-black/10 dark:border-white/10 shadow-sm"></div>
-                )}
-                <div className="text-xs font-bold text-slate-700 dark:text-white">
-                  {assignee?.name || 'Unassigned'}
-                </div>
-              </div>
+                {task.title}
+              </h2>
             </div>
 
-            <div className="p-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl shadow-sm">
-              <span className="text-[9px] font-black text-slate-400 dark:text-white/20 uppercase tracking-widest block mb-2">Priority</span>
-              <div className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider ${priorityConfig[task.priority].text}`}>
-                <FlagIcon className="w-3 h-3" />
-                <span className="bg-transparent uppercase font-black">
-                  {task.priority}
-                </span>
-              </div>
-            </div>
-
-            <div className="p-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl shadow-sm">
-              <span className="text-[9px] font-black text-slate-400 dark:text-white/20 uppercase tracking-widest block mb-2">Deadline</span>
-              <p className="text-xs font-bold text-slate-700 dark:text-white">
-                {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No deadline'}
-              </p>
-            </div>
-
-            <div className="p-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl shadow-sm">
-              <span className="text-[9px] font-black text-slate-400 dark:text-white/20 uppercase tracking-widest block mb-2">Created</span>
-              <p className="text-xs font-bold text-slate-700 dark:text-white">{new Date(task.createdAt).toLocaleDateString()}</p>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <span className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">Tags</span>
-            <div className="flex flex-wrap items-center gap-2 bg-black/[0.02] dark:bg-white/[0.02] p-4 rounded-3xl border border-black/5 dark:border-white/5 min-h-[60px] shadow-inner">
-              {(task.tags || []).map(tag => (
-                <TagPill key={tag} text={tag} />
-              ))}
-              {(task.tags || []).length === 0 && (
-                <span className="text-[10px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-widest">No tags</span>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <h3 className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">Description</h3>
-            <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-[32px] shadow-inner">
-              <p className="text-sm font-medium text-slate-700 dark:text-white/80 leading-relaxed whitespace-pre-wrap">
-                {task.description || <span className="text-slate-400 italic">No description provided.</span>}
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-blue-500/10 to-transparent border border-black/5 dark:border-white/5 rounded-[40px] p-8 shadow-inner relative overflow-hidden">
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-3">
-                  <div className={`p-3 rounded-2xl ${task.timerStartTime ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 animate-pulse' : 'bg-black/5 dark:bg-white/5 text-slate-400 dark:text-white/20'}`}>
-                    <ClockIcon className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest">Time Tracking</h3>
-                    <p className="text-[9px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-wider mt-0.5">{task.timerStartTime ? 'Timer Active' : 'Start Timer'}</p>
-                  </div>
-                </div>
-                {task.timerStartTime && (
-                  <div className="px-4 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full">
-                    <span className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest animate-pulse">Running</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="text-center mb-8">
-                <div className={`text-4xl md:text-6xl font-black font-mono tracking-tighter ${task.timerStartTime
-                  ? 'text-slate-900 dark:text-white'
-                  : 'text-slate-300 dark:text-white/20'
-                  }`}>
-                  {task.timerStartTime ? formatDuration(elapsedTime) : totalTimeDisplay}
-                </div>
-              </div>
-
-              <div className="flex justify-center">
+            <div className="flex flex-col sm:flex-row items-center gap-2 relative z-10">
+              {onDeleteTask && canDelete && (
                 <button
-                  onClick={() => onToggleTimer(task.id)}
-                  className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-4 md:px-10 md:py-5 rounded-[24px] text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl ${task.timerStartTime
-                    ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-red-500/30'
-                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-500/30'
-                    }`}
+                  onClick={() => { onDeleteTask(task.id); onClose(); }}
+                  className="p-3 bg-white/50 dark:bg-white/5 hover:bg-red-500 hover:text-white text-slate-400 dark:text-white/40 rounded-2xl transition-all duration-300 border border-white/50 dark:border-white/5 shadow-sm group"
+                  title="Delete Task"
                 >
-                  {task.timerStartTime ? (
-                    <>
-                      <StopIcon className="w-6 h-6" /> Stop Timer
-                    </>
-                  ) : (
-                    <>
-                      <PlayIcon className="w-6 h-6" /> Start Timer
-                    </>
-                  )}
+                  <TrashIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 </button>
+              )}
+              <button onClick={onClose} className="p-3 bg-white/50 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 dark:text-white/40 hover:text-slate-900 rounded-2xl transition-all duration-300 border border-white/50 dark:border-white/5 shadow-sm group">
+                <XMarkIcon className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+              </button>
+            </div>
+          </header>
+
+          {/* Body */}
+          <main className="px-6 sm:px-8 pb-8 overflow-y-auto flex-grow scrollbar-none space-y-6 sm:space-y-8">
+
+            {blockingTask && (
+              <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/10 border border-amber-500/30 rounded-[24px] p-5 flex items-center gap-4 animate-pulse shadow-lg shadow-amber-500/5">
+                <div className="p-2 bg-amber-500/20 rounded-xl">
+                  <LockClosedIcon className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div>
+                  <p className="text-[10px] items-center font-black text-amber-700/70 dark:text-amber-500/70 uppercase tracking-[0.2em] mb-0.5">Blocked By</p>
+                  <p className="text-sm font-bold text-amber-900 dark:text-amber-100">{blockingTask.title}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Grid Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+              <div className="p-5 bg-white/50 dark:bg-white/5 border border-white/60 dark:border-white/5 rounded-[24px] hover:border-blue-500/30 cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-blue-500/5 shadow-sm">
+                <span className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] block mb-3">Assignee</span>
+                <div className="flex items-center gap-3">
+                  {assignee ? (
+                    <img src={assignee.avatarUrl} alt={assignee.name} className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10 border-2 border-white shadow-sm flex items-center justify-center">
+                      <span className="text-[10px] font-bold text-slate-400">-</span>
+                    </div>
+                  )}
+                  <span className="text-sm font-bold text-slate-800 dark:text-white/90 truncate">
+                    {assignee?.name || 'Unassigned'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-5 bg-white/50 dark:bg-white/5 border border-white/60 dark:border-white/5 rounded-[24px] hover:border-orange-500/30 cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-orange-500/5 shadow-sm">
+                <span className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] block mb-3">Priority</span>
+                <div className={`inline-flex items-center gap-2 ${priorityConfig[task.priority].text}`}>
+                  <div className={`p-1.5 rounded-lg ${priorityConfig[task.priority].bg}`}>
+                    <FlagIcon className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-black uppercase tracking-wide">
+                    {task.priority}
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-5 bg-white/50 dark:bg-white/5 border border-white/60 dark:border-white/5 rounded-[24px] hover:border-rose-500/30 cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-rose-500/5 shadow-sm">
+                <span className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] block mb-3">Deadline</span>
+                <p className="text-sm font-bold text-slate-800 dark:text-white/90">
+                  {task.dueDate ? new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'No deadline'}
+                </p>
+              </div>
+
+              <div className="p-5 bg-white/50 dark:bg-white/5 border border-white/60 dark:border-white/5 rounded-[24px] hover:border-emerald-500/30 cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-emerald-500/5 shadow-sm">
+                <span className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] block mb-3">Created</span>
+                <p className="text-sm font-bold text-slate-800 dark:text-white/90">
+                  {new Date(task.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                </p>
               </div>
             </div>
-          </div>
 
-          <div className="space-y-4">
-            <div className="flex justify-between items-center ml-1">
-              <h3 className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest">Subtasks ({completedSubtasks}/{totalSubtasks})</h3>
-            </div>
+            {/* Body Sections Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-6">
+                {/* Description */}
+                <div>
+                  <h3 className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-[0.2em] ml-2 mb-3">Description</h3>
+                  <div className="p-6 bg-white/40 dark:bg-white/5 border border-white/50 dark:border-white/5 rounded-[32px] shadow-sm min-h-[140px]">
+                    <p className="text-sm font-medium text-slate-700 dark:text-white/80 leading-relaxed whitespace-pre-wrap">
+                      {task.description || <span className="text-slate-400 italic font-normal">No description provided.</span>}
+                    </p>
+                  </div>
+                </div>
 
-            <div className="w-full bg-black/5 dark:bg-white/5 rounded-full h-1.5 overflow-hidden shadow-inner">
-              <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(59,130,246,0.3)]" style={{ width: `${progressPercentage}%` }}></div>
-            </div>
+                {/* Tags */}
+                <div>
+                  <h3 className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-[0.2em] ml-2 mb-3">Tags</h3>
+                  <div className="flex flex-wrap items-center gap-2 bg-white/40 dark:bg-white/5 p-5 rounded-[28px] border border-white/50 dark:border-white/5 min-h-[80px] shadow-sm">
+                    {(task.tags || []).map(tag => (
+                      <TagPill key={tag} text={tag} />
+                    ))}
+                    {(task.tags || []).length === 0 && (
+                      <span className="text-[10px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-widest w-full text-center py-2 border border-dashed border-slate-300 dark:border-white/10 rounded-xl">No tags added</span>
+                    )}
+                  </div>
+                </div>
+              </div>
 
-            <div className="bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-[32px] p-6 space-y-4 shadow-inner">
-              <ul className="space-y-3">
-                {(task.subtasks || []).map(subtask => (
-                  <li key={subtask.id} className="flex items-center group bg-white/40 dark:bg-white/5 p-4 rounded-2xl border border-black/5 dark:border-white/5 hover:bg-white/60 dark:hover:bg-white/[0.08] transition-all shadow-sm">
-                    <div className={`h-5 w-5 rounded-lg border flex items-center justify-center ${subtask.isCompleted ? 'bg-blue-500 border-blue-500' : 'border-black/10 dark:border-white/10'}`}>
-                      {subtask.isCompleted && <CheckCircleIcon className="w-3.5 h-3.5 text-white" />}
-                    </div>
-                    <span className={`ml-4 text-xs font-bold flex-grow ${subtask.isCompleted ? 'text-slate-300 dark:text-white/20 line-through' : 'text-slate-700 dark:text-white/80'}`}>
-                      {subtask.title}
-                    </span>
-                  </li>
-                ))}
-                {(task.subtasks || []).length === 0 && (
-                  <p className="text-[10px] font-bold text-slate-400 dark:text-white/10 uppercase tracking-widest text-center py-4">No subtasks found</p>
-                )}
-              </ul>
-            </div>
-          </div>
+              <div className="space-y-6">
+                {/* Time Tracking */}
+                <div className="bg-gradient-to-br from-blue-500/10 via-transparent to-purple-500/5 border border-blue-500/20 dark:border-blue-500/10 rounded-[32px] p-6 sm:p-8 shadow-sm relative overflow-hidden group hover:border-blue-500/40 transition-all duration-500">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
 
-
-
-          <div className="space-y-6">
-            <h3 className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">Activity & Comments</h3>
-            <div className="space-y-4">
-              {task.comments.map(comment => {
-                const author = employees.find(e => e.id === comment.authorId);
-                return (
-                  <div key={comment.id} className="flex items-start gap-4">
-                    <img src={author?.avatarUrl} alt={author?.name} className="w-10 h-10 rounded-2xl object-cover border border-black/10 dark:border-white/10 shadow-sm" />
-                    <div className="flex-1 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-[24px] px-6 py-4 shadow-sm">
-                      <div className="flex justify-between items-center mb-1">
-                        <p className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wide">{author?.name}</p>
-                        <p className="text-[9px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-tighter">{getRelativeTime(comment.timestamp)}</p>
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2.5 rounded-xl ${task.timerStartTime ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 animate-pulse border border-blue-500/30' : 'bg-white/50 dark:bg-white/5 text-slate-400 dark:text-white/40 border border-white/50 dark:border-white/5'}`}>
+                          <ClockIcon className="w-5 h-5" />
+                        </div>
+                        <h3 className="text-[10px] font-black text-slate-700 dark:text-white/70 uppercase tracking-[0.2em]">Time Spent</h3>
                       </div>
-                      <p className="text-sm font-medium text-slate-600 dark:text-white/70 leading-relaxed">{comment.content}</p>
+                      {task.timerStartTime && (
+                        <div className="px-3 py-1 bg-blue-500 text-white rounded-full flex items-center gap-1.5 shadow-lg shadow-blue-500/20">
+                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                          <span className="text-[9px] font-black uppercase tracking-widest leading-none">Active</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className={`text-4xl sm:text-5xl font-black font-mono tracking-tighter text-center mb-6 transition-colors duration-300 ${task.timerStartTime ? 'text-blue-600 dark:text-blue-400' : 'text-slate-800 dark:text-white/90'}`}>
+                      {task.timerStartTime ? formatDuration(elapsedTime) : totalTimeDisplay}
+                    </div>
+
+                    <button
+                      onClick={() => onToggleTimer(task.id)}
+                      className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-[20px] text-xs font-black uppercase tracking-[0.2em] transition-all duration-300 transform active:scale-95 shadow-xl ${task.timerStartTime
+                          ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-red-500/20 hover:shadow-red-500/40 border border-red-400/50'
+                          : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-500/20 hover:shadow-blue-500/40 border border-blue-400/50 hover:from-blue-500 hover:to-indigo-500'
+                        }`}
+                    >
+                      {task.timerStartTime ? (
+                        <><StopIcon className="w-4 h-4" /> Stop Timer</>
+                      ) : (
+                        <><PlayIcon className="w-4 h-4" /> Start Timer</>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Subtasks */}
+                {totalSubtasks > 0 && (
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-end ml-2">
+                      <h3 className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-[0.2em]">Subtasks</h3>
+                      <span className="text-[10px] font-bold text-slate-500 font-mono bg-white/50 dark:bg-white/10 px-2 py-0.5 rounded-md border border-white/50 dark:border-white/5">{completedSubtasks}/{totalSubtasks}</span>
+                    </div>
+
+                    <div className="w-full bg-white/50 dark:bg-black/20 rounded-full h-1.5 border border-white/40 dark:border-white/5 overflow-hidden">
+                      <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(59,130,246,0.3)]" style={{ width: `${progressPercentage}%` }}></div>
+                    </div>
+
+                    <div className="bg-white/40 dark:bg-white/5 border border-white/50 dark:border-white/5 rounded-[28px] p-4 shadow-sm max-h-[160px] overflow-y-auto scrollbar-none">
+                      <ul className="space-y-2">
+                        {(task.subtasks || []).map(subtask => (
+                          <li key={subtask.id} className="flex items-center bg-white/60 dark:bg-[#1A1A1A] p-3 rounded-[16px] border border-white/60 dark:border-white/5 shadow-sm">
+                            <div className={`h-4 w-4 rounded-[6px] flex items-center justify-center flex-shrink-0 transition-colors ${subtask.isCompleted ? 'bg-blue-500' : 'bg-slate-200 dark:bg-white/10'}`}>
+                              {subtask.isCompleted && <CheckCircleIcon className="w-2.5 h-2.5 text-white" />}
+                            </div>
+                            <span className={`ml-3 text-xs font-bold line-clamp-1 ${subtask.isCompleted ? 'text-slate-400 dark:text-white/30 line-through' : 'text-slate-700 dark:text-white/80'}`}>
+                              {subtask.title}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
-                );
-              })}
-              {task.comments.length === 0 && (
-                <div className="py-12 flex flex-col items-center gap-3 bg-black/[0.01] dark:bg-white/[0.01] border border-dashed border-black/5 dark:border-white/5 rounded-[40px]">
-                  <p className="text-[10px] font-bold text-slate-300 dark:text-white/10 uppercase tracking-[0.3em]">No comments yet</p>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
-        </main>
 
-        <footer className="p-8 bg-black/5 dark:bg-white/[0.02] border-t border-black/5 dark:border-white/5 rounded-b-[40px]">
-          <form onSubmit={handleCommentSubmit} className="flex items-center gap-4">
-            {currentUser && <img src={currentUser.avatarUrl} alt={currentUser.name} className="w-10 h-10 rounded-2xl border border-black/10 dark:border-white/10 shadow-md" />}
-            <div className="flex-1 relative">
-              <input
-                type="text"
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Add a comment..."
-                className="w-full px-6 py-4 bg-white dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-900 dark:text-white font-bold placeholder-slate-300 dark:placeholder-white/10 focus:ring-2 focus:ring-blue-500/50 transition-all outline-none shadow-sm"
-              />
+            {/* Comments Section */}
+            <div className="pt-4 mt-8 border-t border-slate-200 dark:border-white/5">
+              <h3 className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-[0.2em] ml-2 mb-6">Activity & Comments</h3>
+              <div className="space-y-5 mb-6">
+                {task.comments.map(comment => {
+                  const author = employees.find(e => e.id === comment.authorId);
+                  return (
+                    <div key={comment.id} className="flex items-end gap-3 group">
+                      <img src={author?.avatarUrl} alt={author?.name} className="w-8 h-8 rounded-full object-cover border-2 border-white dark:border-[#1E1E1E] shadow-sm mb-1" />
+                      <div className="flex-1 bg-white/60 dark:bg-[#1A1A1A] border border-white/60 dark:border-white/5 rounded-2xl rounded-bl-none px-5 py-4 shadow-sm relative group-hover:border-blue-500/20 transition-colors">
+                        <div className="flex justify-between items-center mb-2">
+                          <p className="text-[11px] font-black text-slate-800 dark:text-white uppercase tracking-wide">{author?.name}</p>
+                          <p className="text-[9px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest">{getRelativeTime(comment.timestamp)}</p>
+                        </div>
+                        <p className="text-sm font-medium text-slate-700 dark:text-white/70 leading-relaxed whitespace-pre-wrap">{comment.content}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+                {task.comments.length === 0 && (
+                  <div className="py-10 flex flex-col items-center justify-center bg-white/30 dark:bg-white/[0.02] border border-dashed border-slate-300 dark:border-white/10 rounded-[32px]">
+                    <div className="w-10 h-10 rounded-full bg-white/50 dark:bg-white/5 flex items-center justify-center mb-3">
+                      <span className="text-xl opacity-50">💭</span>
+                    </div>
+                    <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">No comments yet</p>
+                  </div>
+                )}
+              </div>
             </div>
-            <button type="submit" className="p-4 bg-blue-500 text-white rounded-2xl hover:bg-blue-400 disabled:opacity-30 transition-all shadow-lg shadow-blue-500/20 active:scale-95" disabled={!newComment.trim()}>
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </button>
-          </form>
-        </footer>
+          </main>
+
+          {/* Comment Input Footer */}
+          <footer className="p-4 sm:p-6 bg-white/60 dark:bg-black/20 border-t border-white/50 dark:border-white/5 backdrop-blur-xl shrink-0">
+            <form onSubmit={handleCommentSubmit} className="flex items-center gap-3 sm:gap-4 max-w-4xl mx-auto">
+              {currentUser && <img src={currentUser.avatarUrl} alt={currentUser.name} className="hidden sm:block w-10 h-10 rounded-full border-2 border-white dark:border-[#1E1E1E] shadow-md object-cover" />}
+              <div className="flex-1 relative group">
+                <input
+                  type="text"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Type your comment here..."
+                  className="w-full px-5 py-3.5 sm:py-4 bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[20px] text-slate-900 dark:text-white text-sm font-medium placeholder-slate-400 dark:placeholder-white/20 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all outline-none shadow-sm group-hover:border-slate-300 dark:group-hover:border-white/20"
+                />
+              </div>
+              <button
+                type="submit"
+                className="p-3.5 sm:p-4 bg-blue-600 text-white rounded-[20px] hover:bg-blue-500 disabled:opacity-40 disabled:hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20 active:scale-95 disabled:active:scale-100 flex-shrink-0"
+                disabled={!newComment.trim()}
+              >
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              </button>
+            </form>
+          </footer>
+        </div>
       </div>
     </div>
   );
