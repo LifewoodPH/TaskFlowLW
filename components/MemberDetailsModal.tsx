@@ -93,7 +93,7 @@ const MemberDetailsModal: React.FC<MemberDetailsModalProps> = ({
                             <p className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest">Done</p>
                         </div>
                         <div className="text-center">
-                            <p className="text-2xl font-black text-blue-500 dark:text-blue-400">{stats.inProgress}</p>
+                            <p className="text-2xl font-black text-primary-500 dark:text-primary-400">{stats.inProgress}</p>
                             <p className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest">Active</p>
                         </div>
                     </div>
@@ -120,11 +120,11 @@ const MemberDetailsModal: React.FC<MemberDetailsModalProps> = ({
                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors ${task.status === TaskStatus.DONE
                                             ? 'bg-lime-500/10 border-lime-500/20 text-lime-600 dark:text-[#CEFD4A]'
                                             : task.status === TaskStatus.IN_PROGRESS
-                                                ? 'border-blue-500 text-blue-500'
+                                                ? 'border-primary-500 text-primary-500'
                                                 : 'border-slate-200 dark:border-white/10 text-transparent'
                                             }`}>
                                             {task.status === TaskStatus.DONE && <CheckCircleIcon className="w-5 h-5" />}
-                                            {task.status === TaskStatus.IN_PROGRESS && <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />}
+                                            {task.status === TaskStatus.IN_PROGRESS && <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse" />}
                                         </div>
 
                                         <div className="flex-1 min-w-0">

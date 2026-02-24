@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import { useAuth } from './auth/AuthContext';
 import { isSupabaseConfigured } from './lib/supabaseClient';
 import MainApp from './components/MainApp';
+import SplashScreen from './components/SplashScreen';
 
 // Setup Required Screen Component
 const SetupRequiredScreen: React.FC = () => (
@@ -69,6 +70,60 @@ const AppGateway: React.FC = () => {
   return <MainApp user={user} onLogout={logout} />;
 };
 
+// Inner component that has access to auth context
+const AppWithSplash: React.FC = () => {
+  const { user, loading } = useAuth();
+  const [showSplash, setShowSplash] = useState(false);
+  const prevUserRef = React.useRef<typeof user>(undefined);
+  const initialLoadDone = React.useRef(false);
+
+  React.useEffect(() => {
+    if (loading) return;
+
+    // First time loading is done — if a user is already logged in (page refresh),
+    // don't show the splash. Just record the initial state.
+    if (!initialLoadDone.current) {
+      initialLoadDone.current = true;
+      prevUserRef.current = user;
+      return;
+    }
+
+    // Detect the transition: was null, now has a user → just logged in
+    if (prevUserRef.current === null && user !== null) {
+      setShowSplash(true);
+    }
+
+    // Detect logout: clear splash if it somehow was showing
+    if (user === null) {
+      setShowSplash(false);
+    }
+
+    prevUserRef.current = user;
+  }, [user, loading]);
+
+  return (
+    <>
+      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+      <Routes>
+        {/* Auth Routes */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<LoginPage />} />
+
+        {/* Protected App Routes */}
+        <Route path="/app/*" element={
+          <ProtectedRoute>
+            <AppGateway />
+          </ProtectedRoute>
+        } />
+
+        {/* Default redirect */}
+        <Route path="/" element={<Navigate to="/app" replace />} />
+        <Route path="*" element={<Navigate to="/app" replace />} />
+      </Routes>
+    </>
+  );
+};
+
 // Main App Component with Routes
 const App: React.FC = () => {
   // Check configuration first
@@ -76,28 +131,7 @@ const App: React.FC = () => {
     return <SetupRequiredScreen />;
   }
 
-  return (
-    <Routes>
-      {/* Auth Routes */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<LoginPage />} />
-
-      {/* Protected App Routes */}
-      {/* Both /app and /app/* routes go to the Gatekeeper, which handles sub-routing */}
-      <Route path="/app/*" element={
-        <ProtectedRoute>
-          <AppGateway />
-        </ProtectedRoute>
-      } />
-
-      {/* Default redirect */}
-      <Route path="/" element={<Navigate to="/app" replace />} />
-      <Route path="*" element={<Navigate to="/app" replace />} />
-    </Routes>
-  );
+  return <AppWithSplash />;
 };
 
 export default App;
-
-
-//Push hehe

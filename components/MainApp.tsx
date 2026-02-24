@@ -58,7 +58,6 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
         timeline: 'calendar',
         members: 'members',
         overview: 'analytics',
-        team: 'user-management',
         settings: 'settings',
     };
     const URL_TO_VIEW: Record<string, string> = Object.fromEntries(
@@ -109,6 +108,7 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
     // ─── Derived Current View ─────────────────────────────────────────────
     const currentView = useMemo(() => {
         const path = location.pathname;
+        if (path === '/app/user-management') return 'user-management';
         if (path === '/app' || path === '/app/' || path === '/app/home') return 'home';
         // Workspace-specific views: map URL segment back to internal view ID
         const match = path.match(/\/app\/workspace\/[^/]+\/(.+)/);
@@ -212,7 +212,7 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
             .filter(e => currentSpace.members.includes(e.id))
             .map(e => {
                 const membership = memberships.find(m => m.user_id === e.id && m.space_id === currentSpace.id);
-                return { ...e, role: (membership?.role || 'member') as 'admin' | 'member' };
+                return { ...e, role: (membership?.role || 'member') as 'admin' | 'assistant' | 'member' };
             });
     }, [currentSpace, employees, memberships]);
 
@@ -224,6 +224,10 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
     };
 
     const handleViewChange = (view: string) => {
+        if (view === 'user-management') {
+            navigate('/app/user-management');
+            return;
+        }
         if (activeSpaceId) {
             // Inside a workspace — all views including 'home' (Overview) stay in workspace context
             const space = spaces.find(s => s.id === activeSpaceId);
@@ -469,8 +473,8 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
                                     />
                                 )}
 
-                                {/* User Management (super_admin only) */}
-                                {isOnWorkspace && currentView === 'team' && isSuperAdmin && (
+                                {/* User Management (super_admin only, outside workspaces) */}
+                                {!isOnWorkspace && currentView === 'user-management' && isSuperAdmin && (
                                     <UserManagementView currentUserId={user.employeeId} spaces={spaces} />
                                 )}
 
@@ -497,6 +501,14 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
                                             try {
                                                 await dataService.deleteSpace(spaceId);
                                                 navigate('/app/home');
+                                                loadData();
+                                            } catch (e) { console.error(e); }
+                                        }}
+                                        isAdmin={currentSpaceRole === 'admin'}
+                                        isSuperAdmin={isSuperAdmin}
+                                        onUpdateRole={async (spaceId, memberId, role) => {
+                                            try {
+                                                await dataService.updateWorkspaceRole(memberId, spaceId, role);
                                                 loadData();
                                             } catch (e) { console.error(e); }
                                         }}

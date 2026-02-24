@@ -13,12 +13,12 @@ interface WorkspaceHomePageProps {
 }
 
 const cardAccents = [
-    { from: 'from-violet-500', to: 'to-purple-600', shadow: 'shadow-violet-500/20', glow: 'group-hover:shadow-violet-500/30' },
-    { from: 'from-sky-500', to: 'to-blue-600', shadow: 'shadow-sky-500/20', glow: 'group-hover:shadow-sky-500/30' },
+    { from: 'from-violet-500', to: 'to-primary-600', shadow: 'shadow-violet-500/20', glow: 'group-hover:shadow-violet-500/30' },
+    { from: 'from-sky-500', to: 'to-primary-600', shadow: 'shadow-sky-500/20', glow: 'group-hover:shadow-sky-500/30' },
     { from: 'from-emerald-500', to: 'to-teal-600', shadow: 'shadow-emerald-500/20', glow: 'group-hover:shadow-emerald-500/30' },
     { from: 'from-rose-500', to: 'to-pink-600', shadow: 'shadow-rose-500/20', glow: 'group-hover:shadow-rose-500/30' },
     { from: 'from-amber-500', to: 'to-orange-600', shadow: 'shadow-amber-500/20', glow: 'group-hover:shadow-amber-500/30' },
-    { from: 'from-indigo-500', to: 'to-blue-700', shadow: 'shadow-indigo-500/20', glow: 'group-hover:shadow-indigo-500/30' },
+    { from: 'from-primary-500', to: 'to-primary-700', shadow: 'shadow-primary-500/20', glow: 'group-hover:shadow-primary-500/30' },
     { from: 'from-lime-500', to: 'to-green-600', shadow: 'shadow-lime-500/20', glow: 'group-hover:shadow-lime-500/30' },
     { from: 'from-fuchsia-500', to: 'to-pink-700', shadow: 'shadow-fuchsia-500/20', glow: 'group-hover:shadow-fuchsia-500/30' },
 ];
@@ -105,7 +105,7 @@ const WorkspaceHomePage: React.FC<WorkspaceHomePageProps> = ({
                     )}
                     <button
                         onClick={onJoinSpace}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-surface border border-subtle text-primary text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/12 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 shadow-sm"
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-surface border border-subtle text-primary text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 shadow-sm"
                     >
                         <UserIcon className="w-4 h-4" />
                         Join with Code
@@ -128,7 +128,7 @@ const WorkspaceHomePage: React.FC<WorkspaceHomePageProps> = ({
                                 className={`group relative text-left rounded-[28px] p-0 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${accent.shadow} ${accent.glow} active:scale-[0.98] overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500`}
                             >
                                 {/* Card background */}
-                                <div className="absolute inset-0 bg-white/90 dark:bg-white/[0.06] backdrop-blur-sm rounded-[28px] border border-slate-200/80 dark:border-white/8 group-hover:border-slate-300 dark:group-hover:border-white/15 transition-colors duration-300" />
+                                <div className="absolute inset-0 bg-white/60 dark:bg-white/[0.06] backdrop-blur-md rounded-[28px] border border-slate-200/50 dark:border-white/10 group-hover:border-slate-300/60 dark:group-hover:border-white/15 transition-colors duration-300" />
 
                                 {/* Gradient top bar */}
                                 <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${accent.from} ${accent.to}`} />
@@ -202,7 +202,7 @@ const WorkspaceHomePage: React.FC<WorkspaceHomePageProps> = ({
             ) : (
                 /* ── Empty State ─── */
                 <div className="flex flex-col items-center justify-center py-28 text-center">
-                    <div className="w-24 h-24 rounded-3xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 shadow-xl flex items-center justify-center mb-6">
+                    <div className="w-24 h-24 rounded-3xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-xl flex items-center justify-center mb-6">
                         <svg className="w-12 h-12 text-slate-300 dark:text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
@@ -225,7 +225,7 @@ const WorkspaceHomePage: React.FC<WorkspaceHomePageProps> = ({
                         )}
                         <button
                             onClick={onJoinSpace}
-                            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-surface border border-subtle text-primary text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/12 hover:-translate-y-0.5 transition-all duration-200 shadow-sm"
+                            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-surface border border-subtle text-primary text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/20 hover:-translate-y-0.5 transition-all duration-200 shadow-sm"
                         >
                             <UserIcon className="w-4 h-4" />
                             Join with Code

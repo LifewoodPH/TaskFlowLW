@@ -424,7 +424,7 @@ const HomeView: React.FC<HomeViewProps> = ({ tasks, employees, currentSpace, use
                         className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider transition-all hover:scale-105 active:scale-95 ${task.status === TaskStatus.DONE
                           ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
                           : task.status === TaskStatus.IN_PROGRESS
-                            ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
+                            ? 'bg-primary-500/20 text-primary-600 dark:text-primary-400'
                             : 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-white/40'
                           }`}
                       >
@@ -526,7 +526,7 @@ const HomeView: React.FC<HomeViewProps> = ({ tasks, employees, currentSpace, use
               <div className="space-y-2">
                 {[
                   { id: TaskStatus.TODO, label: 'Pending', desc: 'Task waiting', color: 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 hover:border-slate-300 dark:hover:border-white/20' },
-                  { id: TaskStatus.IN_PROGRESS, label: 'In Progress', desc: 'Working now', color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:border-blue-500/30' },
+                  { id: TaskStatus.IN_PROGRESS, label: 'In Progress', desc: 'Working now', color: 'bg-primary-500/10 text-primary-600 dark:text-primary-400 hover:border-primary-500/30' },
                   { id: TaskStatus.DONE, label: 'Completed', desc: 'Finished', color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:border-emerald-500/30' }
                 ].map(status => (
                   <button
@@ -727,7 +727,7 @@ const HomeView: React.FC<HomeViewProps> = ({ tasks, employees, currentSpace, use
                               className={`text-[9px] px-2 py-1 rounded-lg font-bold uppercase tracking-wider transition-all hover:scale-105 active:scale-95 ${task.status === TaskStatus.DONE
                                 ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
                                 : task.status === TaskStatus.IN_PROGRESS
-                                  ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
+                                  ? 'bg-primary-500/20 text-primary-600 dark:text-primary-400'
                                   : 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-white/40'
                                 }`}
                             >

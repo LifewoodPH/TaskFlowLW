@@ -259,7 +259,7 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ currentUserId, 
                             </div>
                             <div className="flex flex-col items-end gap-2">
                                 {user.isSuperAdmin && (
-                                    <span className="px-2 py-1 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-black uppercase tracking-widest border border-purple-500/20">
+                                    <span className="px-2 py-1 rounded bg-primary-500/10 text-primary-600 dark:text-primary-400 text-[10px] font-black uppercase tracking-widest border border-primary-500/20">
                                         Super Admin
                                     </span>
                                 )}
@@ -301,8 +301,8 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ currentUserId, 
                                 disabled={user.id === currentUserId} // Can't toggle self
                                 className={`w-full py-2 px-4 rounded-xl flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider transition-all
                                     ${user.isSuperAdmin
-                                        ? 'bg-purple-500/10 text-purple-600 hover:bg-purple-500 hover:text-white'
-                                        : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 hover:bg-purple-500 hover:text-white'
+                                        ? 'bg-primary-500/10 text-primary-600 hover:bg-primary-500 hover:text-white'
+                                        : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 hover:bg-primary-500 hover:text-white'
                                     } ${user.id === currentUserId ? 'opacity-50 cursor-not-allowed' : ''}
                                 `}
                             >

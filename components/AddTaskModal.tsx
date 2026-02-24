@@ -176,7 +176,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
         {/* Header */}
         <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-black/5 dark:bg-white/[0.02]">
           <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-xl ${isAdmin ? 'bg-slate-900 shadow-slate-900/20' : 'bg-blue-500 shadow-blue-500/20'}`}>
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-xl ${isAdmin ? 'bg-slate-900 shadow-slate-900/20' : 'bg-primary-500 shadow-primary-500/20'}`}>
               <PlusIcon className="w-6 h-6" />
             </div>
             <div>
@@ -203,7 +203,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-900 dark:text-white font-bold placeholder-slate-400 dark:placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 outline-none shadow-inner"
+              className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-900 dark:text-white font-bold placeholder-slate-400 dark:placeholder-white/20 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-300 outline-none shadow-inner"
               required
               placeholder="e.g., Q3 Financial Report"
             />
@@ -218,7 +218,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-700 dark:text-white/80 font-medium placeholder-slate-400 dark:placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 resize-none outline-none shadow-inner"
+              className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-700 dark:text-white/80 font-medium placeholder-slate-400 dark:placeholder-white/20 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-300 resize-none outline-none shadow-inner"
               placeholder="Add details about this task..."
             />
           </div>
@@ -227,8 +227,8 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
             <label htmlFor="tags" className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">
               Tags
             </label>
-            <div className="group flex flex-wrap items-center gap-2 p-3 bg-black/[0.02] dark:bg-white/[0.02] rounded-2xl border border-black/5 dark:border-white/5 min-h-[56px] focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500/50 transition-all shadow-inner relative hover:bg-black/[0.04] dark:hover:bg-white/[0.04]">
-              <TagIcon className="w-5 h-5 text-slate-400 dark:text-white/30 mr-1 flex-shrink-0 group-focus-within:text-blue-500 transition-colors" />
+            <div className="group flex flex-wrap items-center gap-2 p-3 bg-black/[0.02] dark:bg-white/[0.02] rounded-2xl border border-black/5 dark:border-white/5 min-h-[56px] focus-within:ring-2 focus-within:ring-primary-500/50 focus-within:border-primary-500/50 transition-all shadow-inner relative hover:bg-black/[0.04] dark:hover:bg-white/[0.04]">
+              <TagIcon className="w-5 h-5 text-slate-400 dark:text-white/30 mr-1 flex-shrink-0 group-focus-within:text-primary-500 transition-colors" />
 
               {tags.map(tag => (
                 <TagPill key={tag} text={tag} onRemove={() => removeTag(tag)} />
@@ -273,7 +273,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
                             }}
                             onMouseEnter={() => setFocusedSuggestionIndex(index)}
                             className={`px-3 py-2.5 cursor-pointer text-sm font-bold rounded-lg transition-all flex items-center justify-between group ${index === focusedSuggestionIndex
-                              ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
+                              ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
                               : 'text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/5'
                               }`}
                           >
@@ -309,7 +309,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
                 id="assignee"
                 value={assigneeId}
                 onChange={(e) => setAssigneeId(e.target.value)}
-                className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-700 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/50 appearance-none transition-all cursor-pointer outline-none shadow-inner"
+                className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-700 dark:text-white font-bold focus:ring-2 focus:ring-primary-500/50 appearance-none transition-all cursor-pointer outline-none shadow-inner"
               >
                 {employees
                   .filter(emp => {
@@ -348,7 +348,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
                 id="dueDate"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-700 dark:text-white font-black uppercase focus:ring-2 focus:ring-blue-500/50 transition-all cursor-pointer outline-none shadow-inner"
+                className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-700 dark:text-white font-black uppercase focus:ring-2 focus:ring-primary-500/50 transition-all cursor-pointer outline-none shadow-inner"
                 required
               />
             </div>
@@ -364,7 +364,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
                   id="priority"
                   value={priority}
                   onChange={(e) => setPriority(e.target.value as Priority)}
-                  className="flex-1 px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-700 dark:text-white font-black uppercase focus:ring-2 focus:ring-blue-500/50 appearance-none transition-all cursor-pointer outline-none shadow-inner"
+                  className="flex-1 px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-700 dark:text-white font-black uppercase focus:ring-2 focus:ring-primary-500/50 appearance-none transition-all cursor-pointer outline-none shadow-inner"
                 >
                   {PRIORITIES.map(p => (
                     <option key={p} value={p} className="bg-white dark:bg-[#1E1E1E] text-slate-900 dark:text-white">{p}</option>
@@ -380,7 +380,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
                 id="blockedBy"
                 value={blockedById || ''}
                 onChange={(e) => setBlockedById(e.target.value ? parseInt(e.target.value) : null)}
-                className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-700 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/50 appearance-none transition-all cursor-pointer outline-none shadow-inner"
+                className="w-full px-6 py-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl text-slate-700 dark:text-white font-bold focus:ring-2 focus:ring-primary-500/50 appearance-none transition-all cursor-pointer outline-none shadow-inner"
               >
                 <option value="" className="bg-white dark:bg-[#1E1E1E] text-slate-400 dark:text-white/40">None Detected</option>
                 {potentialBlockingTasks.map(task => (
@@ -402,7 +402,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave, em
           <button
             type="submit"
             onClick={handleSubmit}
-            className="px-6 py-3 md:px-10 md:py-4 bg-blue-500 hover:bg-blue-400 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all duration-300 shadow-xl shadow-blue-500/20 active:scale-95"
+            className="px-6 py-3 md:px-10 md:py-4 bg-primary-500 hover:bg-primary-400 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all duration-300 shadow-xl shadow-primary-500/20 active:scale-95"
           >
             {taskToEdit && (taskToEdit.id || taskToEdit.title) ? 'Update Task' : 'Create Task'}
           </button>

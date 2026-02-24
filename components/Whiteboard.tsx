@@ -136,9 +136,9 @@ const Whiteboard: React.FC = () => {
               {!isAddingResource ? (
                 <button
                   onClick={() => setIsAddingResource(true)}
-                  className="w-full py-6 border-2 border-dashed border-slate-300 dark:border-white/10 rounded-[24px] text-slate-400 dark:text-white/30 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-500/5 transition-all flex flex-col items-center justify-center gap-2 group"
+                  className="w-full py-6 border-2 border-dashed border-slate-300 dark:border-white/10 rounded-[24px] text-slate-400 dark:text-white/30 hover:border-primary-500 hover:text-primary-500 hover:bg-primary-500/5 transition-all flex flex-col items-center justify-center gap-2 group"
                 >
-                  <div className="p-3 rounded-full bg-slate-100 dark:bg-white/5 group-hover:bg-blue-500/10 transition-colors">
+                  <div className="p-3 rounded-full bg-slate-100 dark:bg-white/5 group-hover:bg-primary-500/10 transition-colors">
                     <PlusIcon className="w-6 h-6" />
                   </div>
                   <span className="text-xs font-bold uppercase tracking-widest">Add New Resource</span>
@@ -155,12 +155,12 @@ const Whiteboard: React.FC = () => {
                       placeholder="Title (e.g., Design System)"
                       value={newTitle}
                       onChange={e => setNewTitle(e.target.value)}
-                      className="px-4 py-3 bg-black/5 dark:bg-black/20 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="px-4 py-3 bg-black/5 dark:bg-black/20 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                     <select
                       value={newCategory}
                       onChange={e => setNewCategory(e.target.value as any)}
-                      className="px-4 py-3 bg-black/5 dark:bg-black/20 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="px-4 py-3 bg-black/5 dark:bg-black/20 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary-500"
                     >
                       <option value="Other">Other</option>
                       <option value="Design">Design</option>
@@ -173,12 +173,12 @@ const Whiteboard: React.FC = () => {
                     placeholder="URL (e.g., figma.com/...)"
                     value={newUrl}
                     onChange={e => setNewUrl(e.target.value)}
-                    className="w-full px-4 py-3 bg-black/5 dark:bg-black/20 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                    className="w-full px-4 py-3 bg-black/5 dark:bg-black/20 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary-500 mb-4"
                   />
                   <button
                     onClick={handleAddResource}
                     disabled={!newTitle || !newUrl}
-                    className="w-full py-3 bg-blue-500 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="w-full py-3 bg-primary-500 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Save Resource
                   </button>
@@ -188,11 +188,11 @@ const Whiteboard: React.FC = () => {
               {/* Resource List */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {resources.map(resource => (
-                  <div key={resource.id} className="group relative bg-white/40 dark:bg-white/5 p-6 rounded-[24px] border border-white/40 dark:border-white/5 hover:border-blue-500/30 transition-all hover:shadow-lg hover:shadow-blue-500/5">
+                  <div key={resource.id} className="group relative bg-white/40 dark:bg-white/5 p-6 rounded-[24px] border border-white/40 dark:border-white/5 hover:border-primary-500/30 transition-all hover:shadow-lg hover:shadow-primary-500/5">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3 mb-3">
-                        <span className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider ${resource.category === 'Design' ? 'bg-purple-500/10 text-purple-500' :
-                            resource.category === 'Development' ? 'bg-blue-500/10 text-blue-500' :
+                        <span className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider ${resource.category === 'Design' ? 'bg-primary-500/10 text-primary-500' :
+                            resource.category === 'Development' ? 'bg-primary-500/10 text-primary-500' :
                               resource.category === 'Documentation' ? 'bg-yellow-500/10 text-yellow-500' :
                                 'bg-slate-500/10 text-slate-500'
                           }`}>
@@ -215,7 +215,7 @@ const Whiteboard: React.FC = () => {
                       href={resource.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm font-medium text-slate-500 dark:text-white/40 hover:text-blue-500 dark:hover:text-blue-400 truncate block transition-colors"
+                      className="text-sm font-medium text-slate-500 dark:text-white/40 hover:text-primary-500 dark:hover:text-primary-400 truncate block transition-colors"
                     >
                       {resource.url}
                     </a>

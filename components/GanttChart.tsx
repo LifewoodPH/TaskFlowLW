@@ -56,7 +56,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ tasks, employees, onViewTask })
 
   const statusColors = {
     [TaskStatus.DONE]: 'bg-lime-500 shadow-lime-500/30 text-black',
-    [TaskStatus.IN_PROGRESS]: 'bg-blue-500 shadow-blue-500/30 text-white',
+    [TaskStatus.IN_PROGRESS]: 'bg-primary-500 shadow-primary-500/30 text-white',
     [TaskStatus.TODO]: 'bg-slate-200 dark:bg-white/10 border border-slate-300 dark:border-white/5 text-slate-600 dark:text-white/60 shadow-sm dark:shadow-white/5',
   };
 
@@ -89,7 +89,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ tasks, employees, onViewTask })
           <div>
             <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Timeline Analytics</h2>
             <div className="flex items-center gap-2 mt-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]"></div>
               <p className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-[0.2em]">
                 {days[0]?.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} Timeline
               </p>
@@ -133,7 +133,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ tasks, employees, onViewTask })
                   className={`flex-1 p-6 text-center border-r border-slate-200 dark:border-white/10 last:border-r-0 ${isToday(day) ? 'bg-white/20 dark:bg-white/10' : ''
                     }`}
                 >
-                  <span className={`text-[10px] font-black uppercase tracking-widest ${isToday(day) ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-white/30'}`}>
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${isToday(day) ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400 dark:text-white/30'}`}>
                     {formatDate(day)}
                   </span>
                 </div>
@@ -235,7 +235,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ tasks, employees, onViewTask })
             <span className="text-[10px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">In Queue</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.3)]"></div>
+            <div className="w-2 h-2 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(59,130,246,0.3)]"></div>
             <span className="text-[10px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">Active</span>
           </div>
           <div className="flex items-center gap-3">

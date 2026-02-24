@@ -207,7 +207,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                     <div className="flex flex-wrap items-center gap-4 mb-8">
                         {/* Status (Read-only for now or simple badge) */}
                         <div className="flex items-center gap-2 px-3 py-1.5 bg-neutral-100 dark:bg-white/5 rounded-full text-xs font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
-                            <div className={`w-2 h-2 rounded-full ${status === TaskStatus.TODO ? 'bg-slate-400' : status === TaskStatus.IN_PROGRESS ? 'bg-blue-500' : 'bg-green-500'}`} />
+                            <div className={`w-2 h-2 rounded-full ${status === TaskStatus.TODO ? 'bg-slate-400' : status === TaskStatus.IN_PROGRESS ? 'bg-primary-500' : 'bg-green-500'}`} />
                             {status}
                         </div>
 
@@ -242,7 +242,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                             <button
                                 onClick={() => setPrioritySelectorOpen(!isPrioritySelectorOpen)}
                                 className={`flex items-center gap-2 px-3 py-1.5 border border-transparent rounded-full hover:bg-neutral-100 dark:hover:bg-white/5 transition-colors
-                            ${priority === Priority.HIGH ? 'text-red-500 bg-red-500/10' : priority === Priority.MEDIUM ? 'text-yellow-500 bg-yellow-500/10' : 'text-blue-500 bg-blue-500/10'}
+                            ${priority === Priority.HIGH ? 'text-red-500 bg-red-500/10' : priority === Priority.MEDIUM ? 'text-yellow-500 bg-yellow-500/10' : 'text-primary-500 bg-primary-500/10'}
                         `}
                             >
                                 <FlagIcon className="w-4 h-4" />
@@ -255,7 +255,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                                             key={p}
                                             onClick={() => { setPriority(p); setPrioritySelectorOpen(false); }}
                                             className={`w-full text-left px-4 py-2 hover:bg-neutral-100 dark:hover:bg-white/5 text-sm font-bold
-                                        ${p === Priority.HIGH || p === Priority.URGENT ? 'text-red-500' : p === Priority.MEDIUM ? 'text-yellow-500' : 'text-blue-500'}
+                                        ${p === Priority.HIGH || p === Priority.URGENT ? 'text-red-500' : p === Priority.MEDIUM ? 'text-yellow-500' : 'text-primary-500'}
                                     `}
                                         >
                                             {p}

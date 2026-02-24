@@ -27,7 +27,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ employees, filters, setFilters, s
             name="assignee"
             value={filters.assignee}
             onChange={handleFilterChange}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
           >
             <option value="all">All Assignees</option>
             {employees.map(emp => (
@@ -45,7 +45,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ employees, filters, setFilters, s
           name="priority"
           value={filters.priority}
           onChange={handleFilterChange}
-          className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+          className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
         >
           <option value="all">All Priorities</option>
           {PRIORITIES.map(p => (

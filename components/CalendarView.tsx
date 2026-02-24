@@ -70,7 +70,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ tasks, onViewTask }) => {
       case Priority.URGENT: return 'bg-red-500';
       case Priority.HIGH: return 'bg-orange-500';
       case Priority.MEDIUM: return 'bg-yellow-500';
-      default: return 'bg-blue-500';
+      default: return 'bg-primary-500';
     }
   };
 
@@ -150,7 +150,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ tasks, onViewTask }) => {
                   <span className={`
                         text-xs font-bold w-7 h-7 flex items-center justify-center rounded-full transition-all
                         ${isTodayDate
-                      ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 ring-2 ring-indigo-500/20'
+                      ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30 ring-2 ring-primary-500/20'
                       : 'bg-transparent'}
                     `}>
                     {d.getDate()}
@@ -182,14 +182,14 @@ const CalendarView: React.FC<CalendarViewProps> = ({ tasks, onViewTask }) => {
                     </button>
                   ))}
                   {tasksForDay.length > 4 && (
-                    <div className="text-[9px] font-bold text-slate-400 dark:text-white/30 text-center pt-1 hover:text-indigo-500 cursor-pointer">
+                    <div className="text-[9px] font-bold text-slate-400 dark:text-white/30 text-center pt-1 hover:text-primary-500 cursor-pointer">
                       + {tasksForDay.length - 4} more
                     </div>
                   )}
                 </div>
 
                 {/* Add Task Hover Trigger (Visual Cue) */}
-                <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white/0 to-transparent pointer-events-none group-hover:from-indigo-500/5 transition-all"></div>
+                <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white/0 to-transparent pointer-events-none group-hover:from-primary-500/5 transition-all"></div>
               </div>
             );
           })}

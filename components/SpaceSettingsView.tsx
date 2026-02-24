@@ -10,27 +10,33 @@ import ConfirmationModal from './ConfirmationModal';
 
 interface SpaceSettingsViewProps {
   space: Space;
-  members: Employee[];
+  members: (Employee & { role?: 'admin' | 'assistant' | 'member' })[];
   allEmployees: Employee[];
   currentUserId?: string;
+  isAdmin?: boolean;
+  isSuperAdmin?: boolean;
   onRemoveMember: (spaceId: string, memberId: string) => void;
   onAddMember: (spaceId: string, memberId: string) => void;
   onDeleteSpace: (spaceId: string) => void;
+  onUpdateRole?: (spaceId: string, memberId: string, role: 'admin' | 'assistant' | 'member') => void;
 }
 
-const SpaceSettingsView: React.FC<SpaceSettingsViewProps> = ({ 
-  space, 
-  members, 
+const SpaceSettingsView: React.FC<SpaceSettingsViewProps> = ({
+  space,
+  members,
   allEmployees,
   currentUserId,
-  onRemoveMember, 
-  onAddMember, 
-  onDeleteSpace 
+  isAdmin,
+  isSuperAdmin,
+  onRemoveMember,
+  onAddMember,
+  onDeleteSpace,
+  onUpdateRole
 }) => {
   const [copied, setCopied] = useState(false);
   const [showAddMember, setShowAddMember] = useState(false);
   const [selectedNewMember, setSelectedNewMember] = useState('');
-  
+
   // Confirmation modals state
   const [showRemoveMemberModal, setShowRemoveMemberModal] = useState(false);
   const [memberToRemove, setMemberToRemove] = useState<Employee | null>(null);
@@ -73,7 +79,7 @@ const SpaceSettingsView: React.FC<SpaceSettingsViewProps> = ({
   };
 
   // Get employees that are not already members
-  const availableEmployees = allEmployees.filter(emp => 
+  const availableEmployees = allEmployees.filter(emp =>
     !members.some(member => member.id === emp.id)
   );
 
@@ -96,7 +102,7 @@ const SpaceSettingsView: React.FC<SpaceSettingsViewProps> = ({
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-6 space-y-8">
-        
+
         {/* Workspace Info */}
         <div className="bg-neutral-50 dark:bg-neutral-800/50 rounded-xl p-6 border border-neutral-200/50 dark:border-neutral-700/50">
           <h3 className="text-sm font-semibold text-neutral-900 dark:text-white mb-4 uppercase tracking-wider">Workspace Information</h3>
@@ -112,10 +118,10 @@ const SpaceSettingsView: React.FC<SpaceSettingsViewProps> = ({
             <div>
               <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Created</label>
               <p className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
-                {new Date(space.createdAt).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                {new Date(space.createdAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
                 })}
               </p>
             </div>
@@ -126,19 +132,18 @@ const SpaceSettingsView: React.FC<SpaceSettingsViewProps> = ({
         <div className="bg-neutral-50 dark:bg-neutral-800/50 rounded-xl p-6 border border-neutral-200/50 dark:border-neutral-700/50">
           <h3 className="text-sm font-semibold text-neutral-900 dark:text-white mb-2 uppercase tracking-wider">Invite New Members</h3>
           <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">Share this code with your team. They can enter it after clicking "Join with Code" in the sidebar.</p>
-          
+
           <div className="bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-700 rounded-xl p-5 flex items-center justify-between gap-4">
             <div className="flex-1">
               <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">Join Code</p>
               <code className="text-3xl font-mono font-bold text-neutral-900 dark:text-white tracking-widest">{space.joinCode}</code>
             </div>
-            <button 
+            <button
               onClick={handleCopy}
-              className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
-                copied 
-                  ? 'bg-green-500 text-white' 
-                  : 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-100 active:scale-95'
-              }`}
+              className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${copied
+                ? 'bg-green-500 text-white'
+                : 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-100 active:scale-95'
+                }`}
             >
               {copied ? 'Copied!' : 'Copy Code'}
             </button>
@@ -151,10 +156,10 @@ const SpaceSettingsView: React.FC<SpaceSettingsViewProps> = ({
             <h3 className="text-sm font-semibold text-neutral-900 dark:text-white uppercase tracking-wider">
               Active Members ({members.length})
             </h3>
-            {isOwner && availableEmployees.length > 0 && (
+            {(isAdmin || isSuperAdmin || isOwner) && availableEmployees.length > 0 && (
               <button
                 onClick={() => setShowAddMember(!showAddMember)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-all duration-200"
+                className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium transition-all duration-200"
               >
                 <PlusIcon className="w-4 h-4" />
                 Add Member
@@ -163,8 +168,8 @@ const SpaceSettingsView: React.FC<SpaceSettingsViewProps> = ({
           </div>
 
           {/* Add Member Form */}
-          {showAddMember && isOwner && (
-            <div className="mb-4 p-4 bg-white dark:bg-neutral-900 rounded-xl border-2 border-blue-200 dark:border-blue-800">
+          {showAddMember && (isAdmin || isSuperAdmin || isOwner) && (
+            <div className="mb-4 p-4 bg-white dark:bg-neutral-900 rounded-xl border-2 border-primary-200 dark:border-primary-800">
               <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-2 block">
                 Select Member to Add
               </label>
@@ -172,7 +177,7 @@ const SpaceSettingsView: React.FC<SpaceSettingsViewProps> = ({
                 <select
                   value={selectedNewMember}
                   onChange={(e) => setSelectedNewMember(e.target.value)}
-                  className="flex-1 px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:bg-neutral-800 dark:text-white transition-all duration-200"
+                  className="flex-1 px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:bg-neutral-800 dark:text-white transition-all duration-200"
                 >
                   <option value="">Select a member...</option>
                   {availableEmployees.map(emp => (
@@ -204,15 +209,15 @@ const SpaceSettingsView: React.FC<SpaceSettingsViewProps> = ({
           {/* Members List */}
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {members.map(member => (
-              <div 
-                key={member.id} 
+              <div
+                key={member.id}
                 className="flex items-center justify-between p-3 rounded-xl hover:bg-white dark:hover:bg-neutral-900/50 transition-all duration-200 border border-transparent hover:border-neutral-200 dark:hover:border-neutral-700"
               >
                 <div className="flex items-center gap-3">
-                  <img 
-                    src={member.avatarUrl} 
-                    alt="" 
-                    className="w-10 h-10 rounded-xl object-cover border border-neutral-200/50 dark:border-neutral-700/50" 
+                  <img
+                    src={member.avatarUrl}
+                    alt=""
+                    className="w-10 h-10 rounded-xl object-cover border border-neutral-200/50 dark:border-neutral-700/50"
                   />
                   <div>
                     <p className="font-semibold text-neutral-900 dark:text-white">{member.name}</p>
@@ -220,18 +225,40 @@ const SpaceSettingsView: React.FC<SpaceSettingsViewProps> = ({
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Role Tags */}
+                  {member.role === 'admin' && <span className="px-2 py-0.5 text-[10px] font-bold uppercase bg-lime-500/10 text-lime-600 dark:text-[#CEFD4A] rounded">Workspace Admin</span>}
+                  {member.role === 'assistant' && <span className="px-2 py-0.5 text-[10px] font-bold uppercase bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded">Assistant</span>}
+
                   {member.id === space.ownerId ? (
                     <span className="px-3 py-1 text-xs font-bold uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg">
                       Owner
                     </span>
-                  ) : isOwner && (
-                    <button
-                      onClick={() => handleRemoveMemberClick(member)}
-                      className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all duration-200"
-                    >
-                      <XMarkIcon className="w-4 h-4" />
-                      Remove
-                    </button>
+                  ) : (
+                    <>
+                      {/* Role Management for Admins/SuperAdmins */}
+                      {(isAdmin || isSuperAdmin) && member.role !== 'admin' && (
+                        <button
+                          onClick={() => onUpdateRole?.(space.id, member.id, member.role === 'assistant' ? 'member' : 'assistant')}
+                          className={`flex items-center gap-1 px-3 py-1.5 text-[10px] font-bold uppercase rounded-lg transition-all duration-200 ${member.role === 'assistant'
+                            ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500 hover:text-white'
+                            : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 hover:bg-blue-500 hover:text-white'
+                            }`}
+                        >
+                          {member.role === 'assistant' ? 'Revoke Assistant' : 'Make Assistant'}
+                        </button>
+                      )}
+
+                      {/* Remove Member for Owner/SuperAdmins */}
+                      {(isOwner || isSuperAdmin) && (
+                        <button
+                          onClick={() => handleRemoveMemberClick(member)}
+                          className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all duration-200"
+                        >
+                          <XMarkIcon className="w-4 h-4" />
+                          Remove
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -240,7 +267,7 @@ const SpaceSettingsView: React.FC<SpaceSettingsViewProps> = ({
         </div>
 
         {/* Danger Zone - Delete Workspace */}
-        {isOwner && (
+        {(isOwner || isSuperAdmin) && (
           <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-6 border-2 border-red-200 dark:border-red-800">
             <div className="flex items-start gap-4">
               <div className="p-2 bg-red-100 dark:bg-red-900/50 rounded-lg">

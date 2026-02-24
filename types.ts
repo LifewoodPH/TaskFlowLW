@@ -35,14 +35,14 @@ export interface Employee {
   avatarUrl: string;
   position?: Position | string; // Optional for backward compatibility
   phone?: string;
-  role?: 'admin' | 'member';
+  role?: 'admin' | 'assistant' | 'member';
   isSuperAdmin?: boolean;
 }
 
 export interface EmployeeWithRole extends Employee {
   spaceId: string;
   spaceName: string;
-  role: 'admin' | 'member';
+  role: 'admin' | 'assistant' | 'member';
   isSuperAdmin: boolean;
 }
 

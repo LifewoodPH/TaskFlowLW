@@ -25,14 +25,14 @@ interface TaskListViewProps {
 
 const statusColors = {
   [TaskStatus.TODO]: 'bg-orange-500 shadow-orange-500/50',
-  [TaskStatus.IN_PROGRESS]: 'bg-blue-500 shadow-blue-500/50',
+  [TaskStatus.IN_PROGRESS]: 'bg-primary-500 shadow-primary-500/50',
   [TaskStatus.DONE]: 'bg-emerald-500 shadow-emerald-500/50',
 };
 
 const priorityColors = {
   [Priority.URGENT]: 'text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/20',
   [Priority.HIGH]: 'text-orange-600 dark:text-orange-400 bg-orange-500/10 border border-orange-500/20',
-  [Priority.MEDIUM]: 'text-blue-600 dark:text-blue-400 bg-blue-500/10 border border-blue-500/20',
+  [Priority.MEDIUM]: 'text-primary-600 dark:text-primary-400 bg-primary-500/10 border border-primary-500/20',
   [Priority.LOW]: 'text-slate-500 dark:text-white/40 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5',
 };
 
@@ -206,19 +206,19 @@ const TaskListView: React.FC<TaskListViewProps> = ({ tasks, employees, searchTer
       {/* Today's Tasks Section */}
       {todaysTasks.length > 0 && (
         <div className="relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-indigo-500/5 to-transparent z-0 opacity-50"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 via-primary-500/5 to-transparent z-0 opacity-50"></div>
           <div className="bg-white/60 dark:bg-black/40 backdrop-blur-[40px] border border-white/40 dark:border-white/5 rounded-[40px] overflow-hidden animate-in fade-in duration-1000 shadow-xl shadow-black/5 dark:shadow-none">
             <div className="flex items-center justify-between mb-8 p-8 pb-0">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-500/10 dark:bg-blue-500/20 rounded-2xl">
-                  <ClockIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                <div className="p-3 bg-primary-500/10 dark:bg-primary-500/20 rounded-2xl">
+                  <ClockIcon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                 </div>
                 <div>
                   <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Critical Timeline</h3>
                   <p className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest mt-1">Pending Tasks Due Today</p>
                 </div>
               </div>
-              <div className="h-10 w-10 flex items-center justify-center bg-blue-500 rounded-2xl text-white text-sm font-black shadow-lg shadow-blue-500/20">
+              <div className="h-10 w-10 flex items-center justify-center bg-primary-500 rounded-2xl text-white text-sm font-black shadow-lg shadow-primary-500/20">
                 {todaysTasks.length}
               </div>
             </div>
@@ -244,7 +244,7 @@ const TaskListView: React.FC<TaskListViewProps> = ({ tasks, employees, searchTer
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest">Target Date</span>
-                      <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest bg-blue-500/10 px-2 py-1 rounded-lg">
+                      <span className="text-[10px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-widest bg-primary-500/10 px-2 py-1 rounded-lg">
                         {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                       </span>
                     </div>
@@ -274,7 +274,7 @@ const TaskListView: React.FC<TaskListViewProps> = ({ tasks, employees, searchTer
             {selectedEmployeeId && (
               <button
                 onClick={() => setSelectedEmployeeId(null)}
-                className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest hover:text-slate-900 dark:hover:text-white transition-colors"
+                className="text-[10px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-widest hover:text-slate-900 dark:hover:text-white transition-colors"
               >
                 Restore Global View
               </button>
@@ -291,7 +291,7 @@ const TaskListView: React.FC<TaskListViewProps> = ({ tasks, employees, searchTer
                   key={employee.id}
                   onClick={() => setSelectedEmployeeId(isSelected ? null : employee.id)}
                   className={`bg-white/60 dark:bg-black/40 backdrop-blur-[40px] rounded-[32px] border transition-all duration-500 cursor-pointer overflow-hidden p-8 group hover:scale-[1.02] ${isSelected
-                    ? 'border-blue-500 ring-4 ring-blue-500/10 shadow-2xl shadow-blue-500/10 dark:shadow-blue-500/20'
+                    ? 'border-primary-500 ring-4 ring-primary-500/10 shadow-2xl shadow-primary-500/10 dark:shadow-primary-500/20'
                     : 'border-white/40 dark:border-white/5 hover:border-white/60 dark:hover:border-white/20 shadow-xl shadow-black/5 dark:shadow-none'
                     }`}
                 >
@@ -305,7 +305,7 @@ const TaskListView: React.FC<TaskListViewProps> = ({ tasks, employees, searchTer
                         {employee.name}
                       </h4>
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_5px_rgba(59,130,246,0.5)]"></div>
+                        <div className="w-2 h-2 rounded-full bg-primary-500 shadow-[0_0_5px_rgba(59,130,246,0.5)]"></div>
                         <p className="text-[10px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">
                           {stats.total} assignments
                         </p>
@@ -321,7 +321,7 @@ const TaskListView: React.FC<TaskListViewProps> = ({ tasks, employees, searchTer
                     </div>
                     <div className="h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden shadow-inner">
                       <div
-                        className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full transition-all duration-1000 ease-out"
+                        className="h-full bg-gradient-to-r from-primary-500 via-primary-500 to-primary-500 rounded-full transition-all duration-1000 ease-out"
                         style={{ width: `${completionRate}%` }}
                       />
                     </div>
@@ -333,9 +333,9 @@ const TaskListView: React.FC<TaskListViewProps> = ({ tasks, employees, searchTer
                       <p className="text-xl font-black text-slate-900 dark:text-white mb-1 leading-none">{stats.todo}</p>
                       <p className="text-[8px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">Queue</p>
                     </div>
-                    <div className="text-center p-4 bg-blue-500/10 rounded-2xl border border-blue-500/10">
-                      <p className="text-xl font-black text-blue-600 dark:text-blue-400 mb-1 leading-none">{stats.inProgress}</p>
-                      <p className="text-[8px] font-black text-blue-600/60 dark:text-blue-400/30 uppercase tracking-[0.2em]">Active</p>
+                    <div className="text-center p-4 bg-primary-500/10 rounded-2xl border border-primary-500/10">
+                      <p className="text-xl font-black text-primary-600 dark:text-primary-400 mb-1 leading-none">{stats.inProgress}</p>
+                      <p className="text-[8px] font-black text-primary-600/60 dark:text-primary-400/30 uppercase tracking-[0.2em]">Active</p>
                     </div>
                     <div className="text-center p-4 bg-emerald-500/10 rounded-2xl border border-emerald-500/10">
                       <p className="text-xl font-black text-emerald-600 dark:text-emerald-400 mb-1 leading-none">{stats.completed}</p>
@@ -345,7 +345,7 @@ const TaskListView: React.FC<TaskListViewProps> = ({ tasks, employees, searchTer
 
                   {isSelected && (
                     <div className="mt-6 pt-4 border-t border-white/5 text-center">
-                      <p className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] animate-pulse">
+                      <p className="text-[10px] font-black text-primary-400 uppercase tracking-[0.3em] animate-pulse">
                         Filtering active context
                       </p>
                     </div>
@@ -360,17 +360,17 @@ const TaskListView: React.FC<TaskListViewProps> = ({ tasks, employees, searchTer
       {/* Tasks Section */}
       <div className="px-2">
         {selectedEmployeeId && (
-          <div className="mb-8 p-6 bg-blue-500/10 backdrop-blur-3xl rounded-[32px] border border-blue-500/20 flex items-center justify-between animate-in fade-in zoom-in duration-500 shadow-xl shadow-blue-500/5">
+          <div className="mb-8 p-6 bg-primary-500/10 backdrop-blur-3xl rounded-[32px] border border-primary-500/20 flex items-center justify-between animate-in fade-in zoom-in duration-500 shadow-xl shadow-primary-500/5">
             <div className="flex items-center gap-4">
-              <img src={employees.find(e => e.id === selectedEmployeeId)?.avatarUrl} className="w-10 h-10 rounded-xl border border-blue-500/30 shadow-md" alt="" />
+              <img src={employees.find(e => e.id === selectedEmployeeId)?.avatarUrl} className="w-10 h-10 rounded-xl border border-primary-500/30 shadow-md" alt="" />
               <div>
                 <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">Active Context: {employees.find(e => e.id === selectedEmployeeId)?.name}</h4>
-                <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400/60 uppercase tracking-widest mt-1">Filtering all tasks by squad member</p>
+                <p className="text-[10px] font-bold text-primary-600 dark:text-primary-400/60 uppercase tracking-widest mt-1">Filtering all tasks by squad member</p>
               </div>
             </div>
             <button
               onClick={() => setSelectedEmployeeId(null)}
-              className="px-6 py-2.5 bg-blue-500 hover:bg-blue-400 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-blue-500/20 transition-all active:scale-95"
+              className="px-6 py-2.5 bg-primary-500 hover:bg-primary-400 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary-500/20 transition-all active:scale-95"
             >
               Reset Filter
             </button>

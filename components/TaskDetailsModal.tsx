@@ -28,7 +28,7 @@ interface TaskDetailsModalProps {
 const priorityConfig = {
   [Priority.URGENT]: { text: 'text-red-600 dark:text-red-400', bg: 'bg-red-100 dark:bg-red-900/50' },
   [Priority.HIGH]: { text: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-100 dark:bg-orange-900/50' },
-  [Priority.MEDIUM]: { text: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-900/50' },
+  [Priority.MEDIUM]: { text: 'text-primary-600 dark:text-primary-400', bg: 'bg-primary-100 dark:bg-primary-900/50' },
   [Priority.LOW]: { text: 'text-slate-500 dark:text-slate-400', bg: 'bg-slate-100 dark:bg-slate-700' },
 };
 
@@ -134,17 +134,17 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
 
       <div className={`w-full max-w-3xl max-h-[90vh] flex flex-col relative z-10 transform transition-all duration-500 ${show ? 'translate-y-0 scale-100' : 'translate-y-8 scale-95'}`}>
         {/* Glow effect behind modal */}
-        <div className="absolute -inset-4 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-lime-500/20 rounded-[48px] blur-2xl -z-10 opacity-50 dark:opacity-30"></div>
+        <div className="absolute -inset-4 bg-gradient-to-br from-primary-500/20 via-primary-500/20 to-lime-500/20 rounded-[48px] blur-2xl -z-10 opacity-50 dark:opacity-30"></div>
 
         <div className="bg-white/70 dark:bg-[#0A0A0A]/80 backdrop-blur-3xl rounded-[32px] sm:rounded-[40px] border border-white/50 dark:border-white/10 shadow-2xl overflow-hidden flex flex-col h-full max-h-[90vh]">
           {/* Header */}
           <header className="p-6 sm:p-8 flex justify-between items-start flex-shrink-0 relative overflow-hidden">
             {/* Header background gradient */}
-            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-blue-500/10 dark:from-blue-500/5 to-transparent pointer-events-none"></div>
+            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-primary-500/10 dark:from-primary-500/5 to-transparent pointer-events-none"></div>
 
             <div className="flex-1 mr-4 relative z-10">
               <div className="flex items-center gap-3 mb-3">
-                <div className={`w-2.5 h-2.5 rounded-full ${task.status === TaskStatus.DONE ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]' : 'bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.5)]'}`}></div>
+                <div className={`w-2.5 h-2.5 rounded-full ${task.status === TaskStatus.DONE ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]' : 'bg-primary-500 shadow-[0_0_12px_rgba(59,130,246,0.5)]'}`}></div>
                 <p className="text-[10px] font-black text-slate-500 dark:text-white/40 uppercase tracking-[0.3em]">{task.status === TaskStatus.DONE ? 'Completed' : 'Task Details'}</p>
               </div>
               <h2
@@ -188,7 +188,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
 
             {/* Grid Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-              <div className="p-5 bg-white/50 dark:bg-white/5 border border-white/60 dark:border-white/5 rounded-[24px] hover:border-blue-500/30 cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-blue-500/5 shadow-sm">
+              <div className="p-5 bg-white/50 dark:bg-white/5 border border-white/60 dark:border-white/5 rounded-[24px] hover:border-primary-500/30 cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-primary-500/5 shadow-sm">
                 <span className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-[0.2em] block mb-3">Assignee</span>
                 <div className="flex items-center gap-3">
                   {assignee ? (
@@ -260,26 +260,26 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
 
               <div className="space-y-6">
                 {/* Time Tracking */}
-                <div className="bg-gradient-to-br from-blue-500/10 via-transparent to-purple-500/5 border border-blue-500/20 dark:border-blue-500/10 rounded-[32px] p-6 sm:p-8 shadow-sm relative overflow-hidden group hover:border-blue-500/40 transition-all duration-500">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
+                <div className="bg-gradient-to-br from-primary-500/10 via-transparent to-primary-500/5 border border-primary-500/20 dark:border-primary-500/10 rounded-[32px] p-6 sm:p-8 shadow-sm relative overflow-hidden group hover:border-primary-500/40 transition-all duration-500">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 rounded-full blur-3xl group-hover:bg-primary-500/20 transition-all duration-500"></div>
 
                   <div className="relative z-10">
                     <div className="flex items-center justify-between mb-6">
                       <div className="flex items-center gap-3">
-                        <div className={`p-2.5 rounded-xl ${task.timerStartTime ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 animate-pulse border border-blue-500/30' : 'bg-white/50 dark:bg-white/5 text-slate-400 dark:text-white/40 border border-white/50 dark:border-white/5'}`}>
+                        <div className={`p-2.5 rounded-xl ${task.timerStartTime ? 'bg-primary-500/20 text-primary-600 dark:text-primary-400 animate-pulse border border-primary-500/30' : 'bg-white/50 dark:bg-white/5 text-slate-400 dark:text-white/40 border border-white/50 dark:border-white/5'}`}>
                           <ClockIcon className="w-5 h-5" />
                         </div>
                         <h3 className="text-[10px] font-black text-slate-700 dark:text-white/70 uppercase tracking-[0.2em]">Time Spent</h3>
                       </div>
                       {task.timerStartTime && (
-                        <div className="px-3 py-1 bg-blue-500 text-white rounded-full flex items-center gap-1.5 shadow-lg shadow-blue-500/20">
+                        <div className="px-3 py-1 bg-primary-500 text-white rounded-full flex items-center gap-1.5 shadow-lg shadow-primary-500/20">
                           <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
                           <span className="text-[9px] font-black uppercase tracking-widest leading-none">Active</span>
                         </div>
                       )}
                     </div>
 
-                    <div className={`text-4xl sm:text-5xl font-black font-mono tracking-tighter text-center mb-6 transition-colors duration-300 ${task.timerStartTime ? 'text-blue-600 dark:text-blue-400' : 'text-slate-800 dark:text-white/90'}`}>
+                    <div className={`text-4xl sm:text-5xl font-black font-mono tracking-tighter text-center mb-6 transition-colors duration-300 ${task.timerStartTime ? 'text-primary-600 dark:text-primary-400' : 'text-slate-800 dark:text-white/90'}`}>
                       {task.timerStartTime ? formatDuration(elapsedTime) : totalTimeDisplay}
                     </div>
 
@@ -287,7 +287,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
                       onClick={() => onToggleTimer(task.id)}
                       className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-[20px] text-xs font-black uppercase tracking-[0.2em] transition-all duration-300 transform active:scale-95 shadow-xl ${task.timerStartTime
                           ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-red-500/20 hover:shadow-red-500/40 border border-red-400/50'
-                          : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-500/20 hover:shadow-blue-500/40 border border-blue-400/50 hover:from-blue-500 hover:to-indigo-500'
+                          : 'bg-gradient-to-r from-primary-600 to-primary-600 text-white shadow-primary-500/20 hover:shadow-primary-500/40 border border-primary-400/50 hover:from-primary-500 hover:to-primary-500'
                         }`}
                     >
                       {task.timerStartTime ? (
@@ -308,14 +308,14 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
                     </div>
 
                     <div className="w-full bg-white/50 dark:bg-black/20 rounded-full h-1.5 border border-white/40 dark:border-white/5 overflow-hidden">
-                      <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(59,130,246,0.3)]" style={{ width: `${progressPercentage}%` }}></div>
+                      <div className="bg-gradient-to-r from-primary-500 to-primary-500 h-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(59,130,246,0.3)]" style={{ width: `${progressPercentage}%` }}></div>
                     </div>
 
                     <div className="bg-white/40 dark:bg-white/5 border border-white/50 dark:border-white/5 rounded-[28px] p-4 shadow-sm max-h-[160px] overflow-y-auto scrollbar-none">
                       <ul className="space-y-2">
                         {(task.subtasks || []).map(subtask => (
                           <li key={subtask.id} className="flex items-center bg-white/60 dark:bg-[#1A1A1A] p-3 rounded-[16px] border border-white/60 dark:border-white/5 shadow-sm">
-                            <div className={`h-4 w-4 rounded-[6px] flex items-center justify-center flex-shrink-0 transition-colors ${subtask.isCompleted ? 'bg-blue-500' : 'bg-slate-200 dark:bg-white/10'}`}>
+                            <div className={`h-4 w-4 rounded-[6px] flex items-center justify-center flex-shrink-0 transition-colors ${subtask.isCompleted ? 'bg-primary-500' : 'bg-slate-200 dark:bg-white/10'}`}>
                               {subtask.isCompleted && <CheckCircleIcon className="w-2.5 h-2.5 text-white" />}
                             </div>
                             <span className={`ml-3 text-xs font-bold line-clamp-1 ${subtask.isCompleted ? 'text-slate-400 dark:text-white/30 line-through' : 'text-slate-700 dark:text-white/80'}`}>
@@ -339,7 +339,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
                   return (
                     <div key={comment.id} className="flex items-end gap-3 group">
                       <img src={author?.avatarUrl} alt={author?.name} className="w-8 h-8 rounded-full object-cover border-2 border-white dark:border-[#1E1E1E] shadow-sm mb-1" />
-                      <div className="flex-1 bg-white/60 dark:bg-[#1A1A1A] border border-white/60 dark:border-white/5 rounded-2xl rounded-bl-none px-5 py-4 shadow-sm relative group-hover:border-blue-500/20 transition-colors">
+                      <div className="flex-1 bg-white/60 dark:bg-[#1A1A1A] border border-white/60 dark:border-white/5 rounded-2xl rounded-bl-none px-5 py-4 shadow-sm relative group-hover:border-primary-500/20 transition-colors">
                         <div className="flex justify-between items-center mb-2">
                           <p className="text-[11px] font-black text-slate-800 dark:text-white uppercase tracking-wide">{author?.name}</p>
                           <p className="text-[9px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest">{getRelativeTime(comment.timestamp)}</p>
@@ -371,12 +371,12 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Type your comment here..."
-                  className="w-full px-5 py-3.5 sm:py-4 bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[20px] text-slate-900 dark:text-white text-sm font-medium placeholder-slate-400 dark:placeholder-white/20 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all outline-none shadow-sm group-hover:border-slate-300 dark:group-hover:border-white/20"
+                  className="w-full px-5 py-3.5 sm:py-4 bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[20px] text-slate-900 dark:text-white text-sm font-medium placeholder-slate-400 dark:placeholder-white/20 focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500/50 transition-all outline-none shadow-sm group-hover:border-slate-300 dark:group-hover:border-white/20"
                 />
               </div>
               <button
                 type="submit"
-                className="p-3.5 sm:p-4 bg-blue-600 text-white rounded-[20px] hover:bg-blue-500 disabled:opacity-40 disabled:hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20 active:scale-95 disabled:active:scale-100 flex-shrink-0"
+                className="p-3.5 sm:p-4 bg-primary-600 text-white rounded-[20px] hover:bg-primary-500 disabled:opacity-40 disabled:hover:bg-primary-600 transition-all shadow-lg shadow-primary-500/20 active:scale-95 disabled:active:scale-100 flex-shrink-0"
                 disabled={!newComment.trim()}
               >
                 <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

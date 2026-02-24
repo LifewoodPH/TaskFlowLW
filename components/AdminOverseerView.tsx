@@ -253,7 +253,7 @@ const AdminOverseerView: React.FC<AdminOverseerViewProps> = ({
                                                                             <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${task.status === TaskStatus.DONE
                                                                                 ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
                                                                                 : task.status === TaskStatus.IN_PROGRESS
-                                                                                    ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
+                                                                                    ? 'bg-primary-500/20 text-primary-600 dark:text-primary-400'
                                                                                     : 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-white/40'
                                                                                 }`}>
                                                                                 {task.status === TaskStatus.DONE ? 'Completed' : task.status === TaskStatus.IN_PROGRESS ? 'In Progress' : 'Pending'}

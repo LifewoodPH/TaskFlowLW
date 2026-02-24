@@ -20,7 +20,7 @@ interface TaskColumnProps {
 
 const statusConfig = {
   [TaskStatus.TODO]: { glow: 'bg-orange-500 shadow-orange-500/50', text: 'text-white', label: 'In Queue' },
-  [TaskStatus.IN_PROGRESS]: { glow: 'bg-blue-500 shadow-blue-500/50', text: 'text-white', label: 'Active Tasks' },
+  [TaskStatus.IN_PROGRESS]: { glow: 'bg-primary-500 shadow-primary-500/50', text: 'text-white', label: 'Active Tasks' },
   [TaskStatus.DONE]: { glow: 'bg-emerald-500 shadow-emerald-500/50', text: 'text-white', label: 'Completed' },
 };
 

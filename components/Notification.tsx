@@ -60,7 +60,7 @@ const Notification: React.FC<NotificationProps> = ({ message, type, onClose }) =
       <div className="ml-4 flex-shrink-0">
         <button
           onClick={handleClose}
-          className="inline-flex rounded-md p-1.5 text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+          className="inline-flex rounded-md p-1.5 text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors"
           aria-label="Dismiss notification"
         >
           <XMarkIcon className="h-5 w-5" />

@@ -548,7 +548,7 @@ export const getAllUsersWithRoles = async () => {
   return usersWithRoles;
 };
 
-export const updateWorkspaceRole = async (userId: string, spaceId: string, role: 'admin' | 'member') => {
+export const updateWorkspaceRole = async (userId: string, spaceId: string, role: 'admin' | 'assistant' | 'member') => {
   const { error } = await supabase
     .from('space_members')
     .update({ role })

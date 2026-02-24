@@ -39,11 +39,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       lightBg: 'bg-orange-500/10'
     },
     info: {
-      bg: 'bg-blue-500',
-      text: 'text-blue-500',
-      border: 'border-blue-500',
-      hover: 'hover:bg-blue-600',
-      lightBg: 'bg-blue-500/10'
+      bg: 'bg-primary-500',
+      text: 'text-primary-500',
+      border: 'border-primary-500',
+      hover: 'hover:bg-primary-600',
+      lightBg: 'bg-primary-500/10'
     }
   };
 

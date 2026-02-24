@@ -21,7 +21,7 @@ const TaskPriorityBarChart: React.FC<TaskPriorityBarChartProps> = ({ tasks }) =>
   const configs = [
     { label: Priority.URGENT, color: 'bg-red-500', count: counts[Priority.URGENT] },
     { label: Priority.HIGH, color: 'bg-orange-500', count: counts[Priority.HIGH] },
-    { label: Priority.MEDIUM, color: 'bg-indigo-500', count: counts[Priority.MEDIUM] },
+    { label: Priority.MEDIUM, color: 'bg-primary-500', count: counts[Priority.MEDIUM] },
     { label: Priority.LOW, color: 'bg-slate-500', count: counts[Priority.LOW] },
   ];
 

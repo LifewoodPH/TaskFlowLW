@@ -37,7 +37,7 @@ const ToggleSwitch: React.FC<{ enabled: boolean; onChange: (val: boolean) => voi
 
 const ColorOption: React.FC<{ color: ColorScheme; selected: boolean; onSelect: () => void }> = ({ color, selected, onSelect }) => {
     const bgClasses: Record<ColorScheme, string> = {
-        indigo: 'bg-indigo-500',
+        indigo: 'bg-primary-500',
         emerald: 'bg-emerald-500',
         rose: 'bg-rose-500',
         amber: 'bg-amber-500',
@@ -306,7 +306,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
                                 {/* Avatar Section */}
                                 <div className="flex items-start gap-8">
                                     <div className="relative group">
-                                        <div className={`absolute -inset-0.5 bg-gradient-to-r from-primary-500 to-purple-600 rounded-full opacity-75 blur transition duration-200 group-hover:opacity-100 ${isUploading ? 'animate-pulse' : ''}`}></div>
+                                        <div className={`absolute -inset-0.5 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full opacity-75 blur transition duration-200 group-hover:opacity-100 ${isUploading ? 'animate-pulse' : ''}`}></div>
                                         <img
                                             src={avatarUrl || 'https://via.placeholder.com/150'}
                                             alt="Profile"

@@ -64,7 +64,7 @@ const TopNav: React.FC<TopNavProps> = ({
                     <div className="flex items-center gap-2">
                         <span className="text-[9px] md:text-[10px] font-bold text-lime-600 dark:text-[#CEFD4A] uppercase tracking-widest mb-0.5">Workspace</span>
                         {user.isAdmin && (
-                            <span className="px-1.5 py-0.5 rounded-[4px] bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 text-[8px] font-black uppercase tracking-wider leading-none">
+                            <span className="px-1.5 py-0.5 rounded-[4px] bg-primary-500/10 border border-primary-500/20 text-primary-600 dark:text-primary-400 text-[8px] font-black uppercase tracking-wider leading-none">
                                 Admin Mode
                             </span>
                         )}
@@ -153,15 +153,15 @@ const TopNav: React.FC<TopNavProps> = ({
                         <img
                             src={currentUserEmployee?.avatarUrl}
                             alt=""
-                            className={`w-9 h-9 rounded-full object-cover border-2 transition-all ${user.isAdmin ? 'border-purple-500 dark:border-purple-400' : 'border-transparent group-hover:border-[#CEFD4A]'}`}
+                            className={`w-9 h-9 rounded-full object-cover border-2 transition-all ${user.isAdmin ? 'border-primary-500 dark:border-primary-400' : 'border-transparent group-hover:border-[#CEFD4A]'}`}
                         />
-                        <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 border-2 border-white dark:border-black rounded-full ${user.isAdmin ? 'bg-purple-500 dark:bg-purple-400' : 'bg-lime-400 dark:bg-[#CEFD4A]'}`}></div>
+                        <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 border-2 border-white dark:border-black rounded-full ${user.isAdmin ? 'bg-primary-500 dark:bg-primary-400' : 'bg-lime-400 dark:bg-[#CEFD4A]'}`}></div>
                     </div>
                     <div className="flex flex-col items-start">
                         <span className="text-xs font-bold text-slate-900 dark:text-white leading-none group-hover:text-lime-600 dark:group-hover:text-[#CEFD4A] transition-colors">
                             {user.fullName || user.username}
                         </span>
-                        <span className={`text-[9px] font-bold uppercase tracking-wider ${user.isAdmin ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400 dark:text-white/40'}`}>
+                        <span className={`text-[9px] font-bold uppercase tracking-wider ${user.isAdmin ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400 dark:text-white/40'}`}>
                             {user.isAdmin ? 'Administrator' : 'Online'}
                         </span>
                     </div>

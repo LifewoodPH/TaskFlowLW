@@ -54,7 +54,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ tasks, employees, activ
 
                     <div className="relative z-10">
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-[10px] uppercase tracking-widest font-bold text-purple-400">
+                            <span className="px-3 py-1 rounded-full bg-primary-500/10 border border-primary-500/20 text-[10px] uppercase tracking-widest font-bold text-primary-400">
                                 Command Center
                             </span>
                             <span className="text-xs font-bold text-slate-400 dark:text-white/40 font-mono tracking-widest pl-2 border-l border-white/10">
@@ -214,7 +214,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ tasks, employees, activ
                                                     {task.priority === Priority.URGENT && <BoltIcon className="w-3 h-3 text-red-500" />}
                                                 </div>
                                                 <div className="flex items-center justify-between mt-2">
-                                                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${task.status === TaskStatus.IN_PROGRESS ? 'bg-blue-500/10 text-blue-400' : 'bg-slate-500/10 text-slate-400'
+                                                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${task.status === TaskStatus.IN_PROGRESS ? 'bg-primary-500/10 text-primary-400' : 'bg-slate-500/10 text-slate-400'
                                                         }`}>{task.status}</span>
                                                     {task.dueDate && (
                                                         <span className="text-[9px] font-bold text-slate-400 dark:text-white/30 flex items-center gap-1">
