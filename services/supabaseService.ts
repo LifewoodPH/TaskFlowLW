@@ -357,6 +357,17 @@ export const getAllEmployees = async () => {
   return data.map(mapDbProfileToEmployee);
 };
 
+export const searchUsers = async (query: string) => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .or(`full_name.ilike.%${query}%,email.ilike.%${query}%`)
+    .limit(20);
+
+  if (error) throw error;
+  return data.map(mapDbProfileToEmployee);
+};
+
 export const updateProfile = async (userId: string, updates: { fullName?: string; avatarUrl?: string; phone?: string; position?: string; email?: string }) => {
   const payload: any = {};
   if (updates.fullName) payload.full_name = updates.fullName;
@@ -592,7 +603,14 @@ export const syncDailyTask = async (userId: string, task: any) => {
   return data;
 };
 
+export const deleteDailyTask = async (taskId: string) => {
+  const { error } = await supabase
+    .from('daily_tasks')
+    .delete()
+    .eq('id', taskId);
 
+  if (error) throw error;
+};
 
 // --- Scratchpad Sync ---
 
@@ -616,7 +634,25 @@ export const syncScratchpad = async (userId: string, content: string) => {
 
 // --- Notifications ---
 
+export const getNotifications = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
 
+  if (error) throw error;
+  return data;
+};
+
+export const markNotificationAsRead = async (id: string) => {
+  const { error } = await supabase
+    .from('notifications')
+    .update({ is_read: true })
+    .eq('id', id);
+
+  if (error) throw error;
+};
 
 // --- List Services ---
 
