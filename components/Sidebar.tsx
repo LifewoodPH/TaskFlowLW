@@ -81,9 +81,9 @@ const Sidebar: React.FC<SidebarProps> = ({
       ? [{ id: 'overview', label: 'Analytics', icon: ChartBarIcon }]
       : []
     ),
-    { id: 'members', label: 'Members', icon: UsersIcon },
-    { id: 'timeline', label: 'Calendar', icon: CalendarIcon },
     { id: 'gantt', label: 'Gantt Chart', icon: ViewColumnsIcon }, // Using ViewColumnsIcon as a Gantt chart representation
+    { id: 'timeline', label: 'Calendar', icon: CalendarIcon },
+    { id: 'members', label: 'Members', icon: UsersIcon },
     ...(currentSpaceRole === 'admin' || isSuperAdmin
       ? [{ id: 'settings', label: 'Settings', icon: Cog6ToothIcon }]
       : []
