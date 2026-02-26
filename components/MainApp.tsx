@@ -52,9 +52,9 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
 
     /** Map internal view IDs to URL-readable segments and back */
     const VIEW_TO_URL: Record<string, string> = {
-        home: 'overview',
+        home: 'dashboard',
         board: 'task-board',
-        summary: 'task-summary',
+        summary: 'team-hub',
         timeline: 'calendar',
         gantt: 'gantt-chart',
         members: 'members',
@@ -135,6 +135,14 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
             navigate('/app/home', { replace: true });
         }
     }, [location.pathname, navigate]);
+
+    // ─── Initial Redirect ─────────────────────────────────────────────────
+    // 3. Fallback to `/home`
+    useEffect(() => {
+        if (!activeSpaceId && location.pathname.split('/').length > 2 && location.pathname !== '/app/home' && location.pathname !== '/app/user-management') {
+            navigate('/app/home', { replace: true });
+        }
+    }, [activeSpaceId, location, navigate]);
 
     // ─── Data Loading ─────────────────────────────────────────────────────
     useEffect(() => {
@@ -221,7 +229,7 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
     const handleSelectSpace = (spaceId: string) => {
         const space = spaces.find(s => s.id === spaceId);
         const slug = space ? toSlug(space.name) : spaceId;
-        navigate(`/app/workspace/${slug}/overview`);
+        navigate(`/app/workspace/${slug}/dashboard`);
     };
 
     const handleViewChange = (view: string) => {

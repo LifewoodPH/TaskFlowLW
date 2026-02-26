@@ -74,11 +74,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   // ── Workspace-specific navigation items ──────────────────────────────────
   const workspaceViews: { id: string; label: string; icon: React.FC<{ className?: string }> }[] = [
-    { id: 'home', label: 'Overview', icon: HomeIcon },
+    { id: 'home', label: 'Dashboard', icon: HomeIcon },
     { id: 'board', label: 'Task Board', icon: ViewColumnsIcon },
-    { id: 'summary', label: 'Task Summary', icon: ListBulletIcon },
+    { id: 'summary', label: 'Team Hub', icon: ListBulletIcon },
     { id: 'gantt', label: 'Gantt Chart', icon: ViewColumnsIcon }, // Using ViewColumnsIcon as a Gantt chart representation
-    { id: 'timeline', label: 'Calendar', icon: CalendarIcon },
     { id: 'members', label: 'Members', icon: UsersIcon },
     ...(currentSpaceRole === 'admin' || isSuperAdmin
       ? [{ id: 'settings', label: 'Settings', icon: Cog6ToothIcon }]

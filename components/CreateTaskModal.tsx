@@ -277,17 +277,6 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                             <span className="text-sm font-medium">{dueDate || 'Set Date'}</span>
                         </div>
 
-                        {/* Time Input */}
-                        <div className="flex items-center gap-2 px-3 py-1.5 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-full hover:bg-neutral-50 dark:hover:bg-white/5 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer relative group">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            <input
-                                type="time"
-                                value={dueTime}
-                                onChange={(e) => setDueTime(e.target.value)}
-                                className="absolute inset-0 opacity-0 cursor-pointer"
-                            />
-                            <span className="text-sm font-medium">{dueTime || 'Set Time'}</span>
-                        </div>
                     </div>
 
                     {/* Description */}
@@ -302,15 +291,6 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                         />
                     </div>
 
-                    {/* Attachments Section */}
-                    <div className="mb-8">
-                        <label className="block text-xs font-bold text-neutral-400 uppercase tracking-widest mb-2">Attachments</label>
-                        <div className="border-2 border-dashed border-neutral-200 dark:border-white/10 rounded-xl p-8 flex flex-col items-center justify-center text-neutral-400 hover:text-slate-600 dark:hover:text-slate-300 hover:border-neutral-300 dark:hover:border-white/20 transition-all cursor-pointer group">
-                            <PhotoIcon className="w-8 h-8 mb-2 group-hover:-translate-y-1 transition-transform" />
-                            <span className="text-sm font-medium">Click to upload or drag and drop</span>
-                            <span className="text-xs text-neutral-500 mt-1">SVG, PNG, JPG or GIF (max. 3MB)</span>
-                        </div>
-                    </div>
 
                     {/* Subtasks (Simplified) */}
                     <div>
