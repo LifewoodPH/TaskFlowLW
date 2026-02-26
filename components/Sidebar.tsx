@@ -77,10 +77,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: 'home', label: 'Overview', icon: HomeIcon },
     { id: 'board', label: 'Task Board', icon: ViewColumnsIcon },
     { id: 'summary', label: 'Task Summary', icon: ListBulletIcon },
-    ...(currentSpaceRole === 'admin' || isSuperAdmin
-      ? [{ id: 'overview', label: 'Analytics', icon: ChartBarIcon }]
-      : []
-    ),
     { id: 'gantt', label: 'Gantt Chart', icon: ViewColumnsIcon }, // Using ViewColumnsIcon as a Gantt chart representation
     { id: 'timeline', label: 'Calendar', icon: CalendarIcon },
     { id: 'members', label: 'Members', icon: UsersIcon },
@@ -292,6 +288,28 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </p>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Analytics button (separated) */}
+            {(currentSpaceRole === 'admin' || isSuperAdmin) && (
+              <div className="mb-2 space-y-1">
+                <button
+                  onClick={() => onViewChange('overview')}
+                  className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-[20px] text-sm font-bold transition-all duration-300 group relative
+                    ${currentView === 'overview'
+                      ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-lg shadow-slate-200 dark:shadow-white/10'
+                      : 'text-slate-500 dark:text-white/50 hover:bg-slate-900/5 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
+                    } ${!isOpen && 'justify-center px-0'}`}
+                >
+                  <ChartBarIcon className="w-5 h-5 flex-shrink-0" />
+                  {isOpen && <span>Analytics</span>}
+                  {!isOpen && (
+                    <div className="absolute left-full ml-4 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-[#1E1E1E] text-sm font-bold rounded-xl opacity-0 group-hover:opacity-100 whitespace-nowrap z-50 pointer-events-none shadow-xl transition-all duration-200 translate-x-2 group-hover:translate-x-0">
+                      Analytics
+                    </div>
+                  )}
+                </button>
               </div>
             )}
 
