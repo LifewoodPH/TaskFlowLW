@@ -75,29 +75,6 @@ const TopNav: React.FC<TopNavProps> = ({
 
             {/* Right Actions */}
             <div className="flex items-center gap-4 pointer-events-auto">
-                {/* View Mode Toggle (only for timeline) */}
-                {currentView === 'timeline' && (
-                    <div className="flex items-center bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-white/40 dark:border-white/10 rounded-full p-1 mr-2 shadow-lg">
-                        <button
-                            onClick={() => onTimelineViewModeChange?.('calendar')}
-                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${timelineViewMode === 'calendar'
-                                ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 shadow-sm'
-                                : 'text-slate-500 dark:text-white/40 hover:text-slate-900 dark:hover:text-white'
-                                }`}
-                        >
-                            Calendar
-                        </button>
-                        <button
-                            onClick={() => onTimelineViewModeChange?.('gantt')}
-                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${timelineViewMode === 'gantt'
-                                ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 shadow-sm'
-                                : 'text-slate-500 dark:text-white/40 hover:text-slate-900 dark:hover:text-white'
-                                }`}
-                        >
-                            Gantt
-                        </button>
-                    </div>
-                )}
 
                 {/* Search Pill */}
                 <div className="relative group flex items-center">

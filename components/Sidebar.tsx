@@ -77,12 +77,13 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: 'home', label: 'Overview', icon: HomeIcon },
     { id: 'board', label: 'Task Board', icon: ViewColumnsIcon },
     { id: 'summary', label: 'Task Summary', icon: ListBulletIcon },
-    { id: 'timeline', label: 'Calendar', icon: CalendarIcon },
-    { id: 'members', label: 'Members', icon: UsersIcon },
     ...(currentSpaceRole === 'admin' || isSuperAdmin
       ? [{ id: 'overview', label: 'Analytics', icon: ChartBarIcon }]
       : []
     ),
+    { id: 'members', label: 'Members', icon: UsersIcon },
+    { id: 'timeline', label: 'Calendar', icon: CalendarIcon },
+    { id: 'gantt', label: 'Gantt Chart', icon: ViewColumnsIcon }, // Using ViewColumnsIcon as a Gantt chart representation
     ...(currentSpaceRole === 'admin' || isSuperAdmin
       ? [{ id: 'settings', label: 'Settings', icon: Cog6ToothIcon }]
       : []

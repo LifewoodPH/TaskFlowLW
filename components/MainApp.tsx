@@ -56,6 +56,7 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
         board: 'task-board',
         summary: 'task-summary',
         timeline: 'calendar',
+        gantt: 'gantt-chart',
         members: 'members',
         overview: 'analytics',
         settings: 'settings',
@@ -449,11 +450,14 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
                                 {/* Timeline / Calendar */}
                                 {isOnWorkspace && currentView === 'timeline' && (
                                     <div className="h-[calc(100vh-200px)]">
-                                        {timelineViewMode === 'calendar' ? (
-                                            <CalendarView tasks={filteredTasks} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
-                                        ) : (
-                                            <GanttChart tasks={filteredTasks} employees={spaceMembers} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
-                                        )}
+                                        <CalendarView tasks={filteredTasks} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
+                                    </div>
+                                )}
+
+                                {/* Gantt Chart */}
+                                {isOnWorkspace && currentView === 'gantt' && (
+                                    <div className="h-[calc(100vh-200px)]">
+                                        <GanttChart tasks={filteredTasks} employees={spaceMembers} onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }} />
                                     </div>
                                 )}
 

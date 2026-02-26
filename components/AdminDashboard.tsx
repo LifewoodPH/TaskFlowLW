@@ -125,117 +125,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ tasks, employees, activ
             </div>
 
             {/* Charts Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Column - Visuals */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <BentoCard className="h-[350px] p-6 flex flex-col">
-                            <h3 className="text-xs font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest mb-4">Task Distribution</h3>
-                            <div className="flex-1 min-h-0">
-                                <TaskStatusPieChart tasks={tasks} />
-                            </div>
-                        </BentoCard>
-                        <BentoCard className="h-[350px] p-6 flex flex-col">
-                            <h3 className="text-xs font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest mb-4">Workload Layers</h3>
-                            <div className="flex-1 min-h-0">
-                                <TaskPriorityBarChart tasks={tasks} />
-                            </div>
-                        </BentoCard>
-                    </div>
-                    {isAdmin && (
-                        <BentoCard className="p-6">
-                            <h3 className="text-xs font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest mb-4">Historical Momentum</h3>
-                            <div className="h-[300px]">
-                                <CompletionHistoryChart tasks={tasks} />
-                            </div>
-                        </BentoCard>
-                    )}
-                </div>
-
-                {/* Right Column - Activity Feed */}
-                <BentoCard className="col-span-1 p-0 flex flex-col h-full max-h-[724px]">
-                    <div className="p-6 border-b border-white/5 flex justify-between items-center">
-                        <h3 className="text-xs font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">Live Activity</h3>
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                    </div>
-                    <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-none">
-                        {activityLogs.slice(0, 20).map((log) => (
-                            <div key={log.id} className="flex gap-4 items-start group">
-                                <div className="relative flex-shrink-0 mt-1">
-                                    <img src={log.user.avatarUrl} alt="" className="w-8 h-8 rounded-lg object-cover border border-white/10" />
-                                    <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-black rounded-full flex items-center justify-center">
-                                        <div className="w-1.5 h-1.5 bg-lime-500 rounded-full"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="flex items-center gap-2 mb-0.5">
-                                        <span className="text-xs font-bold text-slate-900 dark:text-white">{log.user.name}</span>
-                                        <span className="text-[9px] text-slate-500 dark:text-white/30 font-bold uppercase tracking-wide">{getRelativeTime(log.timestamp)}</span>
-                                    </div>
-                                    <p className="text-xs text-slate-600 dark:text-white/60 leading-relaxed">
-                                        {log.message}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <BentoCard className="h-[350px] p-6 flex flex-col">
+                    <h3 className="text-xs font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest mb-4">Task Distribution</h3>
+                    <div className="flex-1 min-h-0">
+                        <TaskStatusPieChart tasks={tasks} />
                     </div>
                 </BentoCard>
-            </div>
-
-            {/* Squad Overview Grid */}
-            <div>
-                <div className="flex items-center gap-4 mb-6 px-2">
-                    <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Squad Overview</h3>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {employees.map(employee => {
-                        const employeeTasks = tasks.filter((t: Task) => t.assigneeId === employee.id && t.status !== TaskStatus.DONE);
-
-                        return (
-                            <BentoCard key={employee.id} className="p-0 flex flex-col group overflow-hidden">
-                                <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/5">
-                                    <div className="flex items-center gap-4">
-                                        <img src={employee.avatarUrl} alt={employee.name} className="w-10 h-10 rounded-xl object-cover" />
-                                        <div>
-                                            <p className="text-sm font-bold text-slate-900 dark:text-white">{employee.name}</p>
-                                            <p className="text-[10px] font-bold text-slate-500 dark:text-white/40 uppercase tracking-wider">{employeeTasks.length} Active Tasks</p>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                                <div className="p-4 flex-1 space-y-2 min-h-[160px] max-h-[300px] overflow-y-auto scrollbar-none">
-                                    {employeeTasks.length > 0 ? (
-                                        employeeTasks.map((task: Task) => (
-                                            <div key={task.id} className="p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-transparent hover:border-white/10 transition-all group/item cursor-pointer">
-                                                <div className="flex justify-between items-start mb-1">
-                                                    <p className="text-xs font-bold text-slate-800 dark:text-white/90 line-clamp-1">{task.title}</p>
-                                                    {task.priority === Priority.URGENT && <BoltIcon className="w-3 h-3 text-red-500" />}
-                                                </div>
-                                                <div className="flex items-center justify-between mt-2">
-                                                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${task.status === TaskStatus.IN_PROGRESS ? 'bg-primary-500/10 text-primary-400' : 'bg-slate-500/10 text-slate-400'
-                                                        }`}>{task.status}</span>
-                                                    {task.dueDate && (
-                                                        <span className="text-[9px] font-bold text-slate-400 dark:text-white/30 flex items-center gap-1">
-                                                            <ClockIcon className="w-3 h-3" />
-                                                            {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <div className="h-full flex flex-col items-center justify-center text-slate-400 dark:text-white/20 py-8">
-                                            <CheckCircleIcon className="w-8 h-8 mb-2 opacity-30" />
-                                            <p className="text-[9px] font-bold uppercase tracking-wider">All Set</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </BentoCard>
-                        );
-                    })}
-                </div>
+                <BentoCard className="h-[350px] p-6 flex flex-col">
+                    <h3 className="text-xs font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest mb-4">Workload Layers</h3>
+                    <div className="flex-1 min-h-0">
+                        <TaskPriorityBarChart tasks={tasks} />
+                    </div>
+                </BentoCard>
             </div>
         </div>
     );
