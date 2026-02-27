@@ -42,6 +42,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, allTasks, employee, onEditTas
   const isBlocked = !!task.blockedById;
   const completedSubtasks = (task.subtasks || []).filter(st => st.isCompleted).length;
   const totalSubtasks = (task.subtasks || []).length;
+  const progressPercentage = totalSubtasks === 0 ? 0 : Math.round((completedSubtasks / totalSubtasks) * 100);
   const isTracking = !!task.timerStartTime;
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
@@ -133,7 +134,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, allTasks, employee, onEditTas
           {totalSubtasks > 0 && (
             <div className="flex items-center text-slate-400 dark:text-white/20 group-hover:text-slate-900 dark:group-hover:text-white/40 gap-1.5 transition-colors">
               <ListBulletIcon className="w-3.5 h-3.5 stroke-[2.5px]" />
-              <span className="text-[10px] font-black font-mono">{completedSubtasks}/{totalSubtasks}</span>
+              <span className="text-[10px] font-black font-mono">{progressPercentage}%</span>
             </div>
           )}
           {task.comments.length > 0 && (

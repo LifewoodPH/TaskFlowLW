@@ -236,6 +236,19 @@ export const joinSpace = async (code: string, userId: string) => {
 };
 
 export const getTasks = async (spaceId: string, currentUserId?: string) => {
+  // First, clean up tasks that have been DONE for > 24 hours
+  const oneDayAgo = new Date();
+  oneDayAgo.setHours(oneDayAgo.getHours() - 24);
+  const oneDayAgoISO = oneDayAgo.toISOString();
+
+  await supabase
+    .from('tasks')
+    .delete()
+    .eq('space_id', spaceId)
+    .eq('status', TaskStatus.DONE)
+    .not('completed_at', 'is', null)
+    .lt('completed_at', oneDayAgoISO);
+
   const { data, error } = await supabase
     .from('tasks')
     .select(`
@@ -266,9 +279,15 @@ export const upsertTask = async (task: Partial<Task> & { spaceId: string, title:
     if (task.priority !== undefined) payload.priority = task.priority;
     if (task.tags !== undefined) payload.tags = task.tags;
     if (task.timerStartTime !== undefined) payload.timer_start_time = task.timerStartTime;
-    if (task.blockedById !== undefined) payload.blocked_by_id = task.blockedById;
-    if (task.completedAt !== undefined) payload.completed_at = task.completedAt;
-    if (task.listId !== undefined) payload.list_id = task.listId;
+    if (task.completedAt !== undefined) {
+      payload.completed_at = task.completedAt;
+    } else if (task.status === (TaskStatus.DONE as unknown as string)) {
+      // Auto-set completed_at if status changes to DONE and not explicitly provided
+      payload.completed_at = new Date().toISOString();
+    } else if (task.status && task.status !== (TaskStatus.DONE as unknown as string)) {
+      // Clear completed_at if status changes away from DONE
+      payload.completed_at = null;
+    }
 
     const { data, error } = await supabase
       .from('tasks')
@@ -493,6 +512,18 @@ export const getAllSpaces = async () => {
  * Returns tasks grouped by space for the overseer view
  */
 export const getAllTasksAcrossSpaces = async () => {
+  // First, clean up tasks that have been DONE for > 24 hours
+  const oneDayAgo = new Date();
+  oneDayAgo.setHours(oneDayAgo.getHours() - 24);
+  const oneDayAgoISO = oneDayAgo.toISOString();
+
+  await supabase
+    .from('tasks')
+    .delete()
+    .eq('status', TaskStatus.DONE)
+    .not('completed_at', 'is', null)
+    .lt('completed_at', oneDayAgoISO);
+
   const { data, error } = await supabase
     .from('tasks')
     .select(`
