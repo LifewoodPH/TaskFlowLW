@@ -10,6 +10,7 @@ import { StopIcon } from './icons/StopIcon';
 import { ClockIcon } from './icons/ClockIcon';
 import { CheckCircleIcon } from './icons/CheckCircleIcon';
 import TagPill from './TagPill';
+import * as dataService from '../services/supabaseService';
 
 
 interface TaskDetailsModalProps {
@@ -42,6 +43,7 @@ const formatDuration = (ms: number) => {
 
 const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, task, employees, allTasks, onAddComment, onDeleteTask, onToggleTimer, currentUserId, isAdmin }) => {
   const [newComment, setNewComment] = useState('');
+  const [dummyState, setDummyState] = useState(false); // Used to force re-render for optimistic updates
   const { user } = useAuth();
   const assignee = employees.find(e => e.id === task.assigneeId);
   const currentUser = employees.find(e => e.id === user?.employeeId);
@@ -232,7 +234,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
             </div>
 
             {/* Body Sections Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-6">
               <div className="space-y-6">
                 {/* Description */}
                 <div>
@@ -241,61 +243,6 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
                     <p className="text-sm font-medium text-slate-700 dark:text-white/80 leading-relaxed whitespace-pre-wrap">
                       {task.description || <span className="text-slate-400 italic font-normal">No description provided.</span>}
                     </p>
-                  </div>
-                </div>
-
-                {/* Tags */}
-                <div>
-                  <h3 className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-[0.2em] ml-2 mb-3">Tags</h3>
-                  <div className="flex flex-wrap items-center gap-2 bg-white/40 dark:bg-white/5 p-5 rounded-[28px] border border-white/50 dark:border-white/5 min-h-[80px] shadow-sm">
-                    {(task.tags || []).map(tag => (
-                      <TagPill key={tag} text={tag} />
-                    ))}
-                    {(task.tags || []).length === 0 && (
-                      <span className="text-[10px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-widest w-full text-center py-2 border border-dashed border-slate-300 dark:border-white/10 rounded-xl">No tags added</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                {/* Time Tracking */}
-                <div className="bg-gradient-to-br from-primary-500/10 via-transparent to-primary-500/5 border border-primary-500/20 dark:border-primary-500/10 rounded-[32px] p-6 sm:p-8 shadow-sm relative overflow-hidden group hover:border-primary-500/40 transition-all duration-500">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 rounded-full blur-3xl group-hover:bg-primary-500/20 transition-all duration-500"></div>
-
-                  <div className="relative z-10">
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2.5 rounded-xl ${task.timerStartTime ? 'bg-primary-500/20 text-primary-600 dark:text-primary-400 animate-pulse border border-primary-500/30' : 'bg-white/50 dark:bg-white/5 text-slate-400 dark:text-white/40 border border-white/50 dark:border-white/5'}`}>
-                          <ClockIcon className="w-5 h-5" />
-                        </div>
-                        <h3 className="text-[10px] font-black text-slate-700 dark:text-white/70 uppercase tracking-[0.2em]">Time Spent</h3>
-                      </div>
-                      {task.timerStartTime && (
-                        <div className="px-3 py-1 bg-primary-500 text-white rounded-full flex items-center gap-1.5 shadow-lg shadow-primary-500/20">
-                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-                          <span className="text-[9px] font-black uppercase tracking-widest leading-none">Active</span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className={`text-4xl sm:text-5xl font-black font-mono tracking-tighter text-center mb-6 transition-colors duration-300 ${task.timerStartTime ? 'text-primary-600 dark:text-primary-400' : 'text-slate-800 dark:text-white/90'}`}>
-                      {task.timerStartTime ? formatDuration(elapsedTime) : totalTimeDisplay}
-                    </div>
-
-                    <button
-                      onClick={() => onToggleTimer(task.id)}
-                      className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-[20px] text-xs font-black uppercase tracking-[0.2em] transition-all duration-300 transform active:scale-95 shadow-xl ${task.timerStartTime
-                          ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-red-500/20 hover:shadow-red-500/40 border border-red-400/50'
-                          : 'bg-gradient-to-r from-primary-600 to-primary-600 text-white shadow-primary-500/20 hover:shadow-primary-500/40 border border-primary-400/50 hover:from-primary-500 hover:to-primary-500'
-                        }`}
-                    >
-                      {task.timerStartTime ? (
-                        <><StopIcon className="w-4 h-4" /> Stop Timer</>
-                      ) : (
-                        <><PlayIcon className="w-4 h-4" /> Start Timer</>
-                      )}
-                    </button>
                   </div>
                 </div>
 
@@ -313,11 +260,36 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
 
                     <div className="bg-white/40 dark:bg-white/5 border border-white/50 dark:border-white/5 rounded-[28px] p-4 shadow-sm max-h-[160px] overflow-y-auto scrollbar-none">
                       <ul className="space-y-2">
-                        {(task.subtasks || []).map(subtask => (
-                          <li key={subtask.id} className="flex items-center bg-white/60 dark:bg-[#1A1A1A] p-3 rounded-[16px] border border-white/60 dark:border-white/5 shadow-sm">
-                            <div className={`h-4 w-4 rounded-[6px] flex items-center justify-center flex-shrink-0 transition-colors ${subtask.isCompleted ? 'bg-primary-500' : 'bg-slate-200 dark:bg-white/10'}`}>
+                        {(task.subtasks || []).map((subtask, index) => (
+                          <li key={subtask.id} className="flex items-center bg-white/60 dark:bg-[#1A1A1A] p-3 rounded-[16px] border border-white/60 dark:border-white/5 shadow-sm group">
+                            <button
+                              onClick={async () => {
+                                const currentSubtasks = task.subtasks || [];
+                                const updatedSubtasks = [...currentSubtasks];
+                                updatedSubtasks[index] = { ...updatedSubtasks[index], isCompleted: !updatedSubtasks[index].isCompleted };
+
+                                task.subtasks = updatedSubtasks; // Optimistic update
+                                setDummyState(prev => !prev);    // Force re-render
+
+                                try {
+                                  await dataService.upsertTask({
+                                    ...task,
+                                    subtasks: updatedSubtasks
+                                  });
+                                } catch (error) {
+                                  console.error("Failed to update subtask", error);
+                                  task.subtasks = currentSubtasks; // Revert
+                                  setDummyState(prev => !prev);
+                                }
+                              }}
+                              className={`h-4 w-4 rounded-[6px] flex items-center justify-center flex-shrink-0 transition-colors focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 focus:outline-none
+                                ${subtask.isCompleted
+                                  ? 'bg-primary-500 hover:bg-primary-600 border border-primary-500'
+                                  : 'bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 border border-transparent'
+                                }`}
+                            >
                               {subtask.isCompleted && <CheckCircleIcon className="w-2.5 h-2.5 text-white" />}
-                            </div>
+                            </button>
                             <span className={`ml-3 text-xs font-bold line-clamp-1 ${subtask.isCompleted ? 'text-slate-400 dark:text-white/30 line-through' : 'text-slate-700 dark:text-white/80'}`}>
                               {subtask.title}
                             </span>
@@ -386,8 +358,8 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
             </form>
           </footer>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

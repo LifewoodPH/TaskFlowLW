@@ -46,6 +46,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     const [dueTime, setDueTime] = useState<string>('');
     const [tags, setTags] = useState<string[]>([]);
     const [subtasks, setSubtasks] = useState<Subtask[]>([]);
+    const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
+    const dateInputRef = useRef<HTMLInputElement>(null);
 
     // UI States
     const [isSpaceSelectorOpen, setSpaceSelectorOpen] = useState(false);
@@ -108,6 +110,13 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
 
         await onSave(taskData, taskToEdit?.id as number | null);
         onClose();
+    };
+
+    const handleAddSubtask = () => {
+        if (newSubtaskTitle.trim()) {
+            setSubtasks([...subtasks, { id: Date.now().toString(), title: newSubtaskTitle.trim(), isCompleted: false }]);
+            setNewSubtaskTitle('');
+        }
     };
 
     const currentSpace = spaces.find((s) => s.id === spaceId);
@@ -265,14 +274,19 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                             )}
                         </div>
 
-                        {/* Due Date (Visual Placeholder for now or Input) */}
-                        <div className="flex items-center gap-2 px-3 py-1.5 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-full hover:bg-neutral-50 dark:hover:bg-white/5 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer relative group">
+                        {/* Due Date */}
+                        <div
+                            className="flex items-center gap-2 px-3 py-1.5 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-full hover:bg-neutral-50 dark:hover:bg-white/5 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer relative group"
+                            onClick={() => dateInputRef.current?.showPicker()}
+                        >
                             <CalendarIcon className="w-4 h-4" />
                             <input
+                                ref={dateInputRef}
                                 type="date"
                                 value={dueDate}
                                 onChange={(e) => setDueDate(e.target.value)}
-                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                className="absolute inset-0 opacity-0 cursor-pointer w-[1px] h-[1px]"
+                                style={{ pointerEvents: 'none' }}
                             />
                             <span className="text-sm font-medium">{dueDate || 'Set Date'}</span>
                         </div>
@@ -298,7 +312,18 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                         <div className="space-y-2">
                             {subtasks.map((st, index) => (
                                 <div key={index} className="flex items-center gap-3 p-2 bg-neutral-50 dark:bg-black/20 rounded-lg group">
-                                    <div className={`w-4 h-4 rounded-full border-2 ${st.isCompleted ? 'bg-green-500 border-green-500' : 'border-neutral-300 dark:border-neutral-600'}`} />
+                                    <button
+                                        onClick={() => {
+                                            const newSubtasks = [...subtasks];
+                                            newSubtasks[index].isCompleted = !newSubtasks[index].isCompleted;
+                                            setSubtasks(newSubtasks);
+                                        }}
+                                        className={`w-4 h-4 rounded-full border-2 flex-shrink-0 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500
+                                            ${st.isCompleted
+                                                ? 'bg-green-500 border-green-500'
+                                                : 'border-neutral-300 dark:border-neutral-600 hover:border-green-400 dark:hover:border-green-400 focus:border-green-400'
+                                            }`}
+                                    />
                                     <span className={`text-sm ${st.isCompleted ? 'line-through text-neutral-400' : 'text-slate-700 dark:text-slate-300'}`}>{st.title}</span>
                                     <button
                                         onClick={() => setSubtasks(subtasks.filter((_, i) => i !== index))}
@@ -308,20 +333,24 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                                     </button>
                                 </div>
                             ))}
-                            <div className="flex items-center gap-2">
-                                <PlusIcon className="w-4 h-4 text-neutral-400" />
+                            <div className="flex items-center gap-2 text-neutral-400 group-focus-within:text-slate-900 dark:group-focus-within:text-white">
+                                <button
+                                    onClick={handleAddSubtask}
+                                    disabled={!newSubtaskTitle.trim()}
+                                    className="p-1 hover:bg-neutral-200 dark:hover:bg-white/10 rounded-md transition-colors disabled:opacity-50"
+                                >
+                                    <PlusIcon className="w-4 h-4" />
+                                </button>
                                 <input
                                     type="text"
+                                    value={newSubtaskTitle}
+                                    onChange={(e) => setNewSubtaskTitle(e.target.value)}
                                     placeholder="Add subtask..."
                                     className="bg-transparent border-none focus:ring-0 text-sm p-0 w-full placeholder:text-neutral-400 text-slate-700 dark:text-slate-300"
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
                                             e.preventDefault();
-                                            const val = (e.target as HTMLInputElement).value;
-                                            if (val.trim()) {
-                                                setSubtasks([...subtasks, { id: Date.now().toString(), title: val.trim(), isCompleted: false }]);
-                                                (e.target as HTMLInputElement).value = '';
-                                            }
+                                            handleAddSubtask();
                                         }
                                     }}
                                 />
