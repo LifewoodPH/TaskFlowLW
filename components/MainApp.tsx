@@ -129,20 +129,47 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
         return (mem?.role || 'member') as 'admin' | 'member';
     }, [isSuperAdmin, activeSpaceId, memberships, user.employeeId]);
 
-    // ─── Initial Redirect ─────────────────────────────────────────────────
+    // ─── Initial Redirect & Access Control ──────────────────────────────────
     useEffect(() => {
-        if (location.pathname === '/app' || location.pathname === '/app/') {
-            navigate('/app/home', { replace: true });
-        }
-    }, [location.pathname, navigate]);
+        const path = location.pathname;
 
-    // ─── Initial Redirect ─────────────────────────────────────────────────
-    // 3. Fallback to `/home`
-    useEffect(() => {
-        if (!activeSpaceId && location.pathname.split('/').length > 2 && location.pathname !== '/app/home' && location.pathname !== '/app/user-management') {
+        // Root redirects
+        if (path === '/app' || path === '/app/') {
+            navigate('/app/home', { replace: true });
+            return;
+        }
+
+        // Access control for regular users (non-super-admins and non-space-admins)
+        if (!isSuperAdmin && spaces.length > 0) {
+            // Check if they are a space admin for ANY space
+            const isSpaceAdminAnywhere = memberships.some(m => m.user_id === user.employeeId && m.role === 'admin');
+
+            if (!isSpaceAdminAnywhere) {
+                // If they are on the global home, redirect to their first space's Team Hub
+                if (path === '/app/home') {
+                    const firstSpace = spaces[0];
+                    const slug = toSlug(firstSpace.name);
+                    navigate(`/app/workspace/${slug}/team-hub`, { replace: true });
+                    return;
+                }
+
+                // If they are inside a workspace but NOT on the Team Hub or related allowed views, force Team Hub
+                if (activeSpaceId && currentView !== 'summary') {
+                    const space = spaces.find(s => s.id === activeSpaceId);
+                    if (space) {
+                        const slug = toSlug(space.name);
+                        navigate(`/app/workspace/${slug}/team-hub`, { replace: true });
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Fallback for missing active spaces when deeply linked
+        if (!activeSpaceId && path.split('/').length > 2 && path !== '/app/home' && path !== '/app/user-management') {
             navigate('/app/home', { replace: true });
         }
-    }, [activeSpaceId, location, navigate]);
+    }, [location.pathname, navigate, isSuperAdmin, spaces, activeSpaceId, currentView, memberships, user.employeeId]);
 
     // ─── Data Loading ─────────────────────────────────────────────────────
     useEffect(() => {
