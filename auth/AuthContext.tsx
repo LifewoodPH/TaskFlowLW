@@ -15,10 +15,42 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return;
     }
 
+    // Realtime subscription for profile changes
+    let profileSubscription: any = null;
+
+    const setupRealtime = (userId: string) => {
+      if (profileSubscription) profileSubscription.unsubscribe();
+      profileSubscription = supabase
+        .channel(`public:profiles:id=eq.${userId}`)
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${userId}`
+        }, (payload) => {
+          console.log('Realtime profile update received:', payload.new);
+          setUser(prevUser => {
+            if (!prevUser) return null;
+            return {
+              ...prevUser,
+              username: payload.new.username,
+              fullName: payload.new.full_name,
+              avatarUrl: payload.new.avatar_url,
+              phone: payload.new.phone,
+              position: payload.new.position,
+              department: payload.new.department,
+              isAdmin: payload.new.is_admin,
+            };
+          });
+        })
+        .subscribe();
+    };
+
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         mapSupabaseUser(session.user);
+        setupRealtime(session.user.id);
       } else {
         setLoading(false);
       }
@@ -29,13 +61,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         mapSupabaseUser(session.user);
+        setupRealtime(session.user.id);
       } else {
         setUser(null);
         setLoading(false);
+        if (profileSubscription) profileSubscription.unsubscribe();
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      if (profileSubscription) profileSubscription.unsubscribe();
+    };
   }, []);
 
   const mapSupabaseUser = async (sbUser: any) => {
@@ -132,22 +169,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const updateUser = async (updates: Partial<User>) => {
-    if (user) {
+    if (user && isSupabaseConfigured) {
+      // Optimistically update local state
       setUser({ ...user, ...updates });
-      if (updates.username && isSupabaseConfigured) {
-        await supabase.from('profiles').update({ username: updates.username }).eq('id', user.employeeId);
-      }
-      if (updates.fullName && isSupabaseConfigured) {
-        await supabase.from('profiles').update({ full_name: updates.fullName }).eq('id', user.employeeId);
-      }
-      if (updates.avatarUrl && isSupabaseConfigured) {
-        await supabase.from('profiles').update({ avatar_url: updates.avatarUrl }).eq('id', user.employeeId);
-      }
-      if (updates.phone && isSupabaseConfigured) {
-        await supabase.from('profiles').update({ phone: updates.phone }).eq('id', user.employeeId);
-      }
-      if (updates.position && isSupabaseConfigured) {
-        await supabase.from('profiles').update({ position: updates.position }).eq('id', user.employeeId);
+
+      const dbPayload: any = {};
+      if (updates.username !== undefined) dbPayload.username = updates.username;
+      if (updates.fullName !== undefined) dbPayload.full_name = updates.fullName;
+      if (updates.avatarUrl !== undefined) dbPayload.avatar_url = updates.avatarUrl;
+      if (updates.phone !== undefined) dbPayload.phone = updates.phone;
+      if (updates.position !== undefined) dbPayload.position = updates.position;
+      if (updates.department !== undefined) dbPayload.department = updates.department;
+
+      if (Object.keys(dbPayload).length > 0) {
+        const { error } = await supabase
+          .from('profiles')
+          .update(dbPayload)
+          .eq('id', user.employeeId);
+
+        if (error) {
+          console.error("Error updating profile in DB:", error);
+          // Revert on error if needed, but for now we'll just log
+          throw error;
+        }
       }
     }
   };

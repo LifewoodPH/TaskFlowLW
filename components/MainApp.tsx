@@ -29,6 +29,7 @@ import TopNav from './TopNav';
 import Background from './Background';
 
 // Hooks
+import { useAuth } from '../auth/AuthContext';
 import { useDailyTasks } from '../hooks/useDailyTasks';
 import { useTheme } from './hooks/useTheme';
 import { usePreferences } from './hooks/usePreferences';
@@ -321,8 +322,20 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
         } catch (e) { console.error(e); }
     };
 
+    const { updateUser } = useAuth();
+
     const handleSaveProfile = async (data: { name: string; avatarUrl: string; phone: string; position: string; email?: string }) => {
         try {
+            // Update global user state for immediate UI feedback
+            await updateUser({
+                fullName: data.name,
+                avatarUrl: data.avatarUrl,
+                phone: data.phone,
+                position: data.position,
+                email: data.email,
+            });
+
+            // Also update via service to ensure DB is in sync and other data is refreshed
             await dataService.updateProfile(user.employeeId, {
                 fullName: data.name,
                 avatarUrl: data.avatarUrl,
