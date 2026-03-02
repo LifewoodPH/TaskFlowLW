@@ -146,13 +146,6 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
             const isSpaceAdminAnywhere = memberships.some(m => m.user_id === user.employeeId && m.role === 'admin');
 
             if (!isSpaceAdminAnywhere) {
-                // If they are on the global home, redirect to their first space's Team Hub
-                if (path === '/app/home') {
-                    const firstSpace = spaces[0];
-                    const slug = toSlug(firstSpace.name);
-                    navigate(`/app/workspace/${slug}/team-hub`, { replace: true });
-                    return;
-                }
 
                 // If they are inside a workspace but NOT on the Team Hub or related allowed views, force Team Hub
                 if (activeSpaceId && currentView !== 'summary') {
