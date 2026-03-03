@@ -8,6 +8,7 @@ import { LockClosedIcon } from './icons/LockClosedIcon';
 import { ListBulletIcon } from './icons/ListBulletIcon';
 import { ClockIcon } from './icons/ClockIcon';
 import { ArrowPathIcon } from './icons/ArrowPathIcon';
+import { isTaskOverdue } from '../utils/taskUtils';
 
 import TagPill from './TagPill';
 
@@ -40,7 +41,8 @@ const formatTime = (time24?: string) => {
 };
 
 const TaskCard: React.FC<TaskCardProps> = ({ task, allTasks, employee, onEditTask, onDeleteTask, onUpdateTaskStatus, onViewTask, currentUserId, isAdmin }) => {
-  const isOverdue = new Date(task.dueDate) < new Date() && task.status !== TaskStatus.DONE;
+  // Use the new centralized helper for overdue check
+  const isOverdue = isTaskOverdue(task);
   const [isDragging, setIsDragging] = useState(false);
 
   // Permission Logic

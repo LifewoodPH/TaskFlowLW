@@ -11,6 +11,7 @@ import { FlagIcon } from './icons/FlagIcon';
 import BentoCard from './BentoCard';
 import { BoltIcon } from './icons/BoltIcon';
 import { UsersIcon } from './icons/UsersIcon';
+import { isTaskOverdue } from '../utils/taskUtils';
 
 interface AdminDashboardProps {
     tasks: Task[];
@@ -36,7 +37,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ tasks, employees, activ
     const totalTasks = tasks.length;
     const completedTasks = tasks.filter((t: Task) => t.status === TaskStatus.DONE);
     const completionRate = totalTasks ? Math.round((completedTasks.length / totalTasks) * 100) : 0;
-    const overdueTasks = tasks.filter((t: Task) => new Date(t.dueDate) < new Date() && t.status !== TaskStatus.DONE);
+    const overdueTasks = tasks.filter((t: Task) => isTaskOverdue(t));
     const criticalTasks = tasks.filter((t: Task) => t.priority === Priority.URGENT && t.status !== TaskStatus.DONE);
 
     // New metrics calculations
@@ -155,7 +156,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ tasks, employees, activ
                             <div key={task.id} className="group p-3 rounded-xl bg-black/5 dark:bg-white/5 border border-transparent hover:border-white/10 transition-all cursor-pointer">
                                 <div className="flex justify-between items-start mb-1">
                                     <span className="text-[10px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-wider">{task.spaceId}</span>
-                                    {new Date(task.dueDate) < new Date() && (
+                                    {isTaskOverdue(task) && (
                                         <span className="text-[9px] font-bold text-red-400">OVERDUE</span>
                                     )}
                                 </div>

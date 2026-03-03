@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Task, Space, Employee, TaskStatus, Priority } from '../types';
+import { isTaskOverdue } from '../utils/taskUtils';
 
 interface AdminOverseerViewProps {
     spaces: Space[];
@@ -217,7 +218,7 @@ const AdminOverseerView: React.FC<AdminOverseerViewProps> = ({
                                             ) : (
                                                 <div className="space-y-2">
                                                     {memberTasks.map(task => {
-                                                        const isOverdue = task.status !== TaskStatus.DONE && new Date(task.dueDate) < new Date();
+                                                        const isOverdue = isTaskOverdue(task);
 
                                                         return (
                                                             <button
