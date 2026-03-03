@@ -140,21 +140,14 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
             return;
         }
 
-        // Access control for regular users (non-super-admins and non-space-admins)
-        if (!isSuperAdmin && spaces.length > 0) {
-            // Check if they are a space admin for ANY space
-            const isSpaceAdminAnywhere = memberships.some(m => m.user_id === user.employeeId && m.role === 'admin');
-
-            if (!isSpaceAdminAnywhere) {
-
-                // If they are inside a workspace but NOT on the Team Hub or related allowed views, force Team Hub
-                if (activeSpaceId && currentView !== 'summary') {
-                    const space = spaces.find(s => s.id === activeSpaceId);
-                    if (space) {
-                        const slug = toSlug(space.name);
-                        navigate(`/app/workspace/${slug}/team-hub`, { replace: true });
-                        return;
-                    }
+        // Access control for admin views
+        if (activeSpaceId && (currentView === 'overview' || currentView === 'settings')) {
+            if (currentSpaceRole !== 'admin' && !isSuperAdmin) {
+                const space = spaces.find(s => s.id === activeSpaceId);
+                if (space) {
+                    const slug = toSlug(space.name);
+                    navigate(`/app/workspace/${slug}/dashboard`, { replace: true });
+                    return;
                 }
             }
         }
