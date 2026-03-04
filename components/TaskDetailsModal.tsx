@@ -62,6 +62,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
 
   const [show, setShow] = useState(false);
   const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Timer State
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -223,7 +224,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
               )}
               {onDeleteTask && canDelete && (
                 <button
-                  onClick={() => { onDeleteTask(task.id); onClose(); }}
+                  onClick={() => setShowDeleteConfirm(true)}
                   className="p-3 bg-white/50 dark:bg-white/5 hover:bg-red-500 hover:text-white text-slate-400 dark:text-white/40 rounded-2xl transition-all duration-300 border border-white/50 dark:border-white/5 shadow-sm group"
                   title="Delete Task"
                 >
@@ -503,6 +504,42 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
                 className="flex-1 py-3.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-[20px] font-bold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all active:scale-95"
               >
                 Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowDeleteConfirm(false)} />
+          <div className="relative bg-white dark:bg-[#1A1A1A] rounded-[32px] p-8 max-w-sm w-full border border-slate-200 dark:border-white/10 shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-500/20 mb-6">
+              <TrashIcon className="h-8 w-8 text-red-600 dark:text-red-400" />
+            </div>
+            <h3 className="text-xl font-black text-center text-slate-900 dark:text-white mb-2 tracking-tight">Delete Task?</h3>
+            <p className="text-center text-sm text-slate-500 dark:text-white/60 mb-8 font-medium">
+              Are you sure you want to delete "{task.title}"? This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 py-3.5 px-4 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white/70 rounded-[20px] font-bold transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (onDeleteTask) {
+                    onDeleteTask(task.id);
+                  }
+                  setShowDeleteConfirm(false);
+                  onClose();
+                }}
+                className="flex-1 py-3.5 px-4 bg-red-500 hover:bg-red-600 text-white rounded-[20px] font-bold shadow-lg shadow-red-500/20 hover:shadow-red-500/30 transition-all active:scale-95"
+              >
+                Delete
               </button>
             </div>
           </div>

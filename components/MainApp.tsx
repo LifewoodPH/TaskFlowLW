@@ -313,6 +313,20 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
         } catch (e) { console.error(e); }
     };
 
+    const handleDeleteTask = async (taskId: number) => {
+        try {
+            await dataService.deleteTask(taskId);
+            if (activeSpaceId) {
+                loadSpaceTasks(activeSpaceId);
+            }
+            refreshAllUserTasks();
+            if (selectedTask?.id === taskId) {
+                setTaskDetailsModalOpen(false);
+                setSelectedTask(null);
+            }
+        } catch (e) { console.error('Failed to delete task', e); }
+    };
+
     const { updateUser } = useAuth();
 
     const handleSaveProfile = async (data: { name: string; avatarUrl: string; phone: string; position: string; email?: string }) => {
@@ -456,6 +470,7 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
                                         employees={spaceMembers}
                                         onUpdateTaskStatus={handleUpdateTaskStatus}
                                         onEditTask={(t) => { setTaskToEdit(t); setCreateTaskModalOpen(true); }}
+                                        onDeleteTask={handleDeleteTask}
                                         onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }}
                                         currentUserId={user.employeeId}
                                         isAdmin={currentSpaceRole === 'admin' || isSuperAdmin}
@@ -592,6 +607,7 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
                         allTasks={tasks}
                         onAddComment={handleAddComment}
                         onUpdateTaskStatus={handleUpdateTaskStatus}
+                        onDeleteTask={handleDeleteTask}
                         currentUserId={user.employeeId}
                     />
                 )}
