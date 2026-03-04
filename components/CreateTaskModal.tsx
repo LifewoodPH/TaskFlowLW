@@ -58,6 +58,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     const [isListSelectorOpen, setListSelectorOpen] = useState(false);
     const [isAssigneeSelectorOpen, setAssigneeSelectorOpen] = useState(false);
     const [isPrioritySelectorOpen, setPrioritySelectorOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
     useEffect(() => {
         if (isOpen) {
@@ -109,6 +110,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             priority,
             assigneeId: assigneeIds[0] || '',
             assigneeIds,
+            creatorId: taskToEdit ? taskToEdit.creatorId : currentUserId,
             dueDate,
             dueTime,
             recurrence,
@@ -134,8 +136,25 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     // UI Helpers for multiple assignees
     const selectedAssignees = employees.filter((e) => assigneeIds.includes(e.id));
 
-    const handleAssigneeToggle = (id: string) => {
+    const handleAssigneeToggle = (id: string, e?: React.MouseEvent) => {
+        if (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+
+        const taskCreatorId = taskToEdit ? taskToEdit.creatorId : currentUserId;
+
+        // Prevent unassigning the creator
+        if (assigneeIds.includes(id) && id === taskCreatorId) {
+            setAlertMessage("Since you created this task, you must remain assigned to it.");
+            return;
+        }
+
         if (!isSuperAdmin) {
+            if (taskCreatorId && assigneeIds.includes(taskCreatorId) && id !== taskCreatorId) {
+                setAlertMessage("The creator must remain assigned. You cannot reassign this task to someone else.");
+                return;
+            }
             setAssigneeIds([id]);
             setAssigneeSelectorOpen(false);
             return;
@@ -263,7 +282,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                                         return (
                                             <button
                                                 key={e.id}
-                                                onClick={() => handleAssigneeToggle(e.id)}
+                                                onClick={(event) => handleAssigneeToggle(e.id, event)}
                                                 className={`w-full text-left px-4 py-2 hover:bg-neutral-100 dark:hover:bg-white/5 text-sm flex items-center justify-between gap-2 ${isSelected ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10' : 'text-slate-700 dark:text-slate-200'}`}
                                             >
                                                 <div className="flex items-center gap-2">
@@ -444,6 +463,32 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                     </div>
                 </div >
             </div >
+
+            {/* Custom Alert Modal for warnings */}
+            {alertMessage && (
+                <div className="absolute inset-0 z-[70] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/40 rounded-2xl" onClick={() => setAlertMessage(null)} />
+                    <div className="bg-white dark:bg-[#2A2A2D] rounded-xl shadow-2xl p-6 max-w-sm w-full relative z-10 animate-in fade-in zoom-in duration-200">
+                        <div className="flex items-center gap-3 mb-4 text-amber-500">
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Action Not Allowed</h3>
+                        </div>
+                        <p className="text-slate-600 dark:text-slate-300 text-sm mb-6">
+                            {alertMessage}
+                        </p>
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => setAlertMessage(null)}
+                                className="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-white text-sm font-semibold rounded-lg transition-colors"
+                            >
+                                Understood
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div >
     );
 };

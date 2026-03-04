@@ -74,6 +74,7 @@ export interface Task {
   description: string;
   assigneeId: string; // Maintain for backward compatibility
   assigneeIds?: string[]; // New array for multiple assignees
+  creatorId?: string; // Adding tracking for task creator
   dueDate: string; // YYYY-MM-DD
   status: TaskStatus;
   priority: Priority;
