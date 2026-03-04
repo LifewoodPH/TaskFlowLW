@@ -177,7 +177,7 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
         try {
             const [emps, spcs] = await Promise.all([
                 dataService.getAllEmployees(),
-                dataService.getSpaces(user.employeeId),
+                isSuperAdmin ? dataService.getAllSpaces() : dataService.getSpaces(user.employeeId),
             ]);
             setEmployees(emps);
             setSpaces(spcs);
