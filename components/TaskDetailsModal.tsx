@@ -21,6 +21,7 @@ interface TaskDetailsModalProps {
   allTasks: Task[];
   onAddComment: (taskId: number, content: string) => Promise<void>;
   onDeleteTask?: (taskId: number) => void;
+  onUpdateTaskStatus?: (taskId: number, newStatus: TaskStatus) => void;
   currentUserId?: string;
   isAdmin?: boolean;
 }
@@ -49,7 +50,7 @@ const formatTime = (time24?: string) => {
   return `${hour12}:${m} ${suffix}`;
 };
 
-const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, task, employees, allTasks, onAddComment, onDeleteTask, currentUserId, isAdmin }) => {
+const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, task, employees, allTasks, onAddComment, onDeleteTask, onUpdateTaskStatus, currentUserId, isAdmin }) => {
   const [newComment, setNewComment] = useState('');
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [dummyState, setDummyState] = useState(false); // Used to force re-render for optimistic updates
@@ -60,6 +61,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
   const canDelete = isAdmin || (currentUserId && task.assigneeId === currentUserId);
 
   const [show, setShow] = useState(false);
+  const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
 
   // Timer State
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -209,6 +211,16 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
             </div>
 
             <div className="flex flex-col sm:flex-row items-center gap-2 relative z-10">
+              {onUpdateTaskStatus && task.status !== TaskStatus.DONE && (
+                <button
+                  onClick={() => setShowCompleteConfirm(true)}
+                  className="px-4 py-3 flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-600 dark:text-emerald-400 hover:text-white rounded-2xl transition-all duration-300 border border-emerald-500/20 hover:border-emerald-500 shadow-sm group hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                  title="Mark as Complete"
+                >
+                  <CheckCircleIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-bold tracking-wide">Mark Complete</span>
+                </button>
+              )}
               {onDeleteTask && canDelete && (
                 <button
                   onClick={() => { onDeleteTask(task.id); onClose(); }}
@@ -455,6 +467,47 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
           </footer>
         </div>
       </div >
+
+      {/* Confirmation Modal */}
+      {showCompleteConfirm && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowCompleteConfirm(false)} />
+          <div className="relative bg-white dark:bg-[#1A1A1A] rounded-[32px] p-8 max-w-sm w-full border border-slate-200 dark:border-white/10 shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-emerald-100 dark:bg-emerald-500/20 mb-6">
+              <CheckCircleIcon className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <h3 className="text-xl font-black text-center text-slate-900 dark:text-white mb-2 tracking-tight">Complete Task?</h3>
+            <p className="text-center text-sm text-slate-500 dark:text-white/60 mb-8 font-medium">
+              Are you sure you want to mark "{task.title}" as complete?
+              {task.recurrence && task.recurrence !== 'none' && (
+                <span className="block mt-2 text-primary-600 dark:text-primary-400">
+                  This will automatically generate the next recurring task.
+                </span>
+              )}
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowCompleteConfirm(false)}
+                className="flex-1 py-3.5 px-4 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white/70 rounded-[20px] font-bold transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (onUpdateTaskStatus) {
+                    onUpdateTaskStatus(task.id, TaskStatus.DONE);
+                  }
+                  setShowCompleteConfirm(false);
+                  onClose();
+                }}
+                className="flex-1 py-3.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-[20px] font-bold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all active:scale-95"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div >
   );
 };

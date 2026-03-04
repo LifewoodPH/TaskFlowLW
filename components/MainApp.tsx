@@ -591,6 +591,7 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
                         employees={employees}
                         allTasks={tasks}
                         onAddComment={handleAddComment}
+                        onUpdateTaskStatus={handleUpdateTaskStatus}
                         currentUserId={user.employeeId}
                     />
                 )}
