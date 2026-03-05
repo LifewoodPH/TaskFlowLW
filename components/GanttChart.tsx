@@ -202,7 +202,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ tasks, employees, onViewTask })
                           }}
                         >
                           <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent pointer-events-none rounded-2xl"></div>
-                          <span className={`text-[10px] font-black uppercase tracking-widest truncate relative z-10 ${task.status === TaskStatus.DONE ? 'text-black' : 'text-white'}`}>
+                          <span className={`text-[10px] font-black uppercase tracking-widest truncate relative z-10 ${task.status === TaskStatus.DONE ? 'text-black dark:text-white/40' : 'text-white'}`}>
                             {task.title}
                           </span>
                         </div>

@@ -238,7 +238,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
                   <TrashIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 </button>
               )}
-              <button onClick={onClose} className="p-3 bg-white/50 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 dark:text-white/40 hover:text-slate-900 rounded-2xl transition-all duration-300 border border-white/50 dark:border-white/5 shadow-sm group">
+              <button onClick={onClose} className="p-3 bg-white/50 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white rounded-2xl transition-all duration-300 border border-white/50 dark:border-white/5 shadow-sm group">
                 <XMarkIcon className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
               </button>
             </div>

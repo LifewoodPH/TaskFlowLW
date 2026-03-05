@@ -43,7 +43,7 @@ const Header: React.FC<HeaderProps> = ({
           <span className="text-slate-900 dark:text-white font-bold text-lg tracking-tight">{activeSpace}</span>
         </div>
 
-        <div className="h-10 w-px bg-white/10 mx-2 hidden md:block"></div>
+        <div className="h-10 w-px bg-black/10 dark:bg-white/10 mx-2 hidden md:block"></div>
 
         <nav className="flex items-center gap-1.5 p-1 bg-black/10 dark:bg-black/20 backdrop-blur-md border border-white/5 rounded-[18px]">
           {user.role === 'admin' && (

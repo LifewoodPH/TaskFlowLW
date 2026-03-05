@@ -138,7 +138,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ tasks, onViewTask }) => {
                 key={d.toISOString()}
                 className={`
                    relative flex flex-col p-2 transition-colors duration-200 group
-                   ${isCurrentMonth ? 'bg-white/60 dark:bg-[#1E1E20]/90 hover:bg-white/80 dark:hover:bg-white/5' : 'bg-slate-50/40 dark:bg-black/40'}
+                   ${isCurrentMonth ? 'bg-white/60 dark:bg-[#1E1E20]/90 hover:bg-white/80 dark:hover:bg-white/10' : 'bg-slate-50/40 dark:bg-black/40'}
                    ${!isCurrentMonth ? 'text-slate-300 dark:text-white/10' : 'text-slate-700 dark:text-white/80'}
                 `}
                 onClick={() => {
@@ -169,7 +169,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ tasks, onViewTask }) => {
                              flex items-center gap-2 group/task
                              ${task.status === TaskStatus.DONE
                           ? 'bg-slate-100 text-slate-400 dark:bg-white/5 dark:text-white/20 line-through'
-                          : 'bg-white dark:bg-white/10 text-slate-600 dark:text-white/70 shadow-sm hover:shadow-md dark:hover:bg-white/20 dark:hover:text-white'}
+                          : 'bg-white dark:bg-white/10 text-slate-600 dark:text-white/70 shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-white/20 dark:hover:text-white'}
                           `}
                     >
                       <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${getPriorityColor(task.priority)}`}></div>

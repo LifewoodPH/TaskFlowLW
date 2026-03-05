@@ -696,7 +696,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
                                                     </button>
                                                     <button
                                                         onClick={() => theme === 'light' && toggleTheme()}
-                                                        className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${theme === 'dark' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-white/40 dark:hover:text-white'}`}
+                                                        className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${theme === 'dark'
+                                                                ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
+                                                                : 'text-slate-500 hover:text-slate-700 dark:text-white/40 dark:hover:text-white'
+                                                            }`}
                                                     >
                                                         Dark
                                                     </button>
