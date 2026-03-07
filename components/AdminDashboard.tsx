@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Task, Employee, TaskStatus, ActivityLog, Priority } from '../types';
-
+import TaskStatusStackedBar from './charts/TaskStatusStackedBar';
+import TaskPriorityHorizontalBar from './charts/TaskPriorityHorizontalBar';
 import CompletionHistoryChart from './charts/CompletionHistoryChart';
 import { SparklesIcon } from './icons/SparklesIcon';
 import { ClockIcon } from './icons/ClockIcon';
@@ -260,45 +261,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </div>
             </div>
 
-            {/* Simple Analytics Grid */}
+            {/* Recommended Analytics Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <BentoCard className="p-6 flex flex-col">
+                <BentoCard className="p-6 flex flex-col min-h-[200px]">
                     <h3 className="text-xs font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest mb-4">Task Status</h3>
-                    <div className="grid grid-cols-3 gap-4 flex-1">
-                        <div className="bg-white dark:bg-white/5 rounded-xl p-4 flex flex-col justify-between border border-slate-100 dark:border-white/5 shadow-sm">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">To Do</span>
-                            <span className="text-3xl font-black text-orange-500 mt-2">{tasks.filter(t => t.status === TaskStatus.TODO).length}</span>
-                        </div>
-                        <div className="bg-white dark:bg-white/5 rounded-xl p-4 flex flex-col justify-between border border-slate-100 dark:border-white/5 shadow-sm">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">In Progress</span>
-                            <span className="text-3xl font-black text-indigo-500 mt-2">{tasks.filter(t => t.status === TaskStatus.IN_PROGRESS).length}</span>
-                        </div>
-                        <div className="bg-white dark:bg-white/5 rounded-xl p-4 flex flex-col justify-between border border-slate-100 dark:border-white/5 shadow-sm">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Done</span>
-                            <span className="text-3xl font-black text-emerald-500 mt-2">{tasks.filter(t => t.status === TaskStatus.DONE).length}</span>
-                        </div>
+                    <div className="flex-1">
+                        <TaskStatusStackedBar tasks={tasks} />
                     </div>
                 </BentoCard>
 
-                <BentoCard className="p-6 flex flex-col">
+                <BentoCard className="p-6 flex flex-col min-h-[200px]">
                     <h3 className="text-xs font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest mb-4">Active Priorities</h3>
-                    <div className="grid grid-cols-4 gap-3 flex-1">
-                        <div className="bg-white dark:bg-white/5 rounded-xl p-3 flex flex-col justify-between border border-slate-100 dark:border-white/5 shadow-sm">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Urgent</span>
-                            <span className="text-2xl font-black text-red-500 mt-2">{tasks.filter(t => t.status !== TaskStatus.DONE && t.priority === Priority.URGENT).length}</span>
-                        </div>
-                        <div className="bg-white dark:bg-white/5 rounded-xl p-3 flex flex-col justify-between border border-slate-100 dark:border-white/5 shadow-sm">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">High</span>
-                            <span className="text-2xl font-black text-orange-500 mt-2">{tasks.filter(t => t.status !== TaskStatus.DONE && t.priority === Priority.HIGH).length}</span>
-                        </div>
-                        <div className="bg-white dark:bg-white/5 rounded-xl p-3 flex flex-col justify-between border border-slate-100 dark:border-white/5 shadow-sm">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Med</span>
-                            <span className="text-2xl font-black text-indigo-500 mt-2">{tasks.filter(t => t.status !== TaskStatus.DONE && t.priority === Priority.MEDIUM).length}</span>
-                        </div>
-                        <div className="bg-white dark:bg-white/5 rounded-xl p-3 flex flex-col justify-between border border-slate-100 dark:border-white/5 shadow-sm">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Low</span>
-                            <span className="text-2xl font-black text-slate-500 mt-2">{tasks.filter(t => t.status !== TaskStatus.DONE && t.priority === Priority.LOW).length}</span>
-                        </div>
+                    <div className="flex-1">
+                        <TaskPriorityHorizontalBar tasks={tasks} />
                     </div>
                 </BentoCard>
             </div>
