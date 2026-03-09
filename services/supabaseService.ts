@@ -512,7 +512,6 @@ export const deleteTask = async (taskId: number) => {
 };
 
 
-
 export const addMemberToSpace = async (spaceId: string, userId: string, role: string = 'member') => {
   const { error } = await supabase
     .from('space_members')
@@ -788,6 +787,36 @@ export const syncScratchpad = async (userId: string, content: string) => {
     .from('scratchpads')
     .upsert({ user_id: userId, content, updated_at: new Date().toISOString() });
   if (error) throw error;
+};
+
+// --- Notifications ---
+
+export const getNotifications = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (error) {
+    // If table doesn't exist yet, return empty array instead of crashing
+    if (error.code === '42P01') return [];
+    throw error;
+  }
+  return data;
+};
+
+export const markNotificationAsRead = async (id: number) => {
+  const { error } = await supabase
+    .from('notifications')
+    .update({ is_read: true })
+    .eq('id', id);
+
+  if (error) {
+    if (error.code === '42P01') return;
+    throw error;
+  }
 };
 
 // --- Notifications - REMOVED

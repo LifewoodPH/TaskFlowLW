@@ -51,7 +51,7 @@ const MembersView: React.FC<MembersViewProps> = ({ employees, tasks, currentUser
     try {
       const results = await dataService.searchUsers(query);
       // Filter out users who are already members
-      const filtered = results.filter(u => !employees.some(e => e.id === u.id));
+      const filtered = results.filter((u: Employee) => !employees.some(e => e.id === u.id));
       setSearchResults(filtered);
     } catch (error) {
       console.error(error);

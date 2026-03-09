@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Task, Employee, TaskStatus } from '../types';
 import { isTaskOverdue } from '../utils/taskUtils';
-import { ClockIcon, ArrowsPointingOutIcon, ArrowsPointingInIcon } from '@heroicons/react/24/outline';
+import { Clock, Maximize2, Minimize2 } from 'lucide-react';
 
 interface TaskSummaryViewProps {
     tasks: Task[];
@@ -47,7 +47,7 @@ const TaskSummaryView: React.FC<TaskSummaryViewProps> = ({ tasks, employees, onV
                     <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-2">Team Hub Overview</h2>
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-white/40 bg-black/5 dark:bg-white/5 px-2.5 py-1 rounded-md">
-                            <ClockIcon className="w-4 h-4 text-indigo-500" />
+                            <Clock className="w-4 h-4 text-indigo-500" />
                             {formattedTime}
                         </div>
                         <span className="text-xs font-semibold text-slate-400 dark:text-white/30 tracking-wider">
@@ -62,12 +62,12 @@ const TaskSummaryView: React.FC<TaskSummaryViewProps> = ({ tasks, employees, onV
                 >
                     {isFullscreen ? (
                         <>
-                            <ArrowsPointingInIcon className="w-4 h-4" />
+                            <Minimize2 className="w-4 h-4" />
                             Exit Fullscreen
                         </>
                     ) : (
                         <>
-                            <ArrowsPointingOutIcon className="w-4 h-4" />
+                            <Maximize2 className="w-4 h-4" />
                             Fullscreen
                         </>
                     )}

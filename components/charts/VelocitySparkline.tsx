@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Task, TaskStatus } from '../../types';
-import { ChartBarIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon } from '@heroicons/react/24/outline';
+import { ChartBar, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface VelocitySparklineProps {
     tasks: Task[];
@@ -46,7 +45,7 @@ const VelocitySparkline: React.FC<VelocitySparklineProps> = ({ tasks }) => {
             <div className="flex justify-between items-start relative z-10 mb-4">
                 <div>
                     <h3 className="text-xs font-bold text-slate-500 dark:text-white/50 uppercase tracking-widest flex items-center gap-2">
-                        <ChartBarIcon className="w-4 h-4 text-indigo-400" />
+                        <ChartBar className="w-4 h-4 text-indigo-400" />
                         7-Day Velocity
                     </h3>
                     <div className="mt-2 flex items-baseline gap-2">
@@ -62,7 +61,7 @@ const VelocitySparkline: React.FC<VelocitySparklineProps> = ({ tasks }) => {
                     ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
                     : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
                     }`}>
-                    {isTrendingUp ? <ArrowTrendingUpIcon className="w-3 h-3" /> : <ArrowTrendingDownIcon className="w-3 h-3" />}
+                    {isTrendingUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                     {isTrendingUp ? '+' : ''}{percentChange}% vs last week
                 </div>
             </div>
