@@ -71,6 +71,7 @@ const mapDbTaskToApp = (dbTask: any): Task => ({
   comments: dbTask.comments ? dbTask.comments.map(mapDbCommentToApp) : [],
   subtasks: dbTask.subtasks ? dbTask.subtasks.map(mapDbSubtaskToApp) : [],
   timeLogs: dbTask.time_logs ? dbTask.time_logs.map(mapDbTimeLogToApp) : [],
+  updated_at: dbTask.updated_at,
 });
 
 const mapDbCommentToApp = (dbComment: any): Comment => ({
@@ -334,14 +335,15 @@ export const upsertTask = async (task: Partial<Task> & { spaceId: string, title:
     if (task.priority !== undefined) payload.priority = task.priority;
     if (task.tags !== undefined) payload.tags = task.tags;
     if (task.timerStartTime !== undefined) payload.timer_start_time = task.timerStartTime;
-    if (task.completedAt !== undefined) {
-      payload.completed_at = task.completedAt;
-    } else if (task.status === (TaskStatus.DONE as unknown as string)) {
-      // Auto-set completed_at if status changes to DONE and not explicitly provided
+
+    // Auto-set completed_at if status changes to DONE and no valid completedAt is provided
+    if (task.status === (TaskStatus.DONE as unknown as string) && !task.completedAt) {
       payload.completed_at = new Date().toISOString();
     } else if (task.status && task.status !== (TaskStatus.DONE as unknown as string)) {
-      // Clear completed_at if status changes away from DONE
+      // Clear completed_at if status is changed to something other than DONE
       payload.completed_at = null;
+    } else if (task.completedAt !== undefined) {
+      payload.completed_at = task.completedAt;
     }
 
     const { data, error } = await supabase
