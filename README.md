@@ -1,59 +1,43 @@
+# TaskFlow by Lifewood
 
-# TaskFlow
+Welcome to **TaskFlow**, a premier workspace management and productivity platform designed to streamline how teams organize, collaborate, and execute their daily objectives. Built with a focus on intuitive design and powerful functionality, TaskFlow empowers organizations to take control of their workflows and drive consistent results.
 
-TaskFlow is a modern, responsive web application for tracking and managing daily employee tasks. It features a Kanban-style board, task creation/editing, real-time time tracking, and an AI-powered suite of tools using the Google Gemini API to optimize your workflow.
+---
 
-## ✨ Key Features
+## 🚀 Elevating Team Productivity
 
-### ⚡️ Core Productivity
-- **Dual Views**: Visualize your workflow with a classic Kanban Board or a monthly Calendar View.
-- **Time Tracking**: Built-in start/stop timers on every task. Track duration and view detailed session history logs.
-- **Subtasks & Checklists**: Break complex tasks into actionable steps. Use AI to automatically generate checklist items based on the task description.
-- **Smart Tagging**: Organize tasks with custom, color-coded tags. Includes an intelligent autocomplete system for quick tagging.
-- **Task Dependencies**: Create "blocking" relationships between tasks to ensure work is completed in the correct order.
-- **Real-time Database**: Powered by Supabase for instant updates and team collaboration.
+In today's fast-paced environment, keeping track of moving pieces is critical. TaskFlow provides a centralized hub where leaders can oversee operations and team members can focus on what matters most. Whether you are managing complex projects, standardizing daily routines, or tracking team velocity, TaskFlow adapts to your unique organizational needs.
 
-### 🎨 User Experience
-- **Modern UI/UX**: A polished, split-screen login page with responsive design and smooth transitions.
-- **Dark Mode**: Fully supported dark theme that respects system preferences.
-- **Drag & Drop**: Intuitively move tasks between columns to update status.
-- **Advanced Filtering**: Quickly find tasks by searching titles/tags or filtering by assignee and priority.
+### Key Benefits
+* **Unify Your Workspaces**: Create dedicated spaces for different departments, projects, or client accounts, ensuring information remains organized and accessible to the right people.
+* **Enhance Visibility**: Leadership and management can gain instant access to a "Daily Overview" that provides a real-time snapshot of team progress, active tasks, and overall workload.
+* **Foster Accountability**: Clear task assignments, due dates, and real-time status updates ensure everyone knows exactly what they are responsible for and when it needs to be delivered.
 
-## 🏁 Getting Started
+## ✨ Core Features
 
-### 1. Database Setup (Supabase)
-This project requires a Supabase database.
-1. Create a new project at [Supabase.com](https://supabase.com).
-2. Go to the **SQL Editor** in your Supabase dashboard.
-3. Open the file `supabase_schema.sql` located in the root of this repository.
-4. Copy the entire content and paste it into the Supabase SQL Editor.
-5. Click **Run** to create the tables and security policies.
+### 📊 Dynamic Visual Dashboards
+Visualize your team's workflow the way that makes the most sense to you. Toggle seamlessly between classic Kanban boards, detailed monthly calendars, and interactive Gantt charts to understand project timelines at a glance.
 
-### 2. Environment Variables
-Create a `.env` file locally or set up environment variables in Vercel:
-- `SUPABASE_URL`: Your Supabase Project URL.
-- `SUPABASE_ANON_KEY`: Your Supabase Public API Key.
-- `SUPABASE_ANON_KEY`: Your Supabase Public API Key.
+### ⏱️ Integrated Time Management
+Drive efficiency with built-in time tracking. Team members can start and stop timers directly on their tasks, providing management with accurate insights into task duration and resource allocation without the need for external tools.
 
-### 3. Running Locally
-```bash
-npm install
-npm run dev
-```
+### 🧠 Smart Organization & Subtasks
+Break down monumental projects into manageable, bite-sized actionable steps using subtasks. Utilize intelligent, color-coded tagging and robust filtering to instantly surface the tasks that require immediate attention.
 
-## 📂 Project Structure
+### 🔗 Task Dependencies
+Ensure workflows proceed logically by establishing task dependencies. Prevent bottlenecks by clearly indicating which tasks must be completed before subsequent work can begin.
 
-```
-/
-├── public/
-├── src/
-│   ├── auth/
-│   ├── components/
-│   ├── services/
-│   │   └── supabaseService.ts    # Database logic
-│   ├── App.tsx                   # Main application logic
-│   └── types.ts                  # TypeScript definitions
-├── supabase_schema.sql           # Database setup script
-├── index.html
-└── metadata.json
-```
+### 👥 Seamless Collaboration
+TaskFlow is built for teams. Communicate directly within task cards, share updates in real-time, and ensure that all stakeholders are aligned without cluttering your email inbox.
+
+---
+
+## 🌟 The TaskFlow Experience
+
+TaskFlow isn't just about managing checklists; it's about providing a premium, fluid experience that your team will actually enjoy using. 
+
+Featuring a modern, meticulously crafted interface with support for both light and dark modes, TaskFlow minimizes friction and cognitive load. Our design philosophy ensures that the software gets out of the way, allowing your team to focus entirely on delivering exceptional work.
+
+---
+
+*TaskFlow: Empowering teams to achieve more, together.*
