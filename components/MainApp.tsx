@@ -52,7 +52,6 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
     const toSlug = (name: string) =>
         name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-    /** Map internal view IDs to URL-readable segments and back */
     const VIEW_TO_URL: Record<string, string> = {
         home: 'dashboard',
         board: 'task-board',
@@ -61,6 +60,7 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
         gantt: 'gantt-chart',
         members: 'members',
         overview: 'analytics',
+        analytics: 'daily-overview',
         settings: 'settings',
     };
     const URL_TO_VIEW: Record<string, string> = Object.fromEntries(
@@ -147,7 +147,7 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
         }
 
         // Access control for admin views
-        if (activeSpaceId && (currentView === 'overview' || currentView === 'settings')) {
+        if (activeSpaceId && (currentView === 'overview' || currentView === 'analytics' || currentView === 'settings')) {
             if (currentSpaceRole !== 'admin' && !isSuperAdmin) {
                 const space = spaces.find(s => s.id === activeSpaceId);
                 if (space) {
@@ -590,6 +590,7 @@ const MainApp: React.FC<MainAppProps> = ({ user, onLogout }) => {
                                         onViewTask={(t) => { setSelectedTask(t); setTaskDetailsModalOpen(true); }}
                                         onAddTask={(mid, sid) => { setTaskToEdit({ assigneeId: mid, spaceId: sid }); setCreateTaskModalOpen(true); }}
                                         userName={user.fullName}
+                                        activeSpaceId={activeSpaceId}
                                     />
                                 )}
 

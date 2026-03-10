@@ -10,6 +10,7 @@ interface AdminOverseerViewProps {
     onViewTask: (task: Task) => void;
     onAddTask: (memberId: string, spaceId: string) => void;
     userName?: string;
+    activeSpaceId?: string;
 }
 
 interface MemberWithTasks {
@@ -25,6 +26,7 @@ const AdminOverseerView: React.FC<AdminOverseerViewProps> = ({
     onViewTask,
     onAddTask,
     userName,
+    activeSpaceId,
 }) => {
     // Get time-based greeting
     const getGreeting = () => {
@@ -65,20 +67,30 @@ const AdminOverseerView: React.FC<AdminOverseerViewProps> = ({
 
             // Include if due today OR if in progress
             // But if we're searching, maybe we want to show EVERYTHING that matches?
+            // But if we're searching, maybe we want to show EVERYTHING that matches?
             // The user said "search isn't working/showing output".
-            // If they search, they probably expect to see matching tasks regardless of today/in-progress status.
-            if (searchTerm) return true;
+            // If they search, they probably expect to see matching tasks regardless of today/in-progress/done status.
+            const isDoneToday = task.status === TaskStatus.DONE && (() => {
+                const completedTimestamp = task.completedAt || task.updated_at;
+                if (!completedTimestamp) return false;
+                const completedTime = new Date(completedTimestamp).getTime();
+                const nowTime = new Date().getTime();
+                const twentyFourHoursMs = 24 * 60 * 60 * 1000;
+                return (nowTime - completedTime) <= twentyFourHoursMs;
+            })();
 
             return (
                 (dueDate.getTime() === today.getTime()) ||
-                (task.status === TaskStatus.IN_PROGRESS)
+                (task.status === TaskStatus.IN_PROGRESS) ||
+                isDoneToday
             );
         });
     }, [tasks, today, searchTerm]);
 
     // Group tasks by workspace and member
     const workspaceData = useMemo(() => {
-        const data = spaces.map(space => {
+        const filteredSpaces = activeSpaceId ? spaces.filter(s => s.id === activeSpaceId) : spaces;
+        const data = filteredSpaces.map(space => {
             const spaceTasks = filteredBaseTasks.filter(t => t.spaceId === space.id);
             const spaceMembers = employees.filter(e => space.members.includes(e.id));
 
@@ -101,7 +113,7 @@ const AdminOverseerView: React.FC<AdminOverseerViewProps> = ({
         }).filter(Boolean) as { space: Space; members: MemberWithTasks[]; totalTasks: number }[];
 
         return data;
-    }, [spaces, filteredBaseTasks, employees, searchTerm]);
+    }, [spaces, filteredBaseTasks, employees, searchTerm, activeSpaceId]);
 
     const getPriorityColor = (priority: Priority) => {
         switch (priority) {
@@ -149,7 +161,7 @@ const AdminOverseerView: React.FC<AdminOverseerViewProps> = ({
             </div>
 
             {/* Workspace Cards */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className={`grid grid-cols-1 ${workspaceData.length > 1 ? 'xl:grid-cols-2' : ''} gap-6`}>
                 {workspaceData.length === 0 ? (
                     <div className="col-span-full bg-white/60 dark:bg-black/40 backdrop-blur-[40px] border border-white/40 dark:border-white/5 rounded-[32px] p-12 text-center shadow-xl shadow-black/5 dark:shadow-none">
                         <p className="text-slate-500 dark:text-white/40 text-lg font-bold">No workspaces found</p>
