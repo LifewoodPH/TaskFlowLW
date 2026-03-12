@@ -56,8 +56,8 @@ const GanttChart: React.FC<GanttChartProps> = ({ tasks, employees, onViewTask })
 
   const statusColors = {
     [TaskStatus.DONE]: 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30',
-    [TaskStatus.IN_PROGRESS]: 'bg-primary-500/10 dark:bg-primary-500/20 text-primary-700 dark:text-primary-400 border-primary-200 dark:border-primary-500/30',
-    [TaskStatus.TODO]: 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10',
+    [TaskStatus.IN_PROGRESS]: 'bg-emerald-700/10 dark:bg-emerald-700/20 text-emerald-800 dark:text-emerald-500 border-emerald-300 dark:border-emerald-700/30',
+    [TaskStatus.TODO]: 'bg-orange-500/10 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/30',
   };
 
   const navigateWeek = (direction: number) => {
@@ -116,6 +116,25 @@ const GanttChart: React.FC<GanttChartProps> = ({ tasks, employees, onViewTask })
                 <ChevronRightIcon className="w-4 h-4" />
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30 flex flex-wrap items-center gap-x-8 gap-y-4">
+        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Legend</span>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className="w-2.5 h-2.5 rounded bg-orange-500/20 border border-orange-200 dark:border-orange-500/30"></div>
+            <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">To Do</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2.5 h-2.5 rounded bg-emerald-700/20 border border-emerald-300 dark:border-emerald-700/30"></div>
+            <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">In Progress</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2.5 h-2.5 rounded bg-emerald-500/20 border border-emerald-200 dark:border-emerald-500/30"></div>
+            <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Done</span>
           </div>
         </div>
       </div>
@@ -226,25 +245,6 @@ const GanttChart: React.FC<GanttChartProps> = ({ tasks, employees, onViewTask })
               <p className="text-[10px] font-bold text-slate-400 dark:text-white/10 uppercase tracking-widest mt-2">Zero active tasks detected in this timeline.</p>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Legend */}
-      <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30 flex flex-wrap items-center gap-x-8 gap-y-4">
-        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Legend</span>
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10"></div>
-            <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">To Do</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded bg-primary-500/20 border border-primary-200 dark:border-primary-500/30"></div>
-            <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">In Progress</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded bg-emerald-500/20 border border-emerald-200 dark:border-emerald-500/30"></div>
-            <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Done</span>
-          </div>
         </div>
       </div>
     </div>

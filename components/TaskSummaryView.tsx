@@ -124,8 +124,8 @@ const TaskSummaryView: React.FC<TaskSummaryViewProps> = ({ tasks, employees, onV
                                                 <span className={`text-[10px] px-2 py-1 rounded font-bold uppercase tracking-wider shrink-0 ${task.status === TaskStatus.DONE
                                                     ? 'bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20'
                                                     : task.status === TaskStatus.IN_PROGRESS
-                                                        ? 'bg-indigo-50 text-indigo-600 border border-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20'
-                                                        : 'bg-slate-100 text-slate-500 border border-slate-200 dark:bg-white/5 dark:text-white/40 dark:border-white/10'
+                                                        ? 'bg-emerald-700/10 text-emerald-800 border border-emerald-300 dark:bg-emerald-700/20 dark:text-emerald-500 dark:border-emerald-700/30'
+                                                        : 'bg-orange-50 text-orange-600 border border-orange-100 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20'
                                                     }`}>
                                                     {task.status === TaskStatus.DONE ? 'Completed' : task.status === TaskStatus.IN_PROGRESS ? 'In Progress' : 'To Do'}
                                                 </span>
