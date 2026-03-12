@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext';
 import { Logo } from './Logo';
 import { EyeIcon } from './icons/EyeIcon';
 import { EyeSlashIcon } from './icons/EyeSlashIcon';
+import { PhFlagIcon } from './icons/PhFlagIcon';
 import Background from './Background';
 import InteractiveParticles from './InteractiveParticles';
 
@@ -102,21 +103,6 @@ const LoginPage: React.FC = () => {
             {/* Moving Background Effect as the content (Vivid Mode) */}
             <Background videoSrc="/background.mp4" className="absolute inset-0" noOverlays={true} />
 
-            {/* Logo overlay */}
-            <div className="absolute top-10 left-10 flex items-center gap-3">
-              <div className="bg-white/10 backdrop-blur-md p-2 rounded-xl border border-white/20">
-                <Logo className="w-8 h-8" />
-              </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-2xl font-bold text-white tracking-tight">Task Flow</span>
-                  <div className="px-2 py-0.5 bg-white/20 backdrop-blur-md border border-white/30 rounded-lg text-[10px] font-bold text-white uppercase tracking-widest">
-                    AI
-                  </div>
-                </div>
-                <span className="text-[10px] font-medium text-white/50 tracking-wide">powered by Lifewood PH</span>
-              </div>
-            </div>
 
           </div>
         </div>
@@ -125,21 +111,27 @@ const LoginPage: React.FC = () => {
         <div className="flex flex-col justify-center items-center lg:items-start animate-fade-in px-4 lg:px-12">
           <div className="w-full max-w-[440px] space-y-6">
             {/* Header Content */}
-            <div className="space-y-4">
-              <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-0">
-                <div className="lg:hidden flex items-center gap-3">
-                  <Logo className="w-10 h-10 text-slate-900 dark:text-white" />
-                  <div className="flex flex-col">
-                    <span className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Task Flow</span>
-                    <span className="text-[10px] font-medium text-slate-500 dark:text-white/50 tracking-wide">powered by Lifewood PH</span>
+            <div className="space-y-6">
+              <div className="flex flex-col items-center lg:items-start gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-slate-900/5 dark:bg-white/5 backdrop-blur-md p-2 rounded-xl border border-black/[0.03] dark:border-white/10">
+                    <Logo className="w-8 h-8 text-slate-900 dark:text-white" />
                   </div>
+                  <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Task Flow</span>
                 </div>
-
               </div>
 
-              <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white tracking-tight leading-[1.1] text-center lg:text-left">
-                Sign In to Your Workspace
-              </h1>
+              <div className="space-y-2">
+                <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white tracking-tight leading-[1.1] text-center lg:text-left">
+                  Sign In to Your Workspace
+                </h1>
+                <div className="flex items-center justify-center lg:justify-start gap-2 px-1">
+                  <span className="text-xs font-semibold text-slate-400 dark:text-white/60 uppercase tracking-[0.2em]">
+                    Powered by Lifewood PH
+                  </span>
+                  <PhFlagIcon className="w-5 h-auto shadow-sm" />
+                </div>
+              </div>
             </div>
 
 
@@ -153,7 +145,7 @@ const LoginPage: React.FC = () => {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full bg-white/40 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl py-3 px-5 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-black/10 dark:focus:border-white/10 transition-all duration-300"
+                  className="w-full bg-white/40 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-2xl py-3 px-5 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-black/10 dark:focus:border-white/20 transition-all duration-300"
                   placeholder="Username"
                   autoComplete="username"
                 />
@@ -167,7 +159,7 @@ const LoginPage: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white/40 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl py-3 px-5 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-black/10 dark:focus:border-white/10 transition-all duration-300"
+                  className="w-full bg-white/40 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-2xl py-3 px-5 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-black/10 dark:focus:border-white/20 transition-all duration-300"
                   placeholder="Password"
                   autoComplete="current-password"
                 />
@@ -192,10 +184,10 @@ const LoginPage: React.FC = () => {
                       onChange={(e) => setRememberMe(e.target.checked)}
                       className="sr-only peer"
                     />
-                    <div className="w-5 h-5 border-2 border-slate-200 dark:border-white/10 rounded-lg group-hover:border-slate-300 dark:group-hover:border-white/20 transition-all peer-checked:bg-slate-900 dark:peer-checked:bg-white peer-checked:border-slate-900 dark:peer-checked:border-white" />
+                    <div className="w-5 h-5 border-2 border-slate-200 dark:border-white/20 rounded-lg group-hover:border-slate-300 dark:group-hover:border-white/40 transition-all peer-checked:bg-slate-900 dark:peer-checked:bg-white peer-checked:border-slate-900 dark:peer-checked:border-white" />
                     <svg className="absolute top-1 left-1 w-3 h-3 text-white dark:text-black opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   </div>
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-white/30 uppercase tracking-widest group-hover:text-slate-700 dark:group-hover:text-white/50 transition-colors">Remember Me</span>
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-widest group-hover:text-slate-700 dark:group-hover:text-white/80 transition-colors">Remember Me</span>
                 </label>
               </div>
 
@@ -208,7 +200,7 @@ const LoginPage: React.FC = () => {
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full py-3 px-6 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-900 dark:text-white font-bold rounded-2xl border border-black/5 dark:border-white/5 transition-all duration-300 flex items-center justify-center"
+                  className="w-full py-3 px-6 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 text-slate-900 dark:text-white font-bold rounded-2xl border border-black/5 dark:border-white/10 transition-all duration-300 flex items-center justify-center"
                   disabled={isLoading}
                 >
                   {isLoading ? "Processing..." : "Sign In"}
@@ -216,7 +208,7 @@ const LoginPage: React.FC = () => {
               </div>
             </form>
 
-            <div className="mt-6 space-y-1 text-[10px] text-center lg:text-left uppercase tracking-widest text-slate-400 dark:text-white/20 font-bold leading-relaxed">
+            <div className="mt-6 space-y-1 text-[10px] text-center lg:text-left uppercase tracking-widest text-slate-400 dark:text-white/60 font-bold leading-relaxed">
               <p>By signing in, you agree to TaskFlow's <a href="https://lifewood.com/terms-conditions" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-900 dark:hover:text-white transition-colors">Terms and Conditions</a></p>
               <p>and <a href="https://lifewood.com/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-900 dark:hover:text-white transition-colors">Privacy Policy</a>.</p>
             </div>
