@@ -54,10 +54,11 @@ const GanttChart: React.FC<GanttChartProps> = ({ tasks, employees, onViewTask })
     };
   };
 
-  const statusColors = {
-    [TaskStatus.DONE]: 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30',
-    [TaskStatus.IN_PROGRESS]: 'bg-emerald-700/10 dark:bg-emerald-700/20 text-emerald-800 dark:text-emerald-500 border-emerald-300 dark:border-emerald-700/30',
-    [TaskStatus.TODO]: 'bg-orange-500/10 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/30',
+  const priorityColors = {
+    [Priority.URGENT]: 'bg-red-500/10 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30',
+    [Priority.HIGH]: 'bg-orange-500/10 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/30',
+    [Priority.MEDIUM]: 'bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30',
+    [Priority.LOW]: 'bg-slate-400/10 dark:bg-slate-400/20 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-400/30',
   };
 
   const navigateWeek = (direction: number) => {
@@ -122,19 +123,23 @@ const GanttChart: React.FC<GanttChartProps> = ({ tasks, employees, onViewTask })
 
       {/* Legend */}
       <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30 flex flex-wrap items-center gap-x-8 gap-y-4">
-        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Legend</span>
+        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Priority Legend</span>
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded bg-orange-500/20 border border-orange-200 dark:border-orange-500/30"></div>
-            <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">To Do</span>
+            <div className="w-2.5 h-2.5 rounded bg-red-500 shadow-sm shadow-red-500/20"></div>
+            <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Urgent</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded bg-emerald-700/20 border border-emerald-300 dark:border-emerald-700/30"></div>
-            <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">In Progress</span>
+            <div className="w-2.5 h-2.5 rounded bg-orange-500 shadow-sm shadow-orange-500/20"></div>
+            <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">High</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded bg-emerald-500/20 border border-emerald-200 dark:border-emerald-500/30"></div>
-            <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Done</span>
+            <div className="w-2.5 h-2.5 rounded bg-yellow-500 shadow-sm shadow-yellow-500/20"></div>
+            <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Medium</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2.5 h-2.5 rounded bg-slate-400 shadow-sm shadow-slate-400/20"></div>
+            <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Low</span>
           </div>
         </div>
       </div>
@@ -216,7 +221,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ tasks, employees, onViewTask })
                         <div key={task.id} className="w-full relative h-8 shrink-0">
                           <div
                             onClick={() => onViewTask(task)}
-                            className={`absolute inset-y-0 rounded-lg ${statusColors[task.status]} cursor-pointer hover:brightness-105 active:scale-[0.98] transition-all flex items-center px-3 border shadow-sm group/bar z-10 hover:z-20`}
+                            className={`absolute inset-y-0 rounded-lg ${priorityColors[task.priority]} cursor-pointer hover:brightness-105 active:scale-[0.98] transition-all flex items-center px-3 border shadow-sm group/bar z-10 hover:z-20`}
                             style={{
                               left: `${leftPercent}%`,
                               width: `${widthPercent}%`,

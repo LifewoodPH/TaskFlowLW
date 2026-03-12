@@ -28,11 +28,11 @@ const priorityConfig = [
   {
     key: Priority.MEDIUM,
     label: 'Medium',
-    bar: 'bg-indigo-500',
-    bg: 'bg-white/40 dark:bg-white/5 border border-indigo-500/10',
-    badge: 'text-indigo-600 dark:text-indigo-400 font-black',
+    bar: 'bg-yellow-500',
+    bg: 'bg-white/40 dark:bg-white/5 border border-yellow-500/10',
+    badge: 'text-yellow-600 dark:text-yellow-400 font-black',
     track: 'bg-black/5 dark:bg-white/5',
-    dot: 'bg-indigo-500',
+    dot: 'bg-yellow-500',
   },
   {
     key: Priority.LOW,

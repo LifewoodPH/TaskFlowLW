@@ -8,7 +8,7 @@ interface Props {
 const priorityConfig = [
     { key: Priority.URGENT, label: 'Urgent', bar: 'bg-red-500', text: 'text-red-500' },
     { key: Priority.HIGH, label: 'High', bar: 'bg-orange-500', text: 'text-orange-500' },
-    { key: Priority.MEDIUM, label: 'Medium', bar: 'bg-indigo-500', text: 'text-indigo-500' },
+    { key: Priority.MEDIUM, label: 'Medium', bar: 'bg-yellow-500', text: 'text-yellow-500' },
     { key: Priority.LOW, label: 'Low', bar: 'bg-slate-400', text: 'text-slate-400' },
 ];
 

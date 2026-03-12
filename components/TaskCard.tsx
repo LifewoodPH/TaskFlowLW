@@ -29,8 +29,8 @@ interface TaskCardProps {
 const priorityConfig = {
   [Priority.URGENT]: { glow: 'bg-red-500 shadow-red-500/50', border: 'border-red-500/20' },
   [Priority.HIGH]: { glow: 'bg-orange-500 shadow-orange-500/50', border: 'border-orange-500/20' },
-  [Priority.MEDIUM]: { glow: 'bg-primary-500 shadow-primary-500/50', border: 'border-primary-500/20' },
-  [Priority.LOW]: { glow: 'bg-slate-200 dark:bg-white/20 shadow-white/10', border: 'border-black/5 dark:border-white/5' },
+  [Priority.MEDIUM]: { glow: 'bg-yellow-500 shadow-yellow-500/50', border: 'border-yellow-500/20' },
+  [Priority.LOW]: { glow: 'bg-slate-400 shadow-slate-400/50', border: 'border-slate-500/20' },
 };
 
 const formatTime = (time24?: string) => {
