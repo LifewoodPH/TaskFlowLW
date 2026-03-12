@@ -102,7 +102,7 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ currentUserId, 
         setConfirmModal({
             isOpen: true,
             title: `${action} Workspace Admin?`,
-            message: `Are you sure you want to ${action.toLowerCase()} Workspace Admin rights for ${user.name}? They will ${action === 'Grant' ? 'gain' : 'lose'} the ability to manage tasks and members within their workspace.`,
+            message: `Are you sure you want to ${action.toLowerCase()} Workspace Admin rights for ${user.name}? They will ${action === 'Grant' ? 'gain' : 'lose'} the ability to manage tasks and members inside the "${user.spaceName}" workspace.`,
             type: user.role === 'admin' ? 'warning' : 'info',
             onConfirm: async () => {
                 try {
@@ -134,10 +134,10 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ currentUserId, 
 
         setConfirmModal({
             isOpen: true,
-            title: `${action} Super Admin Access?`,
+            title: `${action} System Admin Access?`,
             message: newStatus
-                ? `Are you sure you want to GRANT ${user.name} Super Admin access? They will have full control over the entire system, including managing other admins.`
-                : `Are you sure you want to REVOKE Super Admin access from ${user.name}? They will lose access to the global Command Center immediately.`,
+                ? `Are you sure you want to GRANT ${user.name} System Admin access? They will have FULL control over every workspace and setting in the entire system.`
+                : `Are you sure you want to REVOKE System Admin access from ${user.name}? They will lose all administrative control immediately.`,
             type: newStatus ? 'danger' : 'warning', // Danger for granting so they pay attention
             onConfirm: async () => {
                 try {
@@ -147,8 +147,8 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ currentUserId, 
                     await dataService.updateSuperAdminStatus(user.id, newStatus);
                     // Optional: Toast success
                 } catch (error) {
-                    console.error("Failed to update super admin status", error);
-                    alert("Failed to update Super Admin status. Please try again.");
+                    console.error("Failed to update system admin status", error);
+                    alert("Failed to update System Admin status. Please try again.");
                     loadUsers(); // Revert on error
                 } finally {
                     setConfirmModal({ ...confirmModal, isOpen: false });
@@ -443,7 +443,7 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ currentUserId, 
                         <div className="flex items-center gap-2 mb-6 flex-wrap">
                             {user.isSuperAdmin && (
                                 <span className="px-2.5 py-1 rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400 text-[9px] font-black uppercase tracking-widest border border-primary-500/20">
-                                    Super Admin
+                                    System Admin
                                 </span>
                             )}
                             {user.role === 'admin' && (
@@ -497,7 +497,7 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ currentUserId, 
                                 `}
                             >
                                 <UsersIcon className="w-4 h-4" />
-                                {user.isSuperAdmin ? 'Full Access Granted' : 'Give Super Admin Access'}
+                                {user.isSuperAdmin ? 'Full Access Granted' : 'Give System Admin Access'}
                             </button>
 
                             <button
@@ -512,7 +512,7 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ currentUserId, 
                                 `}
                             >
                                 <KeyIcon className="w-4 h-4" />
-                                {(!user.spaceId) ? 'Quick Assign & Manage' : (user.role === 'admin' ? 'Workspace Admin Active' : 'Promote to Admin')}
+                                {(!user.spaceId) ? 'Quick Assign & Manage' : (user.role === 'admin' ? 'Workspace Admin Active' : 'Promote to Workspace Admin')}
                             </button>
                         </div>
 
@@ -574,7 +574,7 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ currentUserId, 
                                     className="w-full bg-slate-100 dark:bg-black/20 border-none rounded-2xl py-3 px-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-lime-500 outline-none appearance-none"
                                 >
                                     <option value="member">Member</option>
-                                    <option value="assistant">Workspace Assistant</option>
+                                    <option value="assistant">Assistant</option>
                                     <option value="admin">Workspace Admin</option>
                                 </select>
                             </div>
