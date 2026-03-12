@@ -377,15 +377,15 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ currentUserId, 
                                         <div className="absolute inset-0 rounded-2xl bg-rose-500 animate-pulse opacity-20 scale-110"></div>
                                     )}
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="font-bold text-slate-900 dark:text-white text-xl leading-tight mb-1 truncate" title={user.name}>{user.name}</h3>
+                                <div className="flex-1 min-w-0 text-left">
+                                    <h3 className="font-bold text-slate-900 dark:text-white text-xl leading-tight mb-2 whitespace-normal text-left" title={user.name}>{user.name}</h3>
                                     {editingPositionUserId === user.id ? (
                                         <div className="relative" ref={positionDropdownRef}>
                                             <div
                                                 onClick={() => setPositionDropdownOpen(!positionDropdownOpen)}
                                                 className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded px-2 py-1 flex items-center justify-between cursor-pointer min-w-[140px]"
                                             >
-                                                <span className="text-[10px] font-black text-rose-500 dark:text-rose-400 uppercase tracking-widest truncate max-w-[100px]">
+                                                <span className="text-[10px] font-black text-rose-500 dark:text-rose-400 uppercase tracking-widest truncate">
                                                     {editingPositionValue.length ? editingPositionValue.join(', ') : "Select Position"}
                                                 </span>
                                                 <svg className={`w-3 h-3 text-rose-500 transition-transform ${positionDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -414,7 +414,7 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ currentUserId, 
                                                                 <div className={`w-4 h-4 rounded border flex items-center justify-center mr-3 shrink-0 transition-colors ${isSelected ? 'bg-rose-500 border-rose-500' : 'border-slate-300 dark:border-white/20'}`}>
                                                                     {isSelected && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" /></svg>}
                                                                 </div>
-                                                                <span className="text-[11px] font-bold text-slate-700 dark:text-white/90 uppercase tracking-wider">{pos}</span>
+                                                                <span className="text-[11px] font-bold text-slate-700 dark:text-white/90 uppercase tracking-wider text-left">{pos}</span>
                                                             </label>
                                                         );
                                                     })}
@@ -430,10 +430,10 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ currentUserId, 
                                                 setEditingPositionValue(initialPositions);
                                                 setPositionDropdownOpen(true);
                                             }}
-                                            className="group/pos flex items-center gap-1.5 text-[10px] font-black text-rose-500 dark:text-rose-400 uppercase tracking-widest hover:text-rose-600 dark:hover:text-rose-300 transition-colors"
+                                            className="group/pos flex items-start gap-1.5 text-[10px] font-black text-rose-500 dark:text-rose-400 uppercase tracking-widest hover:text-rose-600 dark:hover:text-rose-300 transition-colors w-full text-left"
                                         >
-                                            {user.position || 'No Position'}
-                                            <PencilSquareIcon className="w-3 h-3 opacity-0 group-hover/pos:opacity-100 transition-opacity" />
+                                            <span className="flex-1 text-left whitespace-normal">{user.position || 'No Position'}</span>
+                                            <PencilSquareIcon className="w-3 h-3 mt-0.5 opacity-0 group-hover/pos:opacity-100 transition-opacity shrink-0" />
                                         </button>
                                     )}
                                 </div>
