@@ -267,7 +267,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
                 </span>
                 <div className="flex items-center gap-3">
                   {assignees.length > 0 ? (
-                    <div className="flex -space-x-3 overflow-hidden items-center">
+                    <div className="flex -space-x-3 overflow-hidden items-center shrink-0">
                       {assignees.map((emp, idx) => (
                         <div key={emp.id} className="relative inline-block" style={{ zIndex: assignees.length - idx }}>
                           <img src={emp.avatarUrl} alt={emp.name} className="w-8 h-8 rounded-full object-cover border-2 border-white dark:border-[#0A0A0A] shadow-sm" title={emp.name} />
@@ -275,11 +275,11 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, ta
                       ))}
                     </div>
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10 border-2 border-white dark:border-[#0A0A0A] shadow-sm flex items-center justify-center relative z-10">
+                    <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10 border-2 border-white dark:border-[#0A0A0A] shadow-sm flex items-center justify-center relative z-10 shrink-0">
                       <span className="text-[10px] font-bold text-slate-400">-</span>
                     </div>
                   )}
-                  <span className="text-sm font-bold text-slate-800 dark:text-white/90 truncate">
+                  <span className="text-sm font-bold text-slate-800 dark:text-white/90 leading-tight break-words block">
                     {assignees.length === 0 ? 'Unassigned' : assignees.length === 1 ? assignees[0].name : `${assignees.length} Assignees`}
                   </span>
                 </div>

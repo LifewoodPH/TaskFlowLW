@@ -163,10 +163,10 @@ const MembersView: React.FC<MembersViewProps> = ({ employees, tasks, currentUser
                   <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-neutral-900 rounded-full"></div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-black text-slate-900 dark:text-white truncate">
+                  <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight mb-1">
                     {employee.name}
                   </h3>
-                  <p className="text-sm font-bold text-slate-500 dark:text-white/40">
+                  <p className="text-sm font-bold text-slate-500 dark:text-white/40 leading-snug">
                     {employee.position || 'Member'}
                   </p>
                 </div>
