@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export type LandingPage = 'home' | 'dashboard' | 'overview';
 export type WeekStartDay = 'sunday' | 'monday';
@@ -10,6 +10,7 @@ export interface Preferences {
     weekStartDay: WeekStartDay;
     timeFormat: TimeFormat;
     showCompletedTasks: TaskVisibility;
+    performanceMode: boolean;
 }
 
 const DEFAULT_PREFERENCES: Preferences = {
@@ -17,6 +18,7 @@ const DEFAULT_PREFERENCES: Preferences = {
     weekStartDay: 'sunday',
     timeFormat: '12h',
     showCompletedTasks: 'recent',
+    performanceMode: false,
 };
 
 export const usePreferences = (): [Preferences, (key: keyof Preferences, value: any) => void] => {
@@ -30,13 +32,34 @@ export const usePreferences = (): [Preferences, (key: keyof Preferences, value: 
         }
     });
 
-    const updatePreference = (key: keyof Preferences, value: any) => {
+    useEffect(() => {
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === 'userPreferences' && e.newValue) {
+                setPreferences({ ...DEFAULT_PREFERENCES, ...JSON.parse(e.newValue) });
+            }
+        };
+
+        const handleCustomChange = (e: CustomEvent<Preferences>) => {
+            setPreferences(e.detail);
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('preferences-changed', handleCustomChange as EventListener);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('preferences-changed', handleCustomChange as EventListener);
+        };
+    }, []);
+
+    const updatePreference = useCallback((key: keyof Preferences, value: any) => {
         setPreferences((prev) => {
             const newPreferences = { ...prev, [key]: value };
             localStorage.setItem('userPreferences', JSON.stringify(newPreferences));
+            window.dispatchEvent(new CustomEvent('preferences-changed', { detail: newPreferences }));
             return newPreferences;
         });
-    };
+    }, []);
 
     return [preferences, updatePreference];
 };

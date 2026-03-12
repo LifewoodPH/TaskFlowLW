@@ -1,7 +1,13 @@
 import React, { useEffect, useRef } from 'react';
+import { usePreferences } from './hooks/usePreferences';
 
 const InteractiveParticles: React.FC = React.memo(() => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [preferences] = usePreferences();
+
+    if (preferences.performanceMode) {
+        return null;
+    }
 
     useEffect(() => {
         const canvas = canvasRef.current;

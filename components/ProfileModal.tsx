@@ -798,26 +798,44 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, curr
                                 {/* Task Visibility */}
                                 <section>
                                     <h4 className="text-[10px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest mb-4">Task Visibility</h4>
-                                    <div className="bg-white dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/5 p-5">
+                                    <div className="bg-white dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/5 p-5 space-y-6">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="font-bold text-slate-900 dark:text-white text-sm">Show Completed Tasks</p>
-                                                <p className="text-xs text-slate-500 dark:text-white/40 mt-0.5">Control when completed tasks are visible.</p>
+                                                <p className="font-bold text-slate-900 dark:text-white text-sm">Completed Tasks</p>
+                                                <p className="text-xs text-slate-500 dark:text-white/40 mt-0.5">Control when completed tasks disappear.</p>
                                             </div>
                                             <div className="w-40">
                                                 <Select
                                                     value={preferences.showCompletedTasks}
                                                     onChange={(val) => setPreferences('showCompletedTasks', val)}
                                                     options={[
-                                                        { label: 'Always', value: 'always' },
-                                                        { label: 'Never', value: 'never' },
-                                                        { label: 'Recent (24h)', value: 'recent' },
+                                                        { label: 'Always Show', value: 'always' },
+                                                        { label: 'Recent Only (24h)', value: 'recent' },
+                                                        { label: 'Never Show', value: 'never' },
                                                     ]}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 </section>
+
+                                {/* Performance Optimization */}
+                                <section>
+                                    <h4 className="text-[10px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest mb-4">Performance</h4>
+                                    <div className="bg-white dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/5 p-5">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="font-bold text-slate-900 dark:text-white text-sm">Low-End Device Mode</p>
+                                                <p className="text-xs text-slate-500 dark:text-white/40 mt-0.5 max-w-[280px]">Disables heavy 3D elements and visual effects for a smoother experience.</p>
+                                            </div>
+                                            <ToggleSwitch
+                                                enabled={preferences.performanceMode}
+                                                onChange={(val) => setPreferences('performanceMode', val)}
+                                            />
+                                        </div>
+                                    </div>
+                                </section>
+
                             </div>
                         )}
 

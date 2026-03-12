@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { usePreferences } from './hooks/usePreferences';
 
 interface BackgroundProps {
     videoSrc?: string;
@@ -8,6 +9,7 @@ interface BackgroundProps {
 
 const Background: React.FC<BackgroundProps> = React.memo(({ videoSrc, className, noOverlays }) => {
     const [isLoaded, setIsLoaded] = useState(false);
+    const [preferences] = usePreferences();
 
     return (
         <div
@@ -19,10 +21,12 @@ const Background: React.FC<BackgroundProps> = React.memo(({ videoSrc, className,
             }}
         >
             {/* Fallback Mesh Gradient (always present as base layer) */}
-            <div className="mesh-gradient absolute w-[150vw] h-[150vh] top-[-25vh] left-[-25vw] filter blur-[80px] opacity-100 dark:opacity-60 transition-opacity duration-1000" />
+            {!preferences.performanceMode && (
+                <div className="mesh-gradient absolute w-[150vw] h-[150vh] top-[-25vh] left-[-25vw] filter blur-[80px] opacity-100 dark:opacity-60 transition-opacity duration-1000" />
+            )}
 
             {/* Asset Overlay (Video or GIF) */}
-            {videoSrc && (
+            {!preferences.performanceMode && videoSrc && (
                 videoSrc.toLowerCase().endsWith('.gif') ? (
                     <img
                         src={videoSrc}
