@@ -13,6 +13,8 @@ import { ViewColumnsIcon } from './icons/ViewColumnsIcon';
 import { CalendarIcon } from './icons/CalendarIcon';
 import { Cog6ToothIcon } from './icons/Cog6ToothIcon';
 import { LogoutIcon } from './icons/LogoutIcon';
+import { GanttIcon } from './icons/GanttIcon';
+import { PresentationChartLineIcon } from './icons/PresentationChartLineIcon';
 import { cardAccents } from './WorkspaceHomePage';
 import { usePreferences } from './hooks/usePreferences';
 
@@ -85,7 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const workspaceViews: { id: string; label: string; icon: React.FC<{ className?: string }> }[] = [
     { id: 'home', label: 'Dashboard', icon: HomeIcon },
     { id: 'board', label: 'Task Board', icon: ViewColumnsIcon },
-    { id: 'gantt', label: 'Gantt Chart', icon: ViewColumnsIcon },
+    { id: 'gantt', label: 'Gantt Chart', icon: GanttIcon },
     { id: 'members', label: 'Members', icon: UsersIcon },
     ...(currentSpaceRole === 'admin' || isSuperAdmin
       ? [
@@ -328,7 +330,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         : 'text-slate-500 dark:text-white/50 hover:bg-slate-900/5 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
                       } ${!isOpen && 'justify-center px-0'}`}
                   >
-                    <ChartBarIcon className="w-5 h-5 flex-shrink-0" />
+                    <PresentationChartLineIcon className="w-5 h-5 flex-shrink-0" />
                     {isOpen && <span>Daily Overview</span>}
                     {!isOpen && (
                       <div className="absolute left-full ml-4 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-[#1E1E1E] text-sm font-bold rounded-xl opacity-0 group-hover:opacity-100 whitespace-nowrap z-50 pointer-events-none shadow-xl transition-all duration-200 translate-x-2 group-hover:translate-x-0">
