@@ -36,6 +36,8 @@ const getRelativeTime = (timestamp: string) => {
     return `${Math.floor(diffInHours / 24)}d ago`;
 };
 
+type TimeRange = 'today' | 'weekly' | 'monthly' | 'yearly' | 'all';
+
 const AdminDashboard: React.FC<AdminDashboardProps> = ({
     tasks,
     employees,
@@ -46,23 +48,70 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     isOverdueModalOpen: externalIsOverdueModalOpen,
     setIsOverdueModalOpen: externalSetIsOverdueModalOpen
 }) => {
-    // Calculations
-    const totalTasks = tasks.length;
-    const completedTasks = tasks.filter((t: Task) => t.status === TaskStatus.DONE);
+    const [timeRange, setTimeRange] = React.useState<TimeRange>('all');
+    
+    // Filtering logic based on timeRange
+    const { filteredTasks, periodStart, periodEnd } = React.useMemo(() => {
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const oneDayMs = 24 * 60 * 60 * 1000;
+        
+        let start = 0;
+        let end = now.getTime() + (100 * 365 * oneDayMs); // Far future
+        
+        if (timeRange === 'today') {
+            start = startOfToday;
+            end = startOfToday + oneDayMs;
+        } else if (timeRange === 'weekly') {
+            start = now.getTime() - 7 * oneDayMs;
+        } else if (timeRange === 'monthly') {
+            start = now.getTime() - 30 * oneDayMs;
+        } else if (timeRange === 'yearly') {
+            start = now.getTime() - 365 * oneDayMs;
+        }
+        
+        if (timeRange === 'all') {
+            return { filteredTasks: tasks, periodStart: 0, periodEnd: end };
+        }
+
+        const filtered = tasks.filter(t => {
+            const dueDate = t.dueDate ? new Date(t.dueDate).getTime() : null;
+            const createdAt = new Date(t.createdAt).getTime();
+            const completedAt = t.completedAt ? new Date(t.completedAt).getTime() : null;
+            
+            // Period includes any task with a significant event (due, created, or completed) in the window
+            return (dueDate && dueDate >= start && dueDate < end) ||
+                   (createdAt >= start && createdAt < end) ||
+                   (completedAt && completedAt >= start && completedAt < end);
+        });
+
+        return { filteredTasks: filtered, periodStart: start, periodEnd: end };
+    }, [tasks, timeRange]);
+
+    // Calculations using filteredTasks
+    const totalTasks = filteredTasks.length;
+    const completedTasks = filteredTasks.filter((t: Task) => t.status === TaskStatus.DONE);
     const completionRate = totalTasks ? Math.round((completedTasks.length / totalTasks) * 100) : 0;
-    const overdueTasks = tasks.filter((t: Task) => isTaskOverdue(t));
-    const criticalTasks = tasks.filter((t: Task) => t.priority === Priority.URGENT && t.status !== TaskStatus.DONE);
+    const overdueTasks = filteredTasks.filter((t: Task) => isTaskOverdue(t));
+    const criticalTasks = filteredTasks.filter((t: Task) => t.priority === Priority.URGENT && t.status !== TaskStatus.DONE);
     const [internalIsOverdueModalOpen, setInternalIsOverdueModalOpen] = useState(false);
 
     const isOverdueModalOpen = externalIsOverdueModalOpen !== undefined ? externalIsOverdueModalOpen : internalIsOverdueModalOpen;
     const setIsOverdueModalOpen = externalSetIsOverdueModalOpen !== undefined ? externalSetIsOverdueModalOpen : setInternalIsOverdueModalOpen;
 
-    // New metrics calculations
-    const today = new Date().toISOString().split('T')[0];
-    const tasksCreatedToday = tasks.filter(t => t.createdAt.startsWith(today)).length;
-    const tasksCompletedToday = tasks.filter(t => t.status === TaskStatus.DONE && t.completedAt?.startsWith(today)).length;
-    const activeAssignees = new Set(tasks.filter(t => t.status !== TaskStatus.DONE && t.assigneeId).map(t => t.assigneeId)).size;
-    const highPriorityActive = tasks.filter(t => (t.priority === Priority.HIGH || t.priority === Priority.URGENT) && t.status !== TaskStatus.DONE).length;
+    // Period-specific metrics (Precise)
+    const periodCreated = filteredTasks.filter(t => {
+        const createdAt = new Date(t.createdAt).getTime();
+        return createdAt >= periodStart && createdAt < periodEnd;
+    }).length;
+
+    const periodCompleted = filteredTasks.filter(t => {
+        const completedAt = t.completedAt ? new Date(t.completedAt).getTime() : null;
+        return completedAt && completedAt >= periodStart && completedAt < periodEnd;
+    }).length;
+
+    const activeAssignees = new Set(filteredTasks.filter(t => t.status !== TaskStatus.DONE && t.assigneeId).map(t => t.assigneeId)).size;
+    const highPriorityActive = filteredTasks.filter(t => (t.priority === Priority.HIGH || t.priority === Priority.URGENT) && t.status !== TaskStatus.DONE).length;
 
     // Calculate average completion time (mock calculation for demo)
     const avgCompletionTime = "2.5 Days";
@@ -77,9 +126,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <div className="p-2 bg-indigo-500/10 text-indigo-500 rounded-xl">
                             <SparklesIcon className="w-5 h-5" />
                         </div>
-                        <span className="text-3xl font-black text-slate-900 dark:text-white">{tasksCreatedToday}</span>
+                        <span className="text-3xl font-black text-slate-900 dark:text-white">{periodCreated}</span>
                     </div>
-                    <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500 dark:text-white/40">Created Today</p>
+                    <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500 dark:text-white/40">
+                        {timeRange === 'today' ? 'Created Today' : timeRange === 'all' ? 'Total Created' : 'Created in Period'}
+                    </p>
                 </BentoCard>
 
                 <BentoCard className="p-5 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-200">
@@ -87,9 +138,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <div className="p-2 bg-green-500/10 text-green-500 rounded-xl">
                             <CheckCircleIcon className="w-5 h-5" />
                         </div>
-                        <span className="text-3xl font-black text-slate-900 dark:text-white">{tasksCompletedToday}</span>
+                        <span className="text-3xl font-black text-slate-900 dark:text-white">{periodCompleted}</span>
                     </div>
-                    <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500 dark:text-white/40">Completed Today</p>
+                    <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500 dark:text-white/40">
+                        {timeRange === 'today' ? 'Completed Today' : timeRange === 'all' ? 'Total Completed' : 'Completed in Period'}
+                    </p>
                 </BentoCard>
 
                 <BentoCard className="p-5 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-200">
@@ -130,6 +183,23 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             <span className="text-xs font-bold text-slate-400 dark:text-white/40 font-mono tracking-widest pl-2 border-l border-white/10">
                                 SYSTEM ONLINE
                             </span>
+                        </div>
+
+                        {/* Time Range Selector */}
+                        <div className="flex items-center gap-1 mb-6 bg-black/10 dark:bg-white/5 p-1 rounded-xl w-fit">
+                            {(['today', 'weekly', 'monthly', 'yearly', 'all'] as TimeRange[]).map((range) => (
+                                <button
+                                    key={range}
+                                    onClick={() => setTimeRange(range)}
+                                    className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
+                                        timeRange === range
+                                            ? 'bg-white dark:bg-white/20 text-slate-900 dark:text-white shadow-sm'
+                                            : 'text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/60'
+                                    }`}
+                                >
+                                    {range}
+                                </button>
+                            ))}
                         </div>
 
                         <h1 className="text-5xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-[0.9] mb-3">
@@ -266,14 +336,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <BentoCard className="p-6 flex flex-col min-h-[200px]">
                     <h3 className="text-xs font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest mb-4">Task Status</h3>
                     <div className="flex-1">
-                        <TaskStatusStackedBar tasks={tasks} />
+                        <TaskStatusStackedBar tasks={filteredTasks} />
                     </div>
                 </BentoCard>
 
                 <BentoCard className="p-6 flex flex-col min-h-[200px]">
                     <h3 className="text-xs font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest mb-4">Active Priorities</h3>
                     <div className="flex-1">
-                        <TaskPriorityHorizontalBar tasks={tasks} />
+                        <TaskPriorityHorizontalBar tasks={filteredTasks} />
                     </div>
                 </BentoCard>
             </div>
@@ -281,7 +351,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <OverdueTasksModal
                 isOpen={isOverdueModalOpen}
                 onClose={() => setIsOverdueModalOpen(false)}
-                tasks={tasks}
+                tasks={filteredTasks}
                 employees={employees}
                 onViewTask={(task) => {
                     if (onViewOverdueTask) {
